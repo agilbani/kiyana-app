@@ -1,20 +1,26 @@
-import ThemedText from "@/components/ThemedText";
+import ThemedGap from "@/components/ThemedGap";
+import ThemedImage from "@/components/ThemedImage";
 import React from "react";
 import { View } from "react-native";
 
 const HomeScreen = () => {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <ThemedText size="lg" type="Bold">
-        Helxxlxo{" "}
-        <ThemedText type="Medium" size="xs">
-          Woxxrsld
-        </ThemedText>
-        !
-      </ThemedText>
-      <ThemedText type="Medium" size="md">
-        Worsxld s
-      </ThemedText>
+      <ThemedImage
+        source={{ uri: "https://picsum.photos/200" }}
+        width={200}
+        height={200}
+        delayBeforeLoad={5000}
+        borderRadius={12}
+      />
+      <ThemedGap height={20} />
+      <ThemedImage
+        source={{ uri: "https://picsum.photos/200" }}
+        width={200}
+        height={200}
+        delayBeforeLoad={5000}
+        borderRadius={12}
+      />
     </View>
   );
 };

@@ -1,9 +1,8 @@
-import React, { useMemo } from "react";
-import { Text, TextStyle } from "react-native";
-
 import Typography from "@/constants/Typography";
 import { FontSize, FontType, ThemedTextProps } from "@/types/components";
 import { scaleFont } from "@/utils/scaleSize";
+import React, { useMemo } from "react";
+import { Text, TextStyle } from "react-native";
 
 const fontFamilyMap: Record<FontType, string> = {
   Regular: Typography.Font.Regular,
@@ -21,13 +20,13 @@ const sizeMap: Record<FontSize, number> = {
   xxl: 32,
 };
 
-function ThemedText({
+const ThemedText: React.FC<ThemedTextProps> = ({
   type = "Regular",
   size = "md",
   style,
   children,
   ...rest
-}: ThemedTextProps) {
+}) => {
   const fontSize = useMemo(() => scaleFont(sizeMap[size]), [size]);
 
   const baseStyle: TextStyle = {
@@ -42,15 +41,15 @@ function ThemedText({
       {children}
     </Text>
   );
-}
+};
 
 // Custom comparator for memo
-function areEqual(prev: ThemedTextProps, next: ThemedTextProps) {
+const areEqual = (prev: ThemedTextProps, next: ThemedTextProps) => {
   return (
     prev.children === next.children &&
     prev.type === next.type &&
     prev.size === next.size
   );
-}
+};
 
 export default React.memo(ThemedText, areEqual);

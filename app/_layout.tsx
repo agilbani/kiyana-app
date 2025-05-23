@@ -4,7 +4,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
-export default function RootLayout() {
+const RootLayout = () => {
   const [loaded] = useFonts({
     "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
     "Roboto-Medium": require("../assets/fonts/Roboto-Medium.ttf"),
@@ -25,4 +25,6 @@ export default function RootLayout() {
       <StatusBar style="auto" />
     </ThemeProvider>
   );
-}
+};
+
+export default RootLayout;
