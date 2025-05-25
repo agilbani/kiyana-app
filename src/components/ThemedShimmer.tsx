@@ -1,7 +1,9 @@
 import Color from "@/constants/Color";
+import Radius from "@/constants/Radius";
+import GlobalStyles from "@/styles/common";
 import { ThemedShimmerProps } from "@/types/components";
 import { scale, verticalScale } from "@/utils/scaleSize";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { IcImage } from "@assets/icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useMemo } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
@@ -36,19 +38,19 @@ const ThemedShimmer: React.FC<ThemedShimmerProps> = React.memo(
 
     const scaledWidth = useMemo(() => scale(width), [width]);
     const scaledHeight = useMemo(() => verticalScale(height), [height]);
+
     const calculatedRadius = useMemo(
       () => Math.min(scaledWidth, scaledHeight) * 0.08,
       [scaledWidth, scaledHeight]
     );
 
-    const resolvedBorderRadius = useMemo(
-      () =>
-        borderRadius !== undefined ? scale(borderRadius) : calculatedRadius,
-      [borderRadius, calculatedRadius]
-    );
+    const resolvedBorderRadius = useMemo(() => {
+      if (!borderRadius) return calculatedRadius;
+      return Radius[borderRadius] ?? calculatedRadius;
+    }, [borderRadius, calculatedRadius]);
 
     const iconSize = useMemo(
-      () => Math.min(scale(width), verticalScale(height)) * 0.5,
+      () => Math.min(scale(width), verticalScale(height)) * 0.25,
       [width, height]
     );
 
@@ -85,6 +87,7 @@ const ThemedShimmer: React.FC<ThemedShimmerProps> = React.memo(
           <View
             style={[
               styles.imagePlaceholder,
+              GlobalStyles.center,
               {
                 width: iconSize,
                 height: iconSize,
@@ -94,11 +97,7 @@ const ThemedShimmer: React.FC<ThemedShimmerProps> = React.memo(
               },
             ]}
           >
-            <MaterialIcons
-              name="image"
-              size={iconSize * 0.5}
-              color={Color.Gray[500]}
-            />
+            <IcImage width={iconSize} height={iconSize} />
           </View>
         )}
       </View>
@@ -118,10 +117,8 @@ const styles = StyleSheet.create({
   },
   imagePlaceholder: {
     position: "absolute",
-    justifyContent: "center",
     alignSelf: "center",
-    alignItems: "center",
   },
 });
 
-export default ThemedShimmer;
+export default React.memo(ThemedShimmer);

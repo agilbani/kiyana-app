@@ -7,6 +7,8 @@ const Radius = {
   lg: 20,
   xl: 24,
   xxl: 32,
+  rounded: 99,
 };
 
+export type RadiusKey = keyof typeof Radius;
 export default Radius;

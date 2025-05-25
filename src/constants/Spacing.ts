@@ -9,4 +9,5 @@ const Spacing = {
   xxl: 32,
 };
 
+export type SpacingKey = keyof typeof Spacing;
 export default Spacing;

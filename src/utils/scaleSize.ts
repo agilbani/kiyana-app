@@ -1,5 +1,6 @@
-import { Dimensions, PixelRatio, Platform } from "react-native";
+import { Dimensions, PixelRatio } from "react-native";
 
+// Ukuran referensi desain (biasanya dari Figma atau iPhone X)
 const guidelineBaseWidth = 375;
 const guidelineBaseHeight = 812;
 
@@ -22,21 +23,19 @@ export const verticalScale = (size: number): number =>
 /**
  * Skala moderat gabungan horizontal + faktor
  * @param size ukuran asli
- * @param factor faktor moderasi (default 0.5)
+ * @param factor faktor moderasi (default 0.9 agar tidak terlalu kecil)
  */
-export const moderateScale = (size: number, factor = 0.5): number =>
+export const moderateScale = (size: number, factor = 0.9): number =>
   size + (scale(size) - size) * factor;
 
 /**
  * Skala font, disesuaikan dengan PixelRatio & platform
  * @param size ukuran font asli
- * @param factor faktor moderasi font (default 0.5)
+ * @param factor faktor moderasi font (default 0.9)
  */
-export const scaleFont = (size: number, factor = 0.5): number => {
+export const scaleFont = (size: number, factor = 0.9): number => {
   const newSize = moderateScale(size, factor);
-  if (Platform.OS === "ios") {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize));
-  } else {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
-  }
+  const roundedSize = PixelRatio.roundToNearestPixel(newSize);
+
+  return Math.max(Math.round(roundedSize) - 1, 12);
 };

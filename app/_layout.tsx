@@ -1,7 +1,9 @@
-import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import GlobalStyles from "@/styles/common";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
 const RootLayout = () => {
@@ -17,13 +19,13 @@ const RootLayout = () => {
   }
 
   return (
-    <ThemeProvider value={DefaultTheme}>
+    <GestureHandlerRootView style={GlobalStyles.flex}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
-    </ThemeProvider>
+    </GestureHandlerRootView>
   );
 };
 

@@ -1,9 +1,13 @@
+import Spacing from "@/constants/Spacing";
 import { ThemedGapProps } from "@/types/components";
 import React from "react";
 import { View } from "react-native";
 
-const ThemedGap: React.FC<ThemedGapProps> = ({ width, height }) => {
-  return <View style={{ width: width, height: height }} />;
+const ThemedGap: React.FC<ThemedGapProps> = ({
+  width = "none",
+  height = "none",
+}) => {
+  return <View style={{ width: Spacing[width], height: Spacing[height] }} />;
 };
 
-export default ThemedGap;
+export default React.memo(ThemedGap);

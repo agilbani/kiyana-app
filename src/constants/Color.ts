@@ -1,3 +1,5 @@
+import { ColorValue } from "react-native";
+
 const Color = {
   Gray: {
     25: "#FCFCFD",
@@ -14,6 +16,7 @@ const Color = {
   },
 
   Purple: {
+    20: "#9747FF33",
     25: "#FAFAFF",
     50: "#F4F3FF",
     100: "#EBE9FE",
@@ -78,10 +81,21 @@ const Color = {
     Background: "#FFFFFF",
   },
 
+  Border: {
+    Purple: "#4F1ED8",
+  },
+
   Button: {
     "Surface-Primary": "#FEFEFE",
     "Background-Primary": "#7A5AF8",
     "Label-Primary": "#FEFEFE",
+    Primary: ["#8862F2", "#7544FC", "#5B2ED4"] as [
+      ColorValue,
+      ColorValue,
+      ...ColorValue[]
+    ],
+    Secondary: ["#5E5E5E", "#1C1C1C"] as [ColorValue, ColorValue],
+    "Disabled-Gradient": ["#AAA", "#999"] as [ColorValue, ColorValue],
   },
 
   Text: {

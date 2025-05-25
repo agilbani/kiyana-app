@@ -1,7 +1,9 @@
 import Color from "@/constants/Color";
+import Radius from "@/constants/Radius";
+import GlobalStyles from "@/styles/common";
 import { ThemedImageProps } from "@/types/components";
 import { scale, verticalScale } from "@/utils/scaleSize";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { IcBrokenImage } from "@assets/icons";
 import { Image } from "expo-image";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Animated, StyleSheet, View } from "react-native";
@@ -13,7 +15,7 @@ const ThemedImage: React.FC<ThemedImageProps> = ({
   width = 200,
   height = 100,
   placeholderColor = Color.Gray[300],
-  borderRadius = 12,
+  borderRadius = "sm",
   delayBeforeLoad,
   onLoadEnd,
 }) => {
@@ -21,16 +23,20 @@ const ThemedImage: React.FC<ThemedImageProps> = ({
   const [error, setError] = useState(false);
 
   const iconSize = useMemo(
-    () => Math.min(scale(width), verticalScale(height)) * 0.5,
+    () => Math.min(scale(width), verticalScale(height)) * 0.25,
     [width, height]
   );
+
+  const resolvedRadius =
+    typeof borderRadius === "string" ? Radius[borderRadius] ?? 0 : borderRadius;
 
   const overlayOpacity = useRef(new Animated.Value(1)).current;
 
   const handleLoadEnd = useCallback(() => {
-    const delay = delayBeforeLoad || 0;
+    const delay = delayBeforeLoad || 1000;
     setTimeout(() => {
       setLoading(false);
+      setError(true);
       onLoadEnd?.();
 
       Animated.timing(overlayOpacity, {
@@ -47,10 +53,17 @@ const ThemedImage: React.FC<ThemedImageProps> = ({
   }, []);
 
   return (
-    <View style={[styles.container, { width, height, borderRadius }, style]}>
+    <View
+      style={[
+        styles.container,
+        GlobalStyles.center,
+        { width, height, borderRadius: resolvedRadius },
+        style,
+      ]}
+    >
       <Image
         source={source}
-        style={[styles.image, { borderRadius }]}
+        style={[styles.image, { borderRadius: resolvedRadius }]}
         onLoadEnd={handleLoadEnd}
         onError={handleError}
         contentFit="cover"
@@ -61,7 +74,10 @@ const ThemedImage: React.FC<ThemedImageProps> = ({
       {!error && (
         <Animated.View
           pointerEvents="none"
-          style={[styles.overlay, { borderRadius, opacity: overlayOpacity }]}
+          style={[
+            styles.overlay,
+            { borderRadius: resolvedRadius, opacity: overlayOpacity },
+          ]}
         />
       )}
 
@@ -78,14 +94,11 @@ const ThemedImage: React.FC<ThemedImageProps> = ({
         <View
           style={[
             styles.placeholder,
+            GlobalStyles.center,
             { backgroundColor: placeholderColor, borderRadius },
           ]}
         >
-          <MaterialIcons
-            name="broken-image"
-            size={iconSize * 0.5}
-            color={Color.Gray[500]}
-          />
+          <IcBrokenImage width={iconSize} height={iconSize} />
         </View>
       )}
     </View>
@@ -96,21 +109,17 @@ export default React.memo(ThemedImage);
 
 const styles = StyleSheet.create({
   container: {
-    overflow: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
     backgroundColor: Color.Gray[300],
+    position: "relative",
+    overflow: "hidden",
   },
   placeholder: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
-    alignItems: "center",
   },
   image: {
+    position: "absolute",
     width: "100%",
     height: "100%",
-    position: "absolute",
     top: 0,
     left: 0,
   },
