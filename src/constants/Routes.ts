@@ -14,6 +14,7 @@ export const ROUTES = {
   DASHBOARD_CASHADVANCE: "/(main)/dashboard/finance/cash-advance",
   DASHBOARD_TRANSFER: "/(main)/dashboard/finance/transfer",
   DASHBOARD_WITHDRAWAL: "/(main)/dashboard/finance/withdrawal",
+  DASHBOARD_HISTORY_TRANSACTION: "/(main)/dashboard/finance/history",
 
   // Attendance
   ATTENDANCE: "/(main)/attendance",

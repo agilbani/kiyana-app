@@ -6,112 +6,70 @@ import {
   ThemedInput,
   ThemedModal,
   ThemedText,
+  ThemedTextarea,
 } from "@/components";
 import Color from "@/constants/Color";
 import Radius from "@/constants/Radius";
 import GlobalStyles from "@/styles/common";
+import { formatRupiahDisplay, formatRupiahInput } from "@/utils/currency";
 import { scale, verticalScale } from "@/utils/scaleSize";
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { Alert, StyleSheet, View } from "react-native";
+import * as yup from "yup";
 
 const SALDO = 100000;
 
-type FormState = {
+type FormValues = {
   recipient: string;
   amount: string;
-  recipientError: string;
-  amountError: string;
-  isLoading: boolean;
+  note: string;
 };
+
+const Row = ({
+  label,
+  value,
+  bold = false,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+}) => (
+  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+    <ThemedText type="Regular" color={Color.Text.Secondary}>
+      {label}
+    </ThemedText>
+    <ThemedText type={bold ? "Bold" : "Medium"}>{value}</ThemedText>
+  </View>
+);
+
+const schema = yup.object().shape({
+  recipient: yup
+    .string()
+    .required("Penerima harus diisi")
+    .min(5, "Nomor HP / ID pengguna tidak valid"),
+  amount: yup
+    .string()
+    .required("Jumlah harus diisi")
+    .matches(/^[0-9.]+$/, "Jumlah harus berupa angka"),
+  note: yup.string().default(""),
+});
 
 const TransferScreen = () => {
   const confirmModalRef = useRef<ThemedModal | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [confirmedRecipientName, setConfirmedRecipientName] = useState("");
 
-  const [form, setForm] = useState<FormState>({
-    recipient: "",
-    amount: "",
-    recipientError: "",
-    amountError: "",
-    isLoading: false,
-  });
-
-  const [confirmedRecipientName, setConfirmedRecipientName] =
-    useState<string>("");
-
-  const formatRupiah = (value: string) => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  };
-
-  const handleAmountChange = (text: string) => {
-    let numericValue = text.replace(/[^0-9]/g, "");
-    if (numericValue.length > 1 && numericValue.startsWith("0")) {
-      numericValue = numericValue.replace(/^0+/, "");
-    }
-    const formatted = formatRupiah(numericValue);
-
-    setForm((prev) => ({
-      ...prev,
-      amount: formatted,
-      amountError: "",
-    }));
-  };
-
-  const handleRecipientChange = (text: string) => {
-    setForm((prev) => ({
-      ...prev,
-      recipient: text,
-      recipientError: "",
-    }));
-  };
-
-  const validateRecipient = () => {
-    if (!form.recipient) {
-      setForm((prev) => ({ ...prev, recipientError: "Penerima harus diisi" }));
-      return false;
-    }
-    if (form.recipient.length < 5) {
-      setForm((prev) => ({
-        ...prev,
-        recipientError: "Nomor HP / ID pengguna tidak valid",
-      }));
-      return false;
-    }
-
-    const recipientName = fetchRecipientName(form.recipient);
-    if (recipientName === "Nama Penerima Tidak Dikenal") {
-      setForm((prev) => ({
-        ...prev,
-        recipientError: "Penerima tidak ditemukan",
-      }));
-      return false;
-    }
-
-    return true;
-  };
-
-  const validateAmount = () => {
-    const numericAmount = Number(form.amount.replace(/\./g, ""));
-    if (!form.amount) {
-      setForm((prev) => ({
-        ...prev,
-        amountError: "Jumlah transfer harus diisi",
-      }));
-      return false;
-    }
-    if (isNaN(numericAmount) || numericAmount <= 0) {
-      setForm((prev) => ({
-        ...prev,
-        amountError: "Jumlah transfer harus angka dan lebih dari 0",
-      }));
-      return false;
-    }
-    if (numericAmount > SALDO) {
-      setForm((prev) => ({ ...prev, amountError: "Saldo tidak cukup" }));
-      return false;
-    }
-    return true;
-  };
+  const { control, handleSubmit, reset, setError, getValues } =
+    useForm<FormValues>({
+      defaultValues: {
+        recipient: "",
+        amount: "",
+        note: "",
+      },
+      resolver: yupResolver(schema),
+    });
 
   const fetchRecipientName = (recipientId: string): string => {
     if (recipientId === "08123456789") return "Budi Santoso";
@@ -119,69 +77,43 @@ const TransferScreen = () => {
     return "Nama Penerima Tidak Dikenal";
   };
 
-  const handleSend = () => {
-    setForm((prev) => ({
-      ...prev,
-      recipientError: "",
-      amountError: "",
-    }));
-
-    if (!validateRecipient() || !validateAmount()) {
-      return;
-    }
-
-    const recipientName = fetchRecipientName(form.recipient);
+  const onSubmit = (data: FormValues) => {
+    const recipientName = fetchRecipientName(data.recipient);
+    const numericAmount = Number(data.amount.replace(/\./g, ""));
 
     if (recipientName === "Nama Penerima Tidak Dikenal") {
-      setForm((prev) => ({
-        ...prev,
-        recipientError: "Penerima tidak ditemukan",
-      }));
+      setError("recipient", { message: "Penerima tidak ditemukan" });
       return;
     }
 
-    setForm((prev) => ({
-      ...prev,
-      isLoading: true,
-    }));
+    if (numericAmount > SALDO) {
+      setError("amount", { message: "Saldo tidak cukup" });
+      return;
+    }
+
+    setIsLoading(true);
+    setConfirmedRecipientName(recipientName);
 
     setTimeout(() => {
-      setConfirmedRecipientName(recipientName);
-      setForm((prev) => ({
-        ...prev,
-        recipientError: "",
-        amountError: "",
-        isLoading: false,
-      }));
-
-      console.log("kesini");
       confirmModalRef.current?.show();
-    }, 2000);
+      setIsLoading(false);
+    }, 1000);
   };
 
   const confirmTransfer = () => {
     confirmModalRef.current?.hide();
-
-    setForm((prev) => ({
-      ...prev,
-      isLoading: true,
-    }));
+    setIsLoading(true);
 
     setTimeout(() => {
-      setForm({
-        recipient: "",
-        amount: "",
-        recipientError: "",
-        amountError: "",
-        isLoading: false,
-      });
+      reset();
+      setIsLoading(false);
       Alert.alert("Transfer Berhasil");
     }, 2000);
   };
 
   return (
     <ThemedContainer>
-      <ThemedHeader title="Kirim Saldo" />
+      <ThemedHeader title="Kirim Uang" />
       <View style={styles.container}>
         <View style={styles.amountWrapper}>
           <ThemedText size="md" color={Color.Text.Secondary}>
@@ -193,50 +125,83 @@ const TransferScreen = () => {
           </ThemedText>
         </View>
         <ThemedGap height="xl" />
-        <ThemedInput
-          label="Penerima"
-          placeholder="Masukkan Nomor HP / ID pengguna"
-          value={form.recipient}
-          onChangeText={handleRecipientChange}
-          autoCapitalize="none"
-          error={form.recipientError}
+        <Controller
+          name="recipient"
+          control={control}
+          render={({ field, fieldState }) => (
+            <ThemedInput
+              label="Penerima"
+              placeholder="Masukkan Nomor HP / ID pengguna"
+              autoCapitalize="none"
+              value={field.value}
+              onChangeText={field.onChange}
+              error={fieldState.error?.message}
+            />
+          )}
         />
         <ThemedGap height="md" />
-        <ThemedInput
-          label="Jumlah Uang"
-          placeholder="Masukkan Jumlah Transfer"
-          value={form.amount}
-          onChangeText={handleAmountChange}
-          keyboardType="numeric"
-          error={form.amountError}
+        <Controller
+          name="amount"
+          control={control}
+          render={({ field, fieldState }) => (
+            <ThemedInput
+              label="Jumlah"
+              placeholder="Contoh: 100.000"
+              keyboardType="numeric"
+              value={field.value}
+              onChangeText={(text) => field.onChange(formatRupiahInput(text))}
+              error={fieldState.error?.message}
+            />
+          )}
         />
-      </View>
-      <View style={styles.footer}>
-        <ThemedButton
-          title="Kirim Saldo"
-          onPress={handleSend}
-          loading={form.isLoading}
-          disabled={form.isLoading}
+        <ThemedGap height="md" />
+        <Controller
+          name="note"
+          control={control}
+          render={({ field, fieldState }) => (
+            <ThemedTextarea
+              label="Keterangan"
+              placeholder="Contoh: Uang makan siang"
+              value={field.value}
+              onChangeText={field.onChange}
+              error={fieldState.error?.message}
+            />
+          )}
         />
       </View>
 
-      {/* Modal Konfirmasi Transfer */}
+      <View style={styles.footer}>
+        <ThemedButton
+          title="Kirim Uang"
+          onPress={handleSubmit(onSubmit)}
+          loading={isLoading}
+          disabled={isLoading}
+        />
+      </View>
+
+      {/* Modal Konfirmasi */}
       <ThemedModal
         ref={confirmModalRef}
         onClose={() => confirmModalRef.current?.hide()}
       >
         <ThemedText size="lg" type="Medium">
-          Konfirmasi Transfer
+          Konfirmasi
         </ThemedText>
-        <ThemedGap height="sm" />
-        <ThemedText type="Regular">
-          Nomor HP / ID pengguna :
-          <ThemedText type="Bold">{form.amount}</ThemedText>
-        </ThemedText>
-        <ThemedGap height="xxs" />
-        <ThemedText type="Regular">
-          Nama : <ThemedText type="Bold">{confirmedRecipientName}</ThemedText>
-        </ThemedText>
+        <ThemedGap height="xl" />
+        <View style={{ gap: 8 }}>
+          <Row label="Nomor HP / ID pengguna" value={getValues("recipient")} />
+          <Row label="Nama Penerima" value={confirmedRecipientName} />
+          <Row
+            label="Jumlah"
+            value={formatRupiahDisplay(getValues("amount"))}
+          />
+          <Row label="Biaya Admin" value="Rp 0" />
+          <Row
+            label="Total"
+            value={formatRupiahDisplay(getValues("amount"))}
+            bold
+          />
+        </View>
         <ThemedGap height="xxl" />
         <View style={GlobalStyles.rowCenter}>
           <View style={GlobalStyles.flex}>

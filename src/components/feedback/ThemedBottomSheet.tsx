@@ -120,7 +120,6 @@ export default class ThemedBottomSheet extends React.PureComponent<
         </Animated.View>
 
         <Animated.View
-          {...this.panResponder.panHandlers}
           style={[
             styles.sheet,
             type === "full" && {
@@ -153,6 +152,6 @@ const styles = StyleSheet.create({
     padding: scale(20),
     borderTopLeftRadius: scale(Radius.xl),
     borderTopRightRadius: scale(Radius.xl),
-    zIndex: 1,
+    zIndex: 999,
   },
 });

@@ -151,7 +151,7 @@ export default class ThemedSelect extends React.PureComponent<
                     size="md"
                     color={value ? stylesComputed.textColor : Color.Gray[400]}
                   >
-                    {selectedOption?.key ?? label ?? ""}
+                    {selectedOption?.value ?? label ?? ""}
                   </ThemedText>
                 </View>
                 <IcArrowDown width={20} height={20} />
@@ -189,11 +189,10 @@ export default class ThemedSelect extends React.PureComponent<
                 />
               </View>
             </View>
-
             <ThemedGap height="xl" />
-
             <FlashList
               data={filteredData}
+              showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   key={item.value}

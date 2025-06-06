@@ -22,7 +22,7 @@ const ThemedBadge: React.FC<ThemedBadgeProps> = ({
           <ThemedGap width="xs" />
         </>
       )}
-      <ThemedText type="Medium" size="sm" color={textColor}>
+      <ThemedText type="SemiBold" size="xs" color={textColor}>
         {text}
       </ThemedText>
     </View>
@@ -33,6 +33,7 @@ export default ThemedBadge;
 
 const styles = StyleSheet.create({
   badge: {
+    alignSelf: "flex-start",
     paddingHorizontal: scale(10),
     paddingVertical: scale(4),
     borderRadius: Radius.rounded,

@@ -1,3 +1,4 @@
+export { default as ThemedBadge } from "./ThemedBadge";
 export { default as ThemedButton } from "./ThemedButton";
 export { default as ThemedGap } from "./ThemedGap";
 export { default as ThemedHeader } from "./ThemedHeader";

@@ -1,6 +1,7 @@
 import { ThemedGap } from "@/components";
 import DashboardAnnouncement from "@/components/screens/Dashboard/DashboardAnnouncement";
 import DashboardCard from "@/components/screens/Dashboard/DashboardCard";
+import DashboardFinanceHistory from "@/components/screens/Dashboard/DashboardFinanceHistory";
 import DashboardHeader from "@/components/screens/Dashboard/DashboardHeader";
 import DashboardTodayTask from "@/components/screens/Dashboard/DashboardTodayTask";
 import Color from "@/constants/Color";
@@ -27,6 +28,8 @@ const HomeScreen = () => {
         <DashboardAnnouncement text="Diberitahukan untuk Semua karyawan agar tidak terlambat melakukan absensi" />
         <ThemedGap height="md" />
         <DashboardTodayTask />
+        <ThemedGap height="md" />
+        <DashboardFinanceHistory />
       </ScrollView>
     </View>
   );

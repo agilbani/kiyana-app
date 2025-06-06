@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     backgroundColor: Color.Background.Background,
     padding: scale(20),
     borderRadius: scale(12),
+    zIndex: 999,
   },
   blur: {
     ...StyleSheet.absoluteFillObject,
