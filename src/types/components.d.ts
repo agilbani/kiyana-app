@@ -2,6 +2,7 @@ import { RadiusKey } from "@/constants/Radius";
 import { SpacingKey } from "@/constants/Spacing";
 import React, { ReactNode } from "react";
 import {
+  Animated,
   ColorValue,
   TextInputProps,
   TextProps,
@@ -72,6 +73,29 @@ export interface ThemedInputState {
   showPassword: boolean;
 }
 
+// Select
+type Option = {
+  key: string;
+  value: string;
+};
+
+export interface ThemedSelectProps {
+  label?: string;
+  icon?: ReactNode;
+  value?: string;
+  onChangeText?: (value: string) => void;
+  error?: string;
+  disabled?: boolean;
+  data?: Option[];
+}
+
+export interface ThemedSelectState {
+  value: string;
+  modalVisible: boolean;
+  searchQuery: string;
+  filteredData: Option[];
+}
+
 // Error message
 export interface ThemedErrorMessageProps {
   message?: string;
@@ -94,12 +118,12 @@ export type ThemedKeyboardAvoidingProps = {
   children: ReactNode;
   style?: ViewStyle;
   keyboardVerticalOffset?: number;
+  backgroundColor?: string;
 };
 
 // Container
 export type ThemedContainerProps = {
   children: ReactNode;
-  style?: ViewStyle;
   backgroundColor?: string;
   statusBarStyle?: "light-content" | "dark-content";
 };
@@ -118,7 +142,6 @@ export type ThemedBottomSheetState = {
 };
 
 // Modal
-
 export type ThemedModalProps = {
   visible?: boolean;
   onClose: () => void;
@@ -129,3 +152,59 @@ export type ThemedModalProps = {
 export type ThemedModalState = {
   visible: boolean;
 };
+
+// OnBoarding
+export interface OnboardingSlideProps {
+  image: any;
+  title: string;
+  description: string;
+}
+
+export interface OnboardingDotsProps {
+  slidesLength: number;
+  translateX: Animated.AnimatedInterpolation<string | number>;
+}
+
+export interface OnboardingActionsProps {
+  onNext: () => void;
+  onSkip: () => void;
+}
+
+// Permissions
+export type PermissionScreenProps = {
+  icon: number;
+  title: string;
+  description: string;
+  onAllow: () => void;
+  onMaybeLater?: () => void;
+};
+
+// AuthLayout
+export interface ThemedAuthLayoutProps {
+  children: React.ReactNode;
+}
+
+// Attendance
+export interface AttendanceHeaderProps {
+  clockInTime: string | null;
+  clockOutTime: string | null;
+  onClockInPress: () => void;
+}
+
+// Header
+export interface ThemedHeaderProps {
+  title: string;
+}
+
+// Badge
+export interface ThemedBadgeProps {
+  icon?: ReactNode;
+  text: string;
+  backgroundColor?: string;
+  textColor?: string;
+}
+
+// Announcement
+export interface DashboardAnnouncementProps {
+  text?: string | undefined;
+}

@@ -6,6 +6,7 @@ const GlobalStyles = StyleSheet.create({
   center: {
     justifyContent: "center",
     alignItems: "center",
+    textAlign: "center",
   },
 
   // Shadow for iOS + Android
@@ -37,6 +38,11 @@ const GlobalStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+
+  // Space between
+  spaceBetween: {
+    justifyContent: "space-between",
   },
 
   // Flex: 1

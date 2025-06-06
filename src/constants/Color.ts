@@ -74,11 +74,14 @@ const Color = {
 
   Base: {
     White: "#FEFEFE",
-    Black: "#1D232E",
+    Black: "#000000",
   },
 
   Background: {
     Background: "#FFFFFF",
+    Navbar: "#1C2020",
+    HeaderTopGradient: "#795FFC",
+    HeaderBottomGradient: "#7155FF",
   },
 
   Border: {

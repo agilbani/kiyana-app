@@ -1,21 +1,25 @@
-import IcArrowDown from "./IcArrowDown.svg";
-import IcArrowLeft from "./IcArrowLeft.svg";
-import IcBrokenImage from "./IcBrokenImage.svg";
-import IcImage from "./IcImage.svg";
-import IcPassword from "./IcPassword.svg";
-import IcSearch from "./IcSearch.svg";
-import IcUserID from "./IcUserID.svg";
-import IcVisibility from "./IcVisibility.svg";
-import IcVisibilityOff from "./IcVisibilityOff.svg";
-
-export {
-  IcArrowDown,
-  IcArrowLeft,
-  IcBrokenImage,
-  IcImage,
-  IcPassword,
-  IcSearch,
-  IcUserID,
-  IcVisibility,
-  IcVisibilityOff,
-};
+export { default as IcActiveCalendar } from "./IcActiveCalendar.svg";
+export { default as IcActiveHome } from "./IcActiveHome.svg";
+export { default as IcActiveTask } from "./IcActiveTask.svg";
+export { default as IcArrowDown } from "./IcArrowDown.svg";
+export { default as IcArrowLeft } from "./IcArrowLeft.svg";
+export { default as IcBell } from "./IcBell.svg";
+export { default as IcBrokenImage } from "./IcBrokenImage.svg";
+export { default as IcCalendar } from "./IcCalendar.svg";
+export { default as IcClock } from "./IcClock.svg";
+export { default as IcClose } from "./IcClose.svg";
+export { default as IcConvertCard } from "./IcConvertCard.svg";
+export { default as IcFaster } from "./IcFaster.svg";
+export { default as IcHome } from "./IcHome.svg";
+export { default as IcImage } from "./IcImage.svg";
+export { default as IcMarker } from "./IcMarker.svg";
+export { default as IcMoneyReceive } from "./IcMoneyReceive.svg";
+export { default as IcPassword } from "./IcPassword.svg";
+export { default as IcReceiptEdit } from "./IcReceiptEdit.svg";
+export { default as IcSearch } from "./IcSearch.svg";
+export { default as IcTask } from "./IcTask.svg";
+export { default as IcTimer } from "./IcTimer.svg";
+export { default as IcUserID } from "./IcUserID.svg";
+export { default as IcVisibility } from "./IcVisibility.svg";
+export { default as IcVisibilityOff } from "./IcVisibilityOff.svg";
+export { default as IcWarning } from "./IcWarning.svg";
