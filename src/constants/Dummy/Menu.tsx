@@ -34,9 +34,9 @@ export const MENUDATA: MenuSection[] = [
         onPress: () => router.push(ROUTES.PROFILE_CHANGE_PASSWORD),
       },
       {
-        title: "Bantuan",
+        title: "Hubungi Kami",
         icon: <IcMessageText />,
-        onPress: () => console.log("Bantuan & FAQ"),
+        onPress: () => router.push(ROUTES.PROFILE_CONTACT_US),
       },
       {
         title: "Keluar",

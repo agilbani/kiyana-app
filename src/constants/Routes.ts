@@ -33,5 +33,6 @@ export const ROUTES = {
   PROFILE_PERSONAL_DATA: "/profile/personal-data",
   PROFILE_PAYROLL: "/profile/payroll",
   PROFILE_DETAIL_PAYROLL: (id: string | number) => `/profile/payroll/${id}`,
+  PROFILE_CONTACT_US: "/profile/contact-us",
   PROFILE_CHANGE_PASSWORD: "/profile/change-password",
 } as const;
