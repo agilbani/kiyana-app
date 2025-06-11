@@ -209,3 +209,14 @@ export interface ThemedBadgeProps {
 export interface DashboardAnnouncementProps {
   text?: string | undefined;
 }
+
+export interface ThemedDatePickerProps {
+  label?: string;
+  disabled?: boolean;
+  error?: string;
+}
+
+export interface ThemedDatePickerState {
+  value?: Date;
+  showPicker: boolean;
+}

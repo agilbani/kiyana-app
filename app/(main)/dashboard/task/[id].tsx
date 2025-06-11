@@ -12,6 +12,7 @@ import Color from "@/constants/Color";
 import Radius from "@/constants/Radius";
 import { useCameraPermission } from "@/hooks/useCameraPermission";
 import GlobalStyles from "@/styles/common";
+import { BatchInput } from "@/types/form";
 import { scale } from "@/utils/scaleSize";
 import { IcClose, IcScan } from "@assets/icons";
 import ILCamera from "@assets/images/permissions/ILCamera.png";
@@ -27,12 +28,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-interface BatchInput {
-  barcode: string;
-  qty_done: number;
-  notes: string;
-}
 
 const statusBarHeight = StatusBar.currentHeight;
 

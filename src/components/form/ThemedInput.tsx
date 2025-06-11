@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     borderRadius: scale(Radius.sm),
   },
   container: {
-    maxHeight: verticalScale(44),
+    height: verticalScale(44),
     borderWidth: 1.5,
     borderRadius: scale(Radius.xs),
     paddingHorizontal: scale(12),

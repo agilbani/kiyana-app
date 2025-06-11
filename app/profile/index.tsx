@@ -1,8 +1,9 @@
-import { ThemedText } from "@/components";
+import { ThemedGap, ThemedImage, ThemedText } from "@/components";
+import ProfileMenu from "@/components/screens/Profile/ProfileMenu";
 import Color from "@/constants/Color";
 import Radius from "@/constants/Radius";
 import GlobalStyles from "@/styles/common";
-import { scale, verticalScale } from "@/utils/scaleSize";
+import { scale } from "@/utils/scaleSize";
 import { IcArrowLeft } from "@assets/icons";
 import { router } from "expo-router";
 import React from "react";
@@ -36,6 +37,29 @@ const ProfileScreen = () => {
           My Profile
         </ThemedText>
       </View>
+      <View style={styles.content}>
+        <View style={styles.profileWrapper}>
+          <View style={styles.profileBorder}>
+            <ThemedImage
+              source={{ uri: "https://picsum.photos/200" }}
+              width={120}
+              height={120}
+            />
+          </View>
+        </View>
+        <ThemedGap height="sm" />
+        <View style={GlobalStyles.center}>
+          <ThemedText type="SemiBold" size="lg">
+            Samsul
+          </ThemedText>
+          <ThemedGap height="xxs" />
+          <ThemedText type="Medium" size="md" color={Color.Purple[500]}>
+            Supervisor
+          </ThemedText>
+        </View>
+        <ThemedGap height="md" />
+        <ProfileMenu />
+      </View>
     </View>
   );
 };
@@ -49,8 +73,7 @@ const styles = StyleSheet.create({
   },
   backgroundHeader: {
     backgroundColor: Color.Background.HeaderTopGradient,
-    height: Dimensions.get("window").height * 0.276,
-    minHeight: verticalScale(224),
+    height: Dimensions.get("window").height * 0.225,
     paddingTop: statusBarHeight ? statusBarHeight + scale(12) : scale(46),
   },
   backButton: {
@@ -63,5 +86,20 @@ const styles = StyleSheet.create({
     borderRadius: Radius.rounded,
     zIndex: 1,
     ...GlobalStyles.center,
+  },
+  profileWrapper: {
+    marginTop: scale(-50),
+    ...GlobalStyles.center,
+  },
+  profileBorder: {
+    borderWidth: 2,
+    borderColor: Color.Background.Background,
+    borderRadius: Radius.sm,
+  },
+  content: {
+    backgroundColor: Color.Background.Background,
+    borderTopLeftRadius: Radius.md,
+    borderTopRightRadius: Radius.md,
+    marginTop: scale(-20),
   },
 });
