@@ -1,25 +1,27 @@
-import { ThemedGap, ThemedText } from "@/components/ui";
+import { ThemedGap, ThemedImage, ThemedText } from "@/components/ui";
 import Color from "@/constants/Color";
 import Radius from "@/constants/Radius";
-import { useAuth } from "@/hooks/useAuth";
+import { ROUTES } from "@/constants/Routes";
 import GlobalStyles from "@/styles/common";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcBell } from "@assets/icons";
-import { Image } from "expo-image";
+import { router } from "expo-router";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const DashboardHeader = () => {
-  const { user } = useAuth();
-
   return (
     <View style={styles.header}>
       <View style={GlobalStyles.rowCenter}>
-        <Image
-          source={{ uri: "https://picsum.photos/200" }}
-          style={styles.profile}
-          contentFit="cover"
-        />
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => router.push(ROUTES.PROFILE)}
+        >
+          <ThemedImage
+            source={{ uri: "https://picsum.photos/200" }}
+            style={styles.profile}
+          />
+        </TouchableOpacity>
         <ThemedGap width="xs" />
         <View>
           <ThemedText type="Medium">Tonald Drump</ThemedText>

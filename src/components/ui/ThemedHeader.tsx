@@ -10,12 +10,15 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import ThemedText from "./ThemedText";
 
 const ThemedHeader: React.FC<ThemedHeaderProps> = ({ title }) => {
+  const handleBack = () => {
+    router.back();
+  };
   return (
     <View style={styles.header}>
       <TouchableOpacity
         activeOpacity={0.8}
         style={styles.backButton}
-        onPress={() => router.back()}
+        onPress={handleBack}
       >
         <IcArrowLeft />
       </TouchableOpacity>

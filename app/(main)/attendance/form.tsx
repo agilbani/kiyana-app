@@ -4,6 +4,7 @@ import {
   ThemedContainer,
   ThemedGap,
   ThemedHeader,
+  ThemedImage,
   ThemedText,
   ThemedTextarea,
 } from "@/components";
@@ -12,10 +13,9 @@ import Radius from "@/constants/Radius";
 import { ROUTES } from "@/constants/Routes";
 import GlobalStyles from "@/styles/common";
 import { scale, verticalScale } from "@/utils/scaleSize";
-import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 
 const AttendanceFormScreen = () => {
   const ref = useRef<ThemedBottomSheet | null>(null);
@@ -35,10 +35,11 @@ const AttendanceFormScreen = () => {
       <View style={styles.container}>
         <View style={styles.card}>
           <View style={styles.photoWrapper}>
-            <Image
+            <ThemedImage
               source={{ uri: "https://picsum.photos/300" }}
+              width={Dimensions.get("window").width * 0.85}
+              height={Dimensions.get("window").height * 0.5}
               style={styles.photo}
-              contentFit="cover"
             />
             <View style={styles.photoContent}>
               <ThemedText type="Medium" size="sm" color={Color.Base.White}>

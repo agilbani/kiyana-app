@@ -9,8 +9,8 @@ import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcClose } from "@assets/icons";
 import ILCamera from "@assets/images/permissions/ILCamera.png";
 import { CameraView } from "expo-camera";
-import { router } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import { router, useFocusEffect } from "expo-router";
+import React, { useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -27,11 +27,13 @@ const AttendanceSelfieScreen = () => {
 
   const { granted, loading, requestPermission } = useCameraPermission();
 
-  useEffect(() => {
-    if (!granted) {
-      requestPermission();
-    }
-  }, [granted]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!granted) {
+        requestPermission();
+      }
+    }, [granted])
+  );
 
   if (loading || granted === null) {
     return (
@@ -62,7 +64,7 @@ const AttendanceSelfieScreen = () => {
         });
 
         if (photo?.uri) {
-          router.push(ROUTES.ATTENDANCE_FORM);
+          router.replace(ROUTES.ATTENDANCE_FORM);
         }
       } catch (error) {
         Alert.alert("Error", "Gagal mengambil foto.");

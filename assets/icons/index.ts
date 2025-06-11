@@ -16,6 +16,7 @@ export { default as IcMarker } from "./IcMarker.svg";
 export { default as IcMoneyReceive } from "./IcMoneyReceive.svg";
 export { default as IcPassword } from "./IcPassword.svg";
 export { default as IcReceiptEdit } from "./IcReceiptEdit.svg";
+export { default as IcScan } from "./IcScan.svg";
 export { default as IcSearch } from "./IcSearch.svg";
 export { default as IcTask } from "./IcTask.svg";
 export { default as IcTimer } from "./IcTimer.svg";

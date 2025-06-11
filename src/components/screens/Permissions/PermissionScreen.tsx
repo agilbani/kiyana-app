@@ -1,5 +1,5 @@
+import { ThemedButton, ThemedGap, ThemedText } from "@/components";
 import { ThemedContainer } from "@/components/layout";
-import { ThemedButton, ThemedGap, ThemedText } from "@/components/ui";
 import Color from "@/constants/Color";
 import Radius from "@/constants/Radius";
 import GlobalStyles from "@/styles/common";

@@ -119,6 +119,7 @@ export type ThemedKeyboardAvoidingProps = {
   style?: ViewStyle;
   keyboardVerticalOffset?: number;
   backgroundColor?: string;
+  withFlex?: boolean;
 };
 
 // Container

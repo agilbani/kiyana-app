@@ -2,7 +2,7 @@ import Color from "@/constants/Color";
 import Radius from "@/constants/Radius";
 import GlobalStyles from "@/styles/common";
 import { ThemedImageProps } from "@/types/components";
-import { scale, verticalScale } from "@/utils/scaleSize";
+import { scale } from "@/utils/scaleSize";
 import { IcBrokenImage } from "@assets/icons";
 import { Image } from "expo-image";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -23,7 +23,7 @@ const ThemedImage: React.FC<ThemedImageProps> = ({
   const [error, setError] = useState(false);
 
   const iconSize = useMemo(
-    () => Math.min(scale(width), verticalScale(height)) * 0.25,
+    () => Math.min(scale(width), scale(height)) * 0.25,
     [width, height]
   );
 
@@ -36,7 +36,6 @@ const ThemedImage: React.FC<ThemedImageProps> = ({
     const delay = delayBeforeLoad || 1000;
     setTimeout(() => {
       setLoading(false);
-      setError(true);
       onLoadEnd?.();
 
       Animated.timing(overlayOpacity, {

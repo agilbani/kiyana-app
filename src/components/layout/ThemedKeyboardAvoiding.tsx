@@ -1,5 +1,4 @@
 import Color from "@/constants/Color";
-import GlobalStyles from "@/styles/common";
 import { ThemedKeyboardAvoidingProps } from "@/types/components";
 import React from "react";
 import {
@@ -15,15 +14,16 @@ const ThemedKeyboardAvoiding: React.FC<ThemedKeyboardAvoidingProps> = ({
   style,
   keyboardVerticalOffset = 0,
   backgroundColor = Color.Background.Background,
+  withFlex = true,
 }) => {
   return (
     <KeyboardAvoidingView
-      style={GlobalStyles.flex}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={keyboardVerticalOffset}
+      style={withFlex ? { flex: 1 } : undefined}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={[GlobalStyles.flex, { backgroundColor }, style]}>
+        <View style={[{ flexGrow: 1, backgroundColor }, style]}>
           {children}
         </View>
       </TouchableWithoutFeedback>

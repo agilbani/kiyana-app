@@ -2,6 +2,7 @@ import {
   ThemedContainer,
   ThemedGap,
   ThemedHeader,
+  ThemedImage,
   ThemedText,
 } from "@/components";
 import Color from "@/constants/Color";
@@ -9,9 +10,8 @@ import Radius from "@/constants/Radius";
 import GlobalStyles from "@/styles/common";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcCalendar } from "@assets/icons";
-import { Image } from "expo-image";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 
 const AttendanceDetailScreen = () => {
   return (
@@ -33,10 +33,11 @@ const AttendanceDetailScreen = () => {
             </ThemedText>
             <ThemedGap height="xxs" />
             <View style={styles.photoWrapper}>
-              <Image
-                source={{ uri: "https://picsum.photos/300" }}
+              <ThemedImage
+                source={{ uri: "https://picsum.photos/500" }}
+                width={Dimensions.get("window").width * 0.78}
+                height={Dimensions.get("window").height * 0.5}
                 style={styles.photo}
-                contentFit="cover"
               />
               <View style={styles.photoContent}>
                 <ThemedText type="Medium" size="sm" color={Color.Base.White}>
@@ -104,7 +105,6 @@ const styles = StyleSheet.create({
     ...GlobalStyles.flex,
   },
   photo: {
-    ...GlobalStyles.flex,
     borderRadius: Radius.sm,
   },
   photoContent: {

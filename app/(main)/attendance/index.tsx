@@ -21,7 +21,7 @@ const renderHistoryListItem: ListRenderItem<any> = () => {
     <TouchableOpacity
       activeOpacity={0.8}
       style={styles.historyCard}
-      onPress={() => router.push("/(main)/attendance/1")}
+      onPress={() => router.push(ROUTES.ATTENDANCE_DETAIL(1) as any)}
     >
       <View style={GlobalStyles.rowCenter}>
         <IcCalendar width={16} height={16} stroke={Color.Purple[500]} />
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(12),
   },
   historyCard: {
-    backgroundColor: Color.Base.White,
+    backgroundColor: Color.Background.Background,
     paddingVertical: scale(12),
     paddingHorizontal: scale(16),
     borderRadius: scale(8),

@@ -2,15 +2,27 @@ import { ThemedBadge, ThemedGap, ThemedText } from "@/components/ui";
 import Color from "@/constants/Color";
 import { MOCK_TASKS } from "@/constants/Dummy/Task";
 import Radius from "@/constants/Radius";
+import { ROUTES } from "@/constants/Routes";
 import GlobalStyles from "@/styles/common";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcActiveCalendar, IcFaster } from "@assets/icons";
+import { router } from "expo-router";
 import React, { useCallback } from "react";
-import { FlatList, Platform, StyleSheet, View } from "react-native";
+import {
+  FlatList,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const TaskItem = React.memo(({ item }: any) => {
   return (
-    <View style={styles.taskWrapper}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      style={styles.taskWrapper}
+      onPress={() => router.push(ROUTES.DASHBOARD_TASK_DETAIL(1) as any)}
+    >
       <View style={GlobalStyles.rowCenter}>
         <IcFaster />
         <ThemedGap width="xs" />
@@ -41,7 +53,7 @@ const TaskItem = React.memo(({ item }: any) => {
           textColor={Color.Base.White}
         />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 });
 

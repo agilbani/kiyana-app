@@ -1,4 +1,4 @@
-import { ThemedButton, ThemedGap, ThemedText } from "@/components";
+import { ThemedButton, ThemedGap, ThemedImage, ThemedText } from "@/components";
 import Color from "@/constants/Color";
 import { OFFICE_LOCATION } from "@/constants/Location";
 import Radius from "@/constants/Radius";
@@ -10,7 +10,6 @@ import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcArrowLeft, IcMarker } from "@assets/icons";
 import ILClockIn from "@assets/images/ILClock.svg";
 import ILLocation from "@assets/images/permissions/ILocation.png";
-import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
@@ -169,10 +168,11 @@ const AttendanceClockInScreen = () => {
         </ThemedText>
         <ThemedGap height="xs" />
         <View style={styles.cardProfile}>
-          <Image
+          <ThemedImage
             source={{ uri: "https://picsum.photos/200" }}
+            width={64}
+            height={64}
             style={styles.profile}
-            contentFit="contain"
           />
           <ThemedGap width="sm" />
           <View style={GlobalStyles.flex}>
@@ -285,8 +285,6 @@ const styles = StyleSheet.create({
     ...GlobalStyles.rowCenter,
   },
   profile: {
-    width: scale(64),
-    height: scale(64),
     borderRadius: scale(10),
   },
   cardClock: {
