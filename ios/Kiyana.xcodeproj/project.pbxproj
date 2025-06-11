@@ -9,27 +9,27 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		B089A0B60A6178550D705445 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC427C91E6407493749C159 /* ExpoModulesProvider.swift */; };
+		51CC746C6E391170E7584E00 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3B369E4FC1D78C49959EA7E0 /* PrivacyInfo.xcprivacy */; };
+		94ABDDEF302E749CA589A5F6 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC87A8A7983E9A77C044E71 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		CB42C8D7D466CE1E8794C4B1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F77187EB02D9081AFAE4319E /* PrivacyInfo.xcprivacy */; };
+		E44E466881AC87AB520AA3AC /* libPods-Kiyana.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 625D7AE9016AD2919CC9477C /* libPods-Kiyana.a */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		FC850AF83DDB0665DFB8A3FE /* libPods-Kiyana.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEAF282EB3079B5A52D849C0 /* libPods-Kiyana.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0BC427C91E6407493749C159 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Kiyana/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		0DBF49CC57916071492BBD41 /* Pods-Kiyana.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kiyana.release.xcconfig"; path = "Target Support Files/Pods-Kiyana/Pods-Kiyana.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Kiyana.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kiyana.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Kiyana/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Kiyana/Info.plist; sourceTree = "<group>"; };
+		1A18CE3D4E252638FF69BB04 /* Pods-Kiyana.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kiyana.debug.xcconfig"; path = "Target Support Files/Pods-Kiyana/Pods-Kiyana.debug.xcconfig"; sourceTree = "<group>"; };
+		3B369E4FC1D78C49959EA7E0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Kiyana/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		625D7AE9016AD2919CC9477C /* libPods-Kiyana.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Kiyana.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Kiyana/SplashScreen.storyboard; sourceTree = "<group>"; };
-		AF160A7059A4094277920CAB /* Pods-Kiyana.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kiyana.debug.xcconfig"; path = "Target Support Files/Pods-Kiyana/Pods-Kiyana.debug.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		BDC87A8A7983E9A77C044E71 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Kiyana/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		ED3F6D7F01C1F8AF7724C9B9 /* Pods-Kiyana.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Kiyana.release.xcconfig"; path = "Target Support Files/Pods-Kiyana/Pods-Kiyana.release.xcconfig"; sourceTree = "<group>"; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Kiyana/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* Kiyana-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Kiyana-Bridging-Header.h"; path = "Kiyana/Kiyana-Bridging-Header.h"; sourceTree = "<group>"; };
-		F77187EB02D9081AFAE4319E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Kiyana/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		FEAF282EB3079B5A52D849C0 /* libPods-Kiyana.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Kiyana.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,21 +37,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FC850AF83DDB0665DFB8A3FE /* libPods-Kiyana.a in Frameworks */,
+				E44E466881AC87AB520AA3AC /* libPods-Kiyana.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		02FD773CA2FE511E776121E0 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				C14F4F212F5C34233DD80985 /* Kiyana */,
-			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
 		13B07FAE1A68108700A75B9A /* Kiyana */ = {
 			isa = PBXGroup;
 			children = (
@@ -61,7 +53,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				F77187EB02D9081AFAE4319E /* PrivacyInfo.xcprivacy */,
+				3B369E4FC1D78C49959EA7E0 /* PrivacyInfo.xcprivacy */,
 			);
 			name = Kiyana;
 			sourceTree = "<group>";
@@ -70,9 +62,25 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				FEAF282EB3079B5A52D849C0 /* libPods-Kiyana.a */,
+				625D7AE9016AD2919CC9477C /* libPods-Kiyana.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4213815A2676BE6F4F13582E /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				7B958D0AF71882EAF06A1A6F /* Kiyana */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		7B958D0AF71882EAF06A1A6F /* Kiyana */ = {
+			isa = PBXGroup;
+			children = (
+				BDC87A8A7983E9A77C044E71 /* ExpoModulesProvider.swift */,
+			);
+			name = Kiyana;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -89,8 +97,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				C879B54FDD30553788236AEC /* Pods */,
-				02FD773CA2FE511E776121E0 /* ExpoModulesProviders */,
+				EFB33779059A8AAF9DCCC5C3 /* Pods */,
+				4213815A2676BE6F4F13582E /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -114,19 +122,11 @@
 			path = Kiyana/Supporting;
 			sourceTree = "<group>";
 		};
-		C14F4F212F5C34233DD80985 /* Kiyana */ = {
+		EFB33779059A8AAF9DCCC5C3 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				0BC427C91E6407493749C159 /* ExpoModulesProvider.swift */,
-			);
-			name = Kiyana;
-			sourceTree = "<group>";
-		};
-		C879B54FDD30553788236AEC /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				AF160A7059A4094277920CAB /* Pods-Kiyana.debug.xcconfig */,
-				0DBF49CC57916071492BBD41 /* Pods-Kiyana.release.xcconfig */,
+				1A18CE3D4E252638FF69BB04 /* Pods-Kiyana.debug.xcconfig */,
+				ED3F6D7F01C1F8AF7724C9B9 /* Pods-Kiyana.release.xcconfig */,
 			);
 			name = Pods;
 			path = Pods;
@@ -140,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Kiyana" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				211D3EF09A5C990435C9CB9D /* [Expo] Configure project */,
+				7D332AF032472BCE637B5C30 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				22AF3AC5E33733E1AE65DFA6 /* [CP] Embed Pods Frameworks */,
+				A756304F8B204439339D618E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				CB42C8D7D466CE1E8794C4B1 /* PrivacyInfo.xcprivacy in Resources */,
+				51CC746C6E391170E7584E00 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,7 +240,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		211D3EF09A5C990435C9CB9D /* [Expo] Configure project */ = {
+		7D332AF032472BCE637B5C30 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -259,24 +259,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-Kiyana/expo-configure-project.sh\"\n";
 		};
-		22AF3AC5E33733E1AE65DFA6 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Kiyana/Pods-Kiyana-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Kiyana/Pods-Kiyana-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -289,6 +271,7 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXNotifications/ExpoNotifications_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoMediaLibrary/ExpoMediaLibrary_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoSystemUI/ExpoSystemUI_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
@@ -307,6 +290,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoMediaLibrary_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoSystemUI_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
@@ -323,6 +307,24 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Kiyana/Pods-Kiyana-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		A756304F8B204439339D618E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Kiyana/Pods-Kiyana-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Kiyana/Pods-Kiyana-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -331,7 +333,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				B089A0B60A6178550D705445 /* ExpoModulesProvider.swift in Sources */,
+				94ABDDEF302E749CA589A5F6 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,7 +342,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AF160A7059A4094277920CAB /* Pods-Kiyana.debug.xcconfig */;
+			baseConfigurationReference = 1A18CE3D4E252638FF69BB04 /* Pods-Kiyana.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -365,7 +367,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ryan77.kiyana;
-				PRODUCT_NAME = "Kiyana";
+				PRODUCT_NAME = Kiyana;
 				SWIFT_OBJC_BRIDGING_HEADER = "Kiyana/Kiyana-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -376,7 +378,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0DBF49CC57916071492BBD41 /* Pods-Kiyana.release.xcconfig */;
+			baseConfigurationReference = ED3F6D7F01C1F8AF7724C9B9 /* Pods-Kiyana.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -396,7 +398,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ryan77.kiyana;
-				PRODUCT_NAME = "Kiyana";
+				PRODUCT_NAME = Kiyana;
 				SWIFT_OBJC_BRIDGING_HEADER = "Kiyana/Kiyana-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
