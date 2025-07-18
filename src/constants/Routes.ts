@@ -27,6 +27,19 @@ export const ROUTES = {
 
   // Task
   TASK: "/(main)/task",
+  TASK_LIST_OF_PRODUCTS: "/(main)/task/warehouse/list-products",
+  TASK_ADD_PRODUCTS: "/(main)/task/warehouse/add-product",
+  TASK_STOCK_IN: "/(main)/task/warehouse/stock-in",
+  TASK_STOCK_OUT: "/(main)/task/warehouse/stock-out",
+  TASK_RETURN_ITEM: "/(main)/task/warehouse/return-item",
+  TASK_LIST_OF_PRIORITY_PRODUCTS:
+    "/(main)/task/priority-product/list-priority-product",
+  TASK_ADD_PRIORITY_PRODUCTS:
+    "/(main)/task/priority-product/add-priority-product",
+  TASK_FIX_ATTENDANCE: "/(main)/task/hr/fix-attendance",
+  TASK_SHIFT_SCHEDULE: "/(main)/task/hr/shift-schedule",
+  TASK_APPROVAL_SUBMISSION: "/(main)/task/hr/approval-submission",
+  TASK_POINT_OF_SALE: "/(main)/task/sale/pos",
 
   // Profile
   PROFILE: "/profile",

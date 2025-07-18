@@ -2,13 +2,13 @@ import {
   ThemedBottomSheet,
   ThemedButton,
   ThemedContainer,
+  ThemedDatePicker,
   ThemedGap,
   ThemedHeader,
   ThemedImage,
   ThemedInput,
   ThemedText,
 } from "@/components";
-import ThemedDatePicker from "@/components/form/ThemedDatePicker";
 import Color from "@/constants/Color";
 import Radius from "@/constants/Radius";
 import GlobalStyles from "@/styles/common";

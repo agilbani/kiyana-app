@@ -6,6 +6,7 @@ import { ROUTES } from "@/constants/Routes";
 import { useCheckRadius } from "@/hooks/useCheckRadius";
 import { useLocationPermission } from "@/hooks/useLocationPermission";
 import GlobalStyles from "@/styles/common";
+import { formatDate } from "@/utils/currency";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcArrowLeft, IcMarker } from "@assets/icons";
 import ILClockIn from "@assets/images/ILClock.svg";
@@ -180,11 +181,7 @@ const AttendanceClockInScreen = () => {
               Nama Pengguna
             </ThemedText>
             <ThemedText type="Medium" size="sm" color={Color.Purple[500]}>
-              {new Date().toLocaleDateString("id-ID", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-              })}
+              {formatDate(new Date())}
             </ThemedText>
             <ThemedGap height="xs" />
             <View style={GlobalStyles.rowCenter}>

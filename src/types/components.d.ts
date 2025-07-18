@@ -133,8 +133,8 @@ export type ThemedContainerProps = {
 export type ThemedBottomSheetProps = {
   type?: "full" | "content";
   visible?: boolean;
-  onClose: () => void;
   children: React.ReactNode;
+  onClose: () => void;
   style?: ViewStyle;
 };
 
@@ -212,8 +212,9 @@ export interface DashboardAnnouncementProps {
 
 export interface ThemedDatePickerProps {
   label?: string;
-  disabled?: boolean;
   error?: string;
+  disabled?: boolean;
+  onChange?: (date: Date) => void;
 }
 
 export interface ThemedDatePickerState {

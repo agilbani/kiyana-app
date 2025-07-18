@@ -1,3 +1,4 @@
+export { default as ThemedDatePicker } from "./ThemedDatePicker";
 export { default as ThemedErrorMessage } from "./ThemedErrorMessage";
 export { default as ThemedInput } from "./ThemedInput";
 export { default as ThemedSelect } from "./ThemedSelect";

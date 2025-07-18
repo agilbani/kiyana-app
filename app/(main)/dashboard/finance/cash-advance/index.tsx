@@ -102,7 +102,7 @@ const CashAdvanceScreen = () => {
           </ThemedText>
           <ThemedGap height="xxs" />
           <ThemedText type="Medium" size="lg">
-            Rp {SALDO.toLocaleString("id-ID")}
+            {formatRupiahDisplay(SALDO)}
           </ThemedText>
         </View>
         <ThemedGap height="xl" />

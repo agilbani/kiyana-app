@@ -2,6 +2,7 @@ import { ThemedGap, ThemedText } from "@/components/ui";
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
 import GlobalStyles from "@/styles/common";
+import { formatRupiahDisplay } from "@/utils/currency";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcConvertCard, IcMoneyReceive, IcReceiptEdit } from "@assets/icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -35,7 +36,7 @@ const DashboardCard = () => {
             Saldo
           </ThemedText>
           <ThemedText type="SemiBold" size="xl" color={Color.Base.White}>
-            Rp 10.000.000
+            {formatRupiahDisplay(10000000)}
           </ThemedText>
         </View>
         <ThemedGap height="md" />

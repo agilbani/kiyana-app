@@ -8,6 +8,8 @@ import {
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcArrowDown, IcDatePicker } from "@assets/icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import moment from "moment";
+import "moment/locale/id";
 import React from "react";
 import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedGap, ThemedText } from "../ui";
@@ -64,11 +66,7 @@ export default class ThemedDatePicker extends React.PureComponent<
     const stylesComputed = this.getComputedStyles();
 
     const formattedDate = value
-      ? value.toLocaleDateString("id-ID", {
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-        })
+      ? moment(value).locale("id").format("DD MMMM YYYY")
       : "";
 
     return (
@@ -129,7 +127,6 @@ export default class ThemedDatePicker extends React.PureComponent<
             mode="date"
             display="default"
             onChange={this.onDateChange}
-            maximumDate={new Date()}
           />
         )}
       </View>

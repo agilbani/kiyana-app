@@ -1,6 +1,7 @@
 import { ThemedGap, ThemedText } from "@/components/ui";
 import Color from "@/constants/Color";
 import { MENUDATA } from "@/constants/Dummy/Menu";
+import GlobalStyles from "@/styles/common";
 import { scale } from "@/utils/scaleSize";
 import React, { memo } from "react";
 import {
@@ -8,7 +9,6 @@ import {
   SectionListRenderItemInfo,
   StyleSheet,
   TouchableOpacity,
-  View,
 } from "react-native";
 
 const MenuItem = memo(
@@ -28,11 +28,9 @@ const MenuItem = memo(
 );
 
 const SectionHeader = memo(({ title }: { title: string }) => (
-  <View style={[styles.sectionHeader, title === "AKUN" && { marginTop: 0 }]}>
-    <ThemedText type="SemiBold" size="md">
-      {title.toUpperCase()}
-    </ThemedText>
-  </View>
+  <ThemedText type="SemiBold" size="md">
+    {title.toUpperCase()}
+  </ThemedText>
 ));
 
 const ProfileMenu = () => {
@@ -47,6 +45,7 @@ const ProfileMenu = () => {
         <SectionHeader title={title} />
       )}
       contentContainerStyle={styles.container}
+      SectionSeparatorComponent={() => <ThemedGap height="xl" />}
       ItemSeparatorComponent={() => <ThemedGap height="sm" />}
       stickySectionHeadersEnabled={false}
       initialNumToRender={10}
@@ -63,15 +62,11 @@ const styles = StyleSheet.create({
     paddingTop: scale(16),
     paddingBottom: scale(40),
   },
-  sectionHeader: {
-    marginTop: scale(20),
-    marginBottom: scale(8),
-  },
   item: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: scale(12),
+    paddingTop: scale(4),
+    paddingBottom: scale(12),
     borderBottomWidth: 1,
     borderColor: Color.Gray[200],
+    ...GlobalStyles.rowCenter,
   },
 });

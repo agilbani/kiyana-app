@@ -82,7 +82,6 @@ const ThemedButton: React.FC<ThemedButtonProps> = ({
       activeOpacity={0.8}
       onPress={onPress}
       disabled={isDisabled}
-      style={style}
     >
       <LinearGradient
         colors={gradientColors}
@@ -96,6 +95,7 @@ const ThemedButton: React.FC<ThemedButtonProps> = ({
             borderWidth: 1,
             borderColor,
           },
+          style,
         ]}
       >
         {loading ? (

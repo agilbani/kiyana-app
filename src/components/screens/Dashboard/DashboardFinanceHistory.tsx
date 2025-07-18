@@ -5,6 +5,7 @@ import { TransactionStatus, TransactionStatusColor } from "@/constants/Enum";
 import Radius from "@/constants/Radius";
 import { ROUTES } from "@/constants/Routes";
 import GlobalStyles from "@/styles/common";
+import { formatRupiahDisplay } from "@/utils/currency";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { router } from "expo-router";
 import React, { useCallback } from "react";
@@ -39,7 +40,7 @@ const TaskItem = React.memo(({ item }: any) => {
         </View>
         <View style={{ alignItems: "flex-end" }}>
           <ThemedText type="SemiBold" size="md">
-            Rp 100.000
+            {formatRupiahDisplay(100000)}
           </ThemedText>
           <ThemedGap height="xs" />
           <ThemedText size="sm" color={Color.Text.Secondary}>
