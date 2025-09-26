@@ -10,185 +10,189 @@ import { ThemedGap, ThemedText } from "../ui";
 import ThemedErrorMessage from "./ThemedErrorMessage";
 
 export default class ThemedInput extends React.PureComponent<
-  ThemedInputProps,
-  ThemedInputState
+    ThemedInputProps,
+    ThemedInputState
 > {
-  constructor(props: ThemedInputProps) {
-    super(props);
-    this.state = {
-      value: props.value || "",
-      isFocused: false,
-      showPassword: false,
-    };
-  }
-
-  componentDidUpdate(prevProps: ThemedInputProps) {
-    if (
-      this.props.value !== prevProps.value &&
-      this.props.value !== this.state.value
-    ) {
-      this.setState({ value: this.props.value ?? "" });
-    }
-  }
-
-  handleFocus = () => this.setState({ isFocused: true });
-  handleBlur = () => this.setState({ isFocused: false });
-  handleChangeText = (text: string) => {
-    this.setState({ value: text });
-    this.props.onChangeText?.(text);
-  };
-
-  togglePasswordVisibility = () => {
-    this.setState((prevState) => ({
-      showPassword: !prevState.showPassword,
-    }));
-  };
-
-  getComputedStyles = () => {
-    const { error, disabled } = this.props;
-    const { isFocused, value } = this.state;
-
-    const filled = !!value;
-
-    let innerBorderColor = Color.Gray[400];
-    let outerBorderColor = "transparent";
-    let iconColor = Color.Purple[400];
-    let textColor = Color.Text.Primary;
-    let backgroundColor = Color.Background.Background;
-
-    if (disabled) {
-      innerBorderColor = Color.Gray[300];
-      iconColor = Color.Gray[400];
-      textColor = Color.Gray[400];
-      backgroundColor = Color.Gray[50];
-    } else if (error) {
-      innerBorderColor = Color.Red[500];
-      iconColor = Color.Purple[400];
-    } else if (isFocused) {
-      innerBorderColor = Color.Purple[400];
-      outerBorderColor = Color.Purple["20"];
-    } else if (filled) {
-      iconColor = Color.Purple[400];
+    constructor(props: ThemedInputProps) {
+        super(props);
+        this.state = {
+            value: props.value || "",
+            isFocused: false,
+            showPassword: false,
+        };
     }
 
-    return {
-      innerBorderColor,
-      outerBorderColor,
-      iconColor,
-      textColor,
-      backgroundColor,
+    componentDidUpdate(prevProps: ThemedInputProps) {
+        if (
+            this.props.value !== prevProps.value &&
+            this.props.value !== this.state.value
+        ) {
+            this.setState({ value: this.props.value ?? "" });
+        }
+    }
+
+    handleFocus = () => this.setState({ isFocused: true });
+    handleBlur = () => this.setState({ isFocused: false });
+    handleChangeText = (text: string) => {
+        this.setState({ value: text });
+        this.props.onChangeText?.(text);
     };
-  };
 
-  render() {
-    const {
-      icon,
-      placeholder,
-      error,
-      disabled,
-      secureTextEntry,
-      label,
-      style,
-      ...rest
-    } = this.props;
-    const { value, showPassword } = this.state;
-    const stylesComputed = this.getComputedStyles();
+    togglePasswordVisibility = () => {
+        this.setState((prevState) => ({
+            showPassword: !prevState.showPassword,
+        }));
+    };
 
-    const shouldShowToggle = secureTextEntry && !disabled;
+    getComputedStyles = () => {
+        const { error, disabled } = this.props;
+        const { isFocused, value } = this.state;
 
-    return (
-      <View>
-        {label && (
-          <>
-            <ThemedText
-              type="Regular"
-              size="sm"
-              color={Color.Gray[600]}
-              style={styles.spacing}
-            >
-              {label}
-            </ThemedText>
-            <ThemedGap height="xxs" />
-          </>
-        )}
-        <View
-          style={[
-            styles.outerContainer,
-            {
-              borderColor: stylesComputed.outerBorderColor,
-            },
-          ]}
-        >
-          <View
-            style={[
-              styles.container,
-              GlobalStyles.rowCenter,
-              {
-                borderColor: stylesComputed.innerBorderColor,
-                backgroundColor: stylesComputed.backgroundColor,
-              },
-            ]}
-          >
-            {icon && (
-              <>
-                {icon}
-                <ThemedGap width="xs" />
-              </>
-            )}
-            <TextInput
-              style={[styles.input, { color: stylesComputed.textColor }, style]}
-              placeholder={placeholder}
-              placeholderTextColor={Color.Gray[400]}
-              editable={!disabled}
-              value={value}
-              secureTextEntry={secureTextEntry && !showPassword}
-              onFocus={this.handleFocus}
-              onBlur={this.handleBlur}
-              onChangeText={this.handleChangeText}
-              {...rest}
-            />
-            {shouldShowToggle && (
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={this.togglePasswordVisibility}
-              >
-                {showPassword ? (
-                  <IcVisibility width={20} height={20} />
-                ) : (
-                  <IcVisibilityOff width={20} height={20} />
+        const filled = !!value;
+
+        let innerBorderColor = Color.Gray[400];
+        let outerBorderColor = "transparent";
+        let iconColor = Color.Purple[400];
+        let textColor = Color.Text.Primary;
+        let backgroundColor = Color.Background.Background;
+
+        if (disabled) {
+            innerBorderColor = Color.Gray[300];
+            iconColor = Color.Gray[400];
+            textColor = Color.Gray[400];
+            backgroundColor = Color.Gray[50];
+        } else if (error) {
+            innerBorderColor = Color.Red[500];
+            iconColor = Color.Purple[400];
+        } else if (isFocused) {
+            innerBorderColor = Color.Purple[400];
+            outerBorderColor = Color.Purple["20"];
+        } else if (filled) {
+            iconColor = Color.Purple[400];
+        }
+
+        return {
+            innerBorderColor,
+            outerBorderColor,
+            iconColor,
+            textColor,
+            backgroundColor,
+        };
+    };
+
+    render() {
+        const {
+            icon,
+            placeholder,
+            error,
+            disabled,
+            secureTextEntry,
+            label,
+            style,
+            ...rest
+        } = this.props;
+        const { value, showPassword } = this.state;
+        const stylesComputed = this.getComputedStyles();
+
+        const shouldShowToggle = secureTextEntry && !disabled;
+
+        return (
+            <View>
+                {label && (
+                    <>
+                        <ThemedText
+                            type="Regular"
+                            size="sm"
+                            color={Color.Gray[600]}
+                            style={styles.spacing}
+                        >
+                            {label}
+                        </ThemedText>
+                        <ThemedGap height="xxs" />
+                    </>
                 )}
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-        <View style={styles.spacing}>
-          <ThemedErrorMessage message={error} />
-        </View>
-      </View>
-    );
-  }
+                <View
+                    style={[
+                        styles.outerContainer,
+                        {
+                            borderColor: stylesComputed.outerBorderColor,
+                        },
+                    ]}
+                >
+                    <View
+                        style={[
+                            styles.container,
+                            GlobalStyles.rowCenter,
+                            {
+                                borderColor: stylesComputed.innerBorderColor,
+                                backgroundColor: stylesComputed.backgroundColor,
+                            },
+                        ]}
+                    >
+                        {icon && (
+                            <>
+                                {icon}
+                                <ThemedGap width="xs" />
+                            </>
+                        )}
+                        <TextInput
+                            style={[
+                                styles.input,
+                                { color: stylesComputed.textColor },
+                                style,
+                            ]}
+                            placeholder={placeholder}
+                            placeholderTextColor={Color.Gray[400]}
+                            editable={!disabled}
+                            value={value}
+                            secureTextEntry={secureTextEntry && !showPassword}
+                            onFocus={this.handleFocus}
+                            onBlur={this.handleBlur}
+                            onChangeText={this.handleChangeText}
+                            {...rest}
+                        />
+                        {shouldShowToggle && (
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={this.togglePasswordVisibility}
+                            >
+                                {showPassword ? (
+                                    <IcVisibility width={20} height={20} />
+                                ) : (
+                                    <IcVisibilityOff width={20} height={20} />
+                                )}
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                </View>
+                <View style={styles.spacing}>
+                    <ThemedErrorMessage message={error} />
+                </View>
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    borderWidth: 3,
-    borderRadius: scale(Radius.sm),
-  },
-  container: {
-    height: verticalScale(44),
-    borderWidth: 1.5,
-    borderRadius: scale(Radius.xs),
-    paddingHorizontal: scale(12),
-    paddingVertical: verticalScale(4),
-  },
-  input: {
-    flex: 1,
-    fontFamily: "Roboto-Regular",
-    fontSize: scaleFont(14),
-    lineHeight: scaleFont(14) * 1.4,
-    letterSpacing: 0.3,
-  },
-  spacing: {
-    marginLeft: scale(4),
-  },
+    outerContainer: {
+        borderWidth: 3,
+        borderRadius: scale(Radius.sm),
+    },
+    container: {
+        height: verticalScale(44),
+        borderWidth: 1.5,
+        borderRadius: scale(Radius.xs),
+        paddingHorizontal: scale(12),
+        paddingVertical: verticalScale(4),
+    },
+    input: {
+        flex: 1,
+        fontFamily: "Roboto-Regular",
+        fontSize: scaleFont(14),
+        lineHeight: scaleFont(14) * 1.4,
+        letterSpacing: 0.3,
+    },
+    spacing: {
+        marginLeft: scale(4),
+    },
 });

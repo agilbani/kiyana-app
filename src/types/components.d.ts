@@ -2,17 +2,19 @@ import { RadiusKey } from "@/constants/Radius";
 import { SpacingKey } from "@/constants/Spacing";
 import React, { ReactNode } from "react";
 import {
-  Animated,
-  ColorValue,
-  TextInputProps,
-  TextProps,
-  TextStyle,
-  ViewStyle,
+   Animated,
+   ColorValue,
+   TextInputProps,
+   TextProps,
+   TextStyle,
+   ViewStyle,
 } from "react-native";
+import { Attendance } from "./attendance";
+import { User } from "./auth";
 
 // Font
 export type FontType = "Regular" | "Medium" | "SemiBold" | "Bold";
-export type FontSize = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
+export type FontSize = "xs" | "sm" | "md" | "base" | "lg" | "xl" | "xxl";
 export interface ThemedTextProps extends TextProps {
   type?: FontType;
   size?: FontSize;
@@ -56,6 +58,7 @@ export interface ThemedButtonProps {
   disabled?: boolean;
   loading?: boolean;
   style?: ViewStyle;
+  textColor?: string;
   onPress?: (event: GestureResponderEvent) => void;
 }
 
@@ -187,14 +190,18 @@ export interface ThemedAuthLayoutProps {
 
 // Attendance
 export interface AttendanceHeaderProps {
-  clockInTime: string | null;
-  clockOutTime: string | null;
-  onClockInPress: () => void;
+  clockInTime: string | undefined;
+  clockOutTime: string | undefined;
+  onClockInPress: (data: any) => void;
+  onClickAbsence: () => void;
+  attendanceData?: Attendance;
+  user?: User
 }
 
 // Header
 export interface ThemedHeaderProps {
   title: string;
+  onPressBack?: () => void
 }
 
 // Badge
@@ -215,6 +222,9 @@ export interface ThemedDatePickerProps {
   error?: string;
   disabled?: boolean;
   onChange?: (date: Date) => void;
+  minimumDate?: any;
+  labelSize?: FontSize;
+  type?: string
 }
 
 export interface ThemedDatePickerState {

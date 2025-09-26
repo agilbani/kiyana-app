@@ -26,4 +26,19 @@ export const MOCK_TRANSACTIONS = [
     name: "Kirim Uang",
     status: TransactionStatus.SUCCESS,
   },
+  {
+    id: "6",
+    name: "Kirim Uang",
+    status: TransactionStatus.SUCCESS,
+  },
+  {
+    id: "7",
+    name: "Kirim Uang",
+    status: TransactionStatus.SUCCESS,
+  },
+  {
+    id: "8",
+    name: "Kirim Uang",
+    status: TransactionStatus.SUCCESS,
+  },
 ];

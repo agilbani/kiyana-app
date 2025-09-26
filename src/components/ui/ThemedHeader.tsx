@@ -9,44 +9,44 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import ThemedText from "./ThemedText";
 
-const ThemedHeader: React.FC<ThemedHeaderProps> = ({ title }) => {
-  const handleBack = () => {
-    router.back();
-  };
-  return (
-    <View style={styles.header}>
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={styles.backButton}
-        onPress={handleBack}
-      >
-        <IcArrowLeft />
-      </TouchableOpacity>
-      <ThemedText type="SemiBold" size="lg">
-        {title}
-      </ThemedText>
-    </View>
-  );
+const ThemedHeader: React.FC<ThemedHeaderProps> = ({ title, onPressBack }) => {
+    const handleBack = () => {
+        router.back();
+    };
+    return (
+        <View style={styles.header}>
+            <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.backButton}
+                onPress={onPressBack ? onPressBack : handleBack}
+            >
+                <IcArrowLeft />
+            </TouchableOpacity>
+            <ThemedText type="SemiBold" size="lg">
+                {title}
+            </ThemedText>
+        </View>
+    );
 };
 
 export default React.memo(ThemedHeader);
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: Color.Background.Background,
-    paddingHorizontal: scale(24),
-    paddingVertical: verticalScale(16),
-    borderBottomWidth: 1,
-    borderColor: Color.Gray[200],
-    ...GlobalStyles.center,
-  },
-  backButton: {
-    position: "absolute",
-    left: scale(24),
-    width: scale(32),
-    height: scale(32),
-    backgroundColor: Color.Purple[50],
-    borderRadius: Radius.rounded,
-    ...GlobalStyles.center,
-  },
+    header: {
+        backgroundColor: Color.Background.Background,
+        paddingHorizontal: scale(24),
+        paddingVertical: verticalScale(16),
+        borderBottomWidth: 1,
+        borderColor: Color.Gray[200],
+        ...GlobalStyles.center,
+    },
+    backButton: {
+        position: "absolute",
+        left: scale(24),
+        width: scale(32),
+        height: scale(32),
+        backgroundColor: Color.Purple[50],
+        borderRadius: Radius.rounded,
+        ...GlobalStyles.center,
+    },
 });

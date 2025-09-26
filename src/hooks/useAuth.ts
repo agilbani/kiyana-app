@@ -16,7 +16,7 @@ const fetchUserProfileFromServer = async (token: string): Promise<UserData> => {
         token.startsWith("fake-jwt-token")
       ) {
         const mockUserData: UserData = {
-          id: `user-${Math.random().toString(36).substring(7)}`,
+          id: 123,
           username: "Fetched User",
           email: "fetched.user@example.com",
         };
@@ -28,7 +28,7 @@ const fetchUserProfileFromServer = async (token: string): Promise<UserData> => {
   });
 };
 
-export function useAuth(): AuthHookResult {
+export function useApp(): AuthHookResult {
   const [user, setUser] = useState<User | null>(null);
   const [loadingInitial, setLoadingInitial] = useState<boolean>(true);
   const [loadingUser, setLoadingUser] = useState<boolean>(false);
@@ -96,7 +96,7 @@ export function useAuth(): AuthHookResult {
     const startTime = Date.now();
 
     try {
-      await SecureStore.setItemAsync(AUTH_TOKEN_KEY, userDataWithToken.token);
+      await SecureStore.setItemAsync(AUTH_TOKEN_KEY, userDataWithToken.token ?? "");
       if (isMountedRef.current) {
         setUser(userDataWithToken);
 

@@ -9,25 +9,29 @@ import ThemedKeyboardAvoiding from "./ThemedKeyboardAvoiding";
 const statusBarHeight = StatusBar.currentHeight;
 
 const ThemedContainer: React.FC<ThemedContainerProps> = ({
-  children,
-  backgroundColor = Color.Background.Background,
-  statusBarStyle = "dark-content",
+    children,
+    backgroundColor = Color.Base.White,
+    statusBarStyle = "dark-content",
 }) => {
-  return (
-    <View style={[styles.page, { backgroundColor }]}>
-      <StatusBar translucent barStyle={statusBarStyle} />
-      <ThemedKeyboardAvoiding backgroundColor={backgroundColor}>
-        {children}
-      </ThemedKeyboardAvoiding>
-    </View>
-  );
+    return (
+        <View style={[styles.page, { backgroundColor }]}>
+            <StatusBar
+                translucent
+                backgroundColor={Color.Base.White}
+                barStyle={statusBarStyle}
+            />
+            <ThemedKeyboardAvoiding backgroundColor={backgroundColor}>
+                {children}
+            </ThemedKeyboardAvoiding>
+        </View>
+    );
 };
 
 export default React.memo(ThemedContainer);
 
 const styles = StyleSheet.create({
-  page: {
-    paddingTop: statusBarHeight ? statusBarHeight : scale(46),
-    ...GlobalStyles.flex,
-  },
+    page: {
+        paddingTop: statusBarHeight ? statusBarHeight : scale(46),
+        ...GlobalStyles.flex,
+    },
 });

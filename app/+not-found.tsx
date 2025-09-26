@@ -4,30 +4,32 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 
 const NotFoundScreen = () => {
-  return (
-    <>
-      <Stack.Screen options={{ title: "Oops!" }} />
-      <View style={styles.container}>
-        <ThemedText type="Regular">This screen does not exist.</ThemedText>
-        <Link href="/(main)/dashboard" style={styles.link}>
-          <ThemedText type="Regular">Go to home screen!</ThemedText>
-        </Link>
-      </View>
-    </>
-  );
+    return (
+        <>
+            <Stack.Screen options={{ title: "Oops!" }} />
+            <View style={styles.container}>
+                <ThemedText type="Regular">
+                    This screen does not exist.
+                </ThemedText>
+                <Link href="/(main)/dashboard/Dashboard" style={styles.link}>
+                    <ThemedText type="Regular">Go to home screen!</ThemedText>
+                </Link>
+            </View>
+        </>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
+    container: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 20,
+    },
+    link: {
+        marginTop: 15,
+        paddingVertical: 15,
+    },
 });
 
 export default NotFoundScreen;

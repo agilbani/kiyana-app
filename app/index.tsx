@@ -1,46 +1,49 @@
 import { ThemedLoader } from "@/components";
 import { ROUTES } from "@/constants/Routes";
-import { useAuth } from "@/hooks/useAuth";
+import { useApp as appContext } from "@/context/AppContext";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useEffect } from "react";
 
 const Middleware = () => {
-  const { user, loadingInitial: isAuthLoading } = useAuth();
-  const router = useRouter();
+    const { user, loading } = appContext();
+    console.log("cek user", user);
 
-  useEffect(() => {
-    if (isAuthLoading) {
-      return;
-    }
+    const router = useRouter();
 
-    const checkAndRedirect = async () => {
-      try {
-        const hasSeenOnboarding = await SecureStore.getItemAsync(
-          "hasSeenOnboarding"
-        );
-        const hasHandledPermissions = await SecureStore.getItemAsync(
-          "hasHandledPermissions"
-        );
-
-        if (!hasSeenOnboarding) {
-          router.replace(ROUTES.ONBOARDING);
-        } else if (!hasHandledPermissions) {
-          router.replace(ROUTES.PERMISSIONS);
-        } else if (!user) {
-          router.replace(ROUTES.LOGIN);
-        } else {
-          router.replace(ROUTES.DASHBOARD);
+    useEffect(() => {
+        if (loading) {
+            return;
         }
-      } catch (error) {
-        router.replace(ROUTES.LOGIN);
-      }
-    };
+        console.log("effek user", user);
 
-    checkAndRedirect();
-  }, [isAuthLoading, user, router]);
+        const checkAndRedirect = async () => {
+            try {
+                const hasSeenOnboarding = await SecureStore.getItemAsync(
+                    "hasSeenOnboarding"
+                );
+                const hasHandledPermissions = await SecureStore.getItemAsync(
+                    "hasHandledPermissions"
+                );
 
-  return <ThemedLoader />;
+                if (!hasSeenOnboarding) {
+                    router.replace(ROUTES.ONBOARDING);
+                } else if (!hasHandledPermissions) {
+                    router.replace(ROUTES.PERMISSIONS);
+                } else if (!user) {
+                    router.replace(ROUTES.LOGIN);
+                } else {
+                    router.replace(ROUTES.DASHBOARD);
+                }
+            } catch (error) {
+                router.replace(ROUTES.LOGIN);
+            }
+        };
+
+        checkAndRedirect();
+    }, [loading, user, router]);
+
+    return <ThemedLoader />;
 };
 
 export default Middleware;
