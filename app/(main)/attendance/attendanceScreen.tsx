@@ -1,11 +1,11 @@
 import { ThemedText } from "@/components";
+import AttendanceScedule from "@/components/screens/Attendance/AttendanceScheduleCard";
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
+import { useApp } from "@/context/AppContext";
 import { usePositionBottom } from "@/utils/bottomPosition";
 import { scale } from "@/utils/scaleSize";
 import {
-    ClockInIcon,
-    ClockOutIcon,
     FaceRecognationIcon,
     GrafikIcon,
     HospitalIcon,
@@ -18,6 +18,7 @@ import { FontAwesome, Fontisto } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import {
+    FlatList,
     Image,
     ScrollView,
     StatusBar,
@@ -29,6 +30,9 @@ import {
 const statusBarHeight = StatusBar.currentHeight;
 
 const AttendanceScreen = () => {
+    const { user, updateUser } = useApp();
+    const isKartap = user?.type === "TETAP";
+    const isHost = user?.is_host;
     const { bottom } = usePositionBottom();
     const menu = [
         {
@@ -45,21 +49,25 @@ const AttendanceScreen = () => {
             icon: PaperIcon,
             title: "Pengajuan Tukar Jadwal",
             onPress: () => console.log("tukar jadwal"),
+            isShow: isKartap ? true : false,
         },
         {
             icon: HospitalIcon,
             title: "Pengajuan Izin & Sakit",
             onPress: () => console.log("izin"),
+            isShow: isKartap ? true : false,
         },
         {
             icon: IcBack,
             title: "Aktivitas Lembur",
             onPress: () => console.log("lembur"),
+            isShow: isKartap ? true : false,
         },
         {
             icon: GrafikIcon,
             title: "Absensi Karyawan Tidak Tetap",
             onPress: () => console.log("karyawan tidak tetap"),
+            isShow: isKartap ? false : true,
         },
     ];
 
@@ -119,63 +127,7 @@ const AttendanceScreen = () => {
                         />
                     </TouchableOpacity>
                 </View>
-                {
-                    //section info jam
-                }
-                <View style={styles.viewInfoAttendance}>
-                    <ThemedText
-                        size="md"
-                        type="Medium"
-                        color={Color.Green[500]}
-                    >
-                        Jadwal kamu hari ini
-                    </ThemedText>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 15,
-                            marginTop: 10,
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 10,
-                            }}
-                        >
-                            <ClockOutIcon width={17} height={17} />
-                            <ThemedText size="xxl" color={Color.Green[500]}>
-                                08:00
-                            </ThemedText>
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 5,
-                            }}
-                        >
-                            <View style={styles.dot} />
-                            <View style={styles.dot} />
-                            <View style={styles.dot} />
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 10,
-                            }}
-                        >
-                            <ThemedText size="xxl" color={Color.Green[500]}>
-                                17:00
-                            </ThemedText>
-                            <ClockInIcon width={17} height={17} />
-                        </View>
-                    </View>
-                </View>
+                <AttendanceScedule />
                 {
                     //section info user
                 }
@@ -241,56 +193,58 @@ const AttendanceScreen = () => {
                         type="Medium"
                         color={Color.Green[500]}
                     >
-                        Presensi kelauar, Rabu 10 Sep 2025 17:00
+                        Presensi keluar, Rabu 10 Sep 2025 17:00
                     </ThemedText>
                 </View>
-                <View
-                    style={{
-                        marginTop: 20,
-                        flexWrap: "wrap",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                    }}
-                >
-                    {menu.map((v, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            activeOpacity={0.9}
-                            style={styles.cardItem}
-                            onPress={v.onPress}
-                        >
-                            <Image
-                                source={v.icon}
-                                style={{
-                                    width: "40%",
-                                    height: undefined,
-                                    aspectRatio: 1,
-                                    resizeMode: "contain",
-                                }}
-                            />
-
-                            {/* Teks container agar sejajar */}
-                            <View
-                                style={{
-                                    minHeight: 34,
-                                    justifyContent: "center",
-                                }}
-                            >
-                                <ThemedText
-                                    size="xs"
-                                    numberOfLines={2} // maksimal 2 baris, sisanya wrap
-                                    style={{
-                                        textAlign: "center",
-                                        flexWrap: "wrap",
-                                        lineHeight: 16,
-                                    }}
+                <FlatList
+                    data={menu}
+                    keyExtractor={(v, i) => `${i}`}
+                    numColumns={3}
+                    nestedScrollEnabled
+                    scrollEnabled={false}
+                    columnWrapperStyle={{ justifyContent: "space-between" }}
+                    renderItem={({ item }) => {
+                        if (item.isShow) {
+                            return (
+                                <TouchableOpacity
+                                    activeOpacity={0.9}
+                                    style={[styles.cardItem, { marginTop: 15 }]}
+                                    onPress={item.onPress}
                                 >
-                                    {v.title}
-                                </ThemedText>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+                                    <Image
+                                        source={item.icon}
+                                        style={{
+                                            width: "40%",
+                                            height: undefined,
+                                            aspectRatio: 1,
+                                            resizeMode: "contain",
+                                        }}
+                                    />
+                                    <View
+                                        style={{
+                                            minHeight: 34,
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        <ThemedText
+                                            size="xs"
+                                            numberOfLines={2}
+                                            style={{
+                                                textAlign: "center",
+                                                flexWrap: "wrap",
+                                                lineHeight: 16,
+                                            }}
+                                        >
+                                            {item.title}
+                                        </ThemedText>
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        } else {
+                            return <View style={{ width: "30%" }} />;
+                        }
+                    }}
+                />
             </ScrollView>
             <View style={[styles.footer, { bottom }]}>
                 <Image source={FaceRecognationIcon} style={styles.imgFace} />
@@ -323,13 +277,13 @@ const styles = StyleSheet.create({
     },
     cardItem: {
         flexBasis: "30%", // tiga kolom
-        aspectRatio: 0.8, // tinggi = lebar
-        marginBottom: 16,
+        aspectRatio: 1, // tinggi = lebar
+        marginBottom: 5,
         borderRadius: 12,
         backgroundColor: Color.Base.White,
         justifyContent: "center",
         alignItems: "center",
-        paddingHorizontal: 6,
+        //   paddingHorizontal: 6,
         gap: 10,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
@@ -360,22 +314,6 @@ const styles = StyleSheet.create({
         backgroundColor: Color.Base.White,
         justifyContent: "center",
         alignItems: "center",
-    },
-    dot: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        backgroundColor: Color.Base.Black,
-    },
-    viewInfoAttendance: {
-        marginTop: 20,
-        backgroundColor: Color.Base.White,
-        borderRadius: 12,
-        paddingVertical: 14,
-        justifyContent: "center",
-        alignItems: "center",
-        borderColor: Color.Gray[300],
-        borderWidth: 1,
     },
     viewBell: {
         width: 35,
