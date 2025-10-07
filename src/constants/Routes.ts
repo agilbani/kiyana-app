@@ -40,6 +40,8 @@ export const ROUTES = {
   ABSENCE_HISTORY: `/(main)/attendance/absence`,
   ABSENCE_ADD: `/(main)/attendance/add-absence`,
   EDIT_ATTENDANCE: `/(main)/attendance/editAttendance`,
+  PRESENCE_SCREEN: "/(main)/attendance/presenceScreen",
+  ATTENDANCE_SUMMARY: "/(main)/attendance/attendanceSummary",
 
   // Task
   TASK: "/task",

@@ -7,10 +7,9 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 
 const AttendanceStatistics: React.FC<AttendanceStatisticProps> = ({ data }) => {
-    console.log("cek statistic", data);
 
     return (
-        <View style={[styles.card, GlobalStyles.shadow]}>
+        <>
             <ThemedText type="SemiBold" size="md">
                 Statistik Kehadiran
             </ThemedText>
@@ -128,7 +127,7 @@ const AttendanceStatistics: React.FC<AttendanceStatisticProps> = ({ data }) => {
                     </ThemedText>
                 </View>
             </View>
-        </View>
+        </>
     );
 };
 

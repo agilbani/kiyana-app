@@ -1,5 +1,6 @@
 import { ThemedText } from "@/components";
 import Color from "@/constants/Color";
+import { ROUTES } from "@/constants/Routes";
 import { usePositionBottom } from "@/utils/bottomPosition";
 import { scale } from "@/utils/scaleSize";
 import {
@@ -14,6 +15,7 @@ import {
     PaperIcon,
 } from "@assets/index";
 import { FontAwesome, Fontisto } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
 import {
     Image,
@@ -32,12 +34,12 @@ const AttendanceScreen = () => {
         {
             icon: LoanIcon,
             title: "Hadir",
-            onPress: () => console.log("kehadiran"),
+            onPress: () => router.push(ROUTES.PRESENCE_SCREEN),
         },
         {
             icon: IcBack,
             title: "Rekap Absensi",
-            onPress: () => console.log("rekap"),
+            onPress: () => router.push(ROUTES.ATTENDANCE_SUMMARY),
         },
         {
             icon: PaperIcon,
