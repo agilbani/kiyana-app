@@ -7,17 +7,58 @@ import ThemedText from "./ThemedText";
 
 interface Props {
     label: string;
-    value: Date | null;
-    onChange: (date: Date) => void;
+    value: string | null; // format: HH:mm
+    onChange: (time: string) => void; // return format HH:mm
+    disable?: boolean;
 }
 
-const TimePickerField: React.FC<Props> = ({ label, value, onChange }) => {
+const TimePickerField: React.FC<Props> = ({
+    label,
+    value,
+    onChange,
+    disable = false,
+}) => {
     const [showPicker, setShowPicker] = useState(false);
+
+    // ubah string "HH:mm" jadi Date
+    const parseToDate = (time: string | null): Date => {
+        const now = new Date();
+
+        if (!time || !/^\d{2}:\d{2}$/.test(time)) {
+            now.setHours(0, 0, 0, 0);
+            return now;
+        }
+
+        const [hour, minute] = time.split(":").map(Number);
+
+        if (
+            isNaN(hour) ||
+            isNaN(minute) ||
+            hour < 0 ||
+            hour > 23 ||
+            minute < 0 ||
+            minute > 59
+        ) {
+            now.setHours(0, 0, 0, 0); // fallback ke 00:00
+            return now;
+        }
+
+        now.setHours(hour, minute, 0, 0);
+        return now;
+    };
+
+    // format Date ke "HH:mm"
+    const formatToTimeString = (date: Date): string => {
+        const h = date.getHours().toString().padStart(2, "0");
+        const m = date.getMinutes().toString().padStart(2, "0");
+        //   const s = date.getSeconds().toString().padStart(2, "0");
+        return `${h}:${m}`;
+    };
 
     const handleChange = (_: any, selectedDate?: Date) => {
         setShowPicker(false);
         if (selectedDate) {
-            onChange(selectedDate);
+            onChange(formatToTimeString(selectedDate));
         }
     };
 
@@ -41,26 +82,22 @@ const TimePickerField: React.FC<Props> = ({ label, value, onChange }) => {
                     borderRadius: 8,
                 }}
                 onPress={() => setShowPicker(true)}
+                disabled={disable}
             >
                 <ThemedText
-                    type={"Regular"}
+                    type="Regular"
                     size="md"
                     color={value ? Color.Base.Black : Color.Gray[300]}
                     style={{ marginLeft: scale(4) }}
                     numberOfLines={1}
                 >
-                    {value
-                        ? value.toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                          })
-                        : "Pilih Jam"}
+                    {value || "Pilih Jam"}
                 </ThemedText>
             </TouchableOpacity>
 
             {showPicker && (
                 <DateTimePicker
-                    value={value || new Date()}
+                    value={parseToDate(value)}
                     mode="time"
                     is24Hour
                     display={Platform.OS === "ios" ? "spinner" : "default"}

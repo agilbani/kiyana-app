@@ -4,10 +4,15 @@ export enum TransactionStatus {
   SUCCESS = "Selesai",
   PROCESSING = "Diproses",
   FAILED = "Ditolak",
+  ACTIVE = 'Aktif'
 }
 
 export const TransactionStatusColor = {
   [TransactionStatus.SUCCESS]: {
+    backgroundColor: Color.Green[500],
+    textColor: Color.Base.White,
+  },
+  [TransactionStatus.ACTIVE]: {
     backgroundColor: Color.Green[500],
     textColor: Color.Base.White,
   },

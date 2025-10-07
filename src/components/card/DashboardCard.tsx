@@ -19,7 +19,7 @@ const DashboardCard = ({ onPressLoan, onPressWithdraw, user }: any) => {
                 <ThemedText size="md" type="SemiBold" color={Color.Base.Black}>
                     Saldo Anda Hari Ini
                 </ThemedText>
-                {/* <TouchableOpacity
+                <TouchableOpacity
                     activeOpacity={0.9}
                     style={{
                         flexDirection: "row",
@@ -35,7 +35,7 @@ const DashboardCard = ({ onPressLoan, onPressWithdraw, user }: any) => {
                             Lihat Riwayat
                         </ThemedText>
                     </View>
-                </TouchableOpacity> */}
+                </TouchableOpacity>
             </View>
             <View
                 style={{

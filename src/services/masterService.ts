@@ -73,12 +73,30 @@ export const getColor = async (): Promise<MasterResponse> => {
   }
 };
 
+export const getAllEmployee = async (): Promise<MasterResponse> => {
+  try {
+    const res = await api.get<MasterResponse>("/employees");
+    return {
+      success: true,
+      message: "Success fetch data user",
+      data: res.data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message ??
+        "Terjadi kesalahan saat mengambil data kategori.",
+    };
+  }
+};
+
 export const getSewnEmployee = async (): Promise<MasterResponse> => {
   try {
     const res = await api.get<MasterResponse>("/employees?roleName=Penjahit");
     return {
       success: true,
-      message: "Success fetch data loan",
+      message: "Success fetch data user",
       data: res.data,
     };
   } catch (error: any) {
@@ -96,7 +114,7 @@ export const getCuttingEmployee = async (): Promise<MasterResponse> => {
     const res = await api.get<MasterResponse>("/employees?roleName=Tukang Potong");
     return {
       success: true,
-      message: "Success fetch data loan",
+      message: "Success fetch data user",
       data: res.data,
     };
   } catch (error: any) {

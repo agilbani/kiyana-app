@@ -19,11 +19,18 @@ import { ShowToastMessage } from "@/utils/toastMessage";
 import { router, useFocusEffect } from "expo-router";
 import moment from "moment";
 import React, { useCallback, useState } from "react";
-import { FlatList, Platform, StatusBar, StyleSheet, View } from "react-native";
+import {
+    FlatList,
+    Platform,
+    StatusBar,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 const statusBarHeight = StatusBar.currentHeight;
 
-const TaskItem = React.memo(({ item }: any) => {
+const TaskItem = React.memo(({ item, onAction }: any) => {
     const { backgroundColor, textColor } = TransactionStatusColor[
         item.status as TransactionStatus
     ] ?? {
@@ -31,7 +38,11 @@ const TaskItem = React.memo(({ item }: any) => {
         textColor: "#333333",
     };
     return (
-        <View style={styles.taskWrapper}>
+        <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={onAction}
+            style={styles.taskWrapper}
+        >
             <View style={GlobalStyles.rowSpaceBetween}>
                 <View>
                     <ThemedText type="Medium" size="md">
@@ -54,13 +65,23 @@ const TaskItem = React.memo(({ item }: any) => {
                     </ThemedText>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 });
 
 const CashFinanceHistory = () => {
     const renderTaskItem = useCallback(
-        ({ item }: any) => <TaskItem item={item} />,
+        ({ item }: any) => (
+            <TaskItem
+                item={item}
+                onAction={() =>
+                    router.push({
+                        pathname: ROUTES.DASHBOARD_DETAIL_CASHADVANCE,
+                        params: { id: item.id },
+                    })
+                }
+            />
+        ),
         []
     );
     const [listLoan, setListLoan] = useState<LoanSubmission[]>([]);
@@ -69,6 +90,8 @@ const CashFinanceHistory = () => {
     const getListLoan = async () => {
         setLoading(true);
         const res = await getMyLoans();
+        console.log("res loan", res);
+
         setLoading(false);
         if (res.success) {
             setListLoan(res.data ?? []);
@@ -153,6 +176,8 @@ const styles = StyleSheet.create({
         backgroundColor: Color.Gray[50],
         padding: scale(12),
         borderWidth: 1,
+        width: "94%",
+        alignSelf: "center",
         borderColor: Color.Gray[200],
         borderRadius: Radius.xs,
     },

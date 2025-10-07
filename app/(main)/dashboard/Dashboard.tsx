@@ -1,13 +1,17 @@
-import { HomeDashboardCard, ThemedText } from "@/components";
+import { ThemedText } from "@/components";
+import DashboardCardSection from "@/components/card/DashboardCardSection";
+import DashboardAmountCard from "@/components/screens/Dashboard/DashboardAmountCard";
+import DashboardScanCard from "@/components/screens/Dashboard/DashboardScanCard";
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
 import { useApp } from "@/context/AppContext";
 import { getProfile } from "@/services/authService";
 import { scale } from "@/utils/scaleSize";
 import { router, useFocusEffect } from "expo-router";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
     Image,
+    RefreshControl,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -18,7 +22,8 @@ import {
 const statusBarHeight = StatusBar.currentHeight;
 
 const Dashboard = () => {
-    const { user, token, logout, updateUser } = useApp();
+    const { user, updateUser } = useApp();
+    const [refreshing, setRefreshing] = useState(false);
     const MenuOptions = [
         {
             label: "Produksi",
@@ -130,19 +135,25 @@ const Dashboard = () => {
                     label: "Perbaikan Absensi",
                     action: () => router.push(ROUTES.EDIT_ATTENDANCE),
                 },
-                {
-                    icon: require("@assets/icons/NoteIcon.png"),
-                    label: "Perhitungan Gaji",
-                    action: () => console.log("task cutting"),
-                },
+                //  {
+                //      icon: require("@assets/icons/NoteIcon.png"),
+                //      label: "Perhitungan Gaji",
+                //      action: () => console.log("task cutting"),
+                //  },
             ],
         },
     ];
 
     const getUser = async () => {
         const res = await getProfile();
+        setRefreshing((prev) => false);
         updateUser(res.data);
     };
+
+    const onRefresh = useCallback(() => {
+        setRefreshing((prev) => !prev);
+        getUser();
+    }, []);
 
     useFocusEffect(
         useCallback(() => {
@@ -160,22 +171,30 @@ const Dashboard = () => {
                 backgroundColor={Color.Base.White}
                 barStyle="dark-content"
             />
-            <View style={styles.header}>
-                <ThemedText size="lg" type="SemiBold" color={Color.Base.Black}>
-                    Kiyana
-                </ThemedText>
-            </View>
-            <HomeDashboardCard
-                onPressLoan={() =>
-                    router.push(ROUTES.DASHBOARD_HISTORYCASHADVANCE)
-                }
-                onPressWithdraw={() => router.push(ROUTES.DASHBOARD_WITHDRAWAL)}
-                user={user}
-            />
+            <DashboardCardSection />
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scroll}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
             >
+                <DashboardAmountCard
+                    onPressLoan={() =>
+                        router.push(ROUTES.DASHBOARD_HISTORYCASHADVANCE)
+                    }
+                    onPressWithdraw={() =>
+                        router.push(ROUTES.DASHBOARD_WITHDRAWAL)
+                    }
+                    onPressHistory={() =>
+                        router.push(ROUTES.DASHBOARD_HISTORY_TRANSACTION)
+                    }
+                    user={user}
+                />
+                <DashboardScanCard user={user} />
                 {MenuOptions.map((v: any, index: any) => (
                     <View key={`${index}`} style={styles.card}>
                         <ThemedText

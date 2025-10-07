@@ -1,5 +1,6 @@
 import { TabBarButton, TabIconWithIndicator } from "@/components";
 import Color from "@/constants/Color";
+import { ROUTES } from "@/constants/Routes";
 import { verticalScale } from "@/utils/scaleSize";
 import {
     IcActiveCalendar,
@@ -13,8 +14,8 @@ import {
     BottomTabBarButtonProps,
     BottomTabNavigationOptions,
 } from "@react-navigation/bottom-tabs";
-import { Tabs, useSegments } from "expo-router";
-import React, { useMemo } from "react";
+import { Tabs, usePathname, useRouter, useSegments } from "expo-router";
+import React, { useEffect, useMemo } from "react";
 import { ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -33,13 +34,20 @@ const createTabBarIcon = (ActiveIcon: any, InactiveIcon: any) => {
 
 const MainLayout = () => {
     const segment = useSegments();
+    const pathname = usePathname();
+    const router = useRouter();
+
     const insets = useSafeAreaInsets();
-    console.log("cek segment", segment);
+    const mainTabScreens = ["/dashboard/Dashboard", "/attendance", "/profile"];
 
-    const page = segment[segment.length - 1];
-    const mainTabScreenNames = ["Dashboard", "attendance", "profile"];
+    useEffect(() => {
+        if (pathname === "/") {
+            router.replace(ROUTES.DASHBOARD);
+        }
+    }, [pathname]);
 
-    const isMainTabScreenActive = mainTabScreenNames.includes(page);
+    //  const isMainTabScreenActive = mainTabScreens.includes(page);
+    const isMainTabScreenActive = mainTabScreens.includes(pathname);
 
     const screenOptionsObject = useMemo((): BottomTabNavigationOptions => {
         const displayStyle: "flex" | "none" = isMainTabScreenActive
@@ -55,7 +63,7 @@ const MainLayout = () => {
             tabBarShowLabel: false,
             tabBarStyle: {
                 height: verticalScale(74),
-                backgroundColor: Color.Background.Navbar,
+                backgroundColor: Color.Base.White,
                 paddingTop: verticalScale(12),
                 display: displayStyle,
                 marginBottom: insets.bottom,

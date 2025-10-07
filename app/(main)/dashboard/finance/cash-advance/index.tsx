@@ -3,6 +3,7 @@ import {
     ThemedContainer,
     ThemedDatePicker,
     ThemedDropdown,
+    ThemedErrorMessage,
     ThemedGap,
     ThemedHeader,
     ThemedInput,
@@ -21,18 +22,29 @@ import { ShowToastMessage } from "@/utils/toastMessage";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { ScrollView, StyleSheet, View } from "react-native";
 import * as yup from "yup";
-
-const SALDO = 100000;
 
 type FormValues = {
     reason: string;
     amount: string;
     submission_date: string;
     tenor: string;
+    type: string;
+    accountNumber?: string;
 };
+
+const optionsType = [
+    {
+        label: "Cash",
+        value: "cash",
+    },
+    {
+        label: "Transfer",
+        value: "transfer",
+    },
+];
 
 const Row = ({
     label,
@@ -59,6 +71,8 @@ const schema = yup.object().shape({
         .matches(/^[0-9.]+$/, "Jumlah harus berupa angka"),
     submission_date: yup.string().required("Tanggal pengajuan harus diisi"),
     tenor: yup.string().required("Tempo tenor harus diisi"),
+    type: yup.string().required("Silahkan pilih metode pembayaran"),
+    accountNumber: yup.string().optional(),
 });
 
 const CashAdvanceScreen = () => {
@@ -85,9 +99,15 @@ const CashAdvanceScreen = () => {
                 amount: "",
                 submission_date: "",
                 tenor: "",
+                type: "",
+                accountNumber: "",
             },
             resolver: yupResolver(schema),
         });
+
+    const typePayment = useWatch({ control, name: "type" });
+    const reason = useWatch({ control, name: "reason" });
+    const amount = useWatch({ control, name: "amount" });
 
     const onSubmit = (data: FormValues) => {
         confirmModalRef.current?.show();
@@ -124,74 +144,125 @@ const CashAdvanceScreen = () => {
         <ThemedContainer>
             <ThemedHeader title="Ajukan Kasbon" />
             <View style={styles.container}>
-                <View style={styles.amountWrapper}>
-                    <ThemedText size="md" color={Color.Text.Secondary}>
-                        Saldo Anda
-                    </ThemedText>
-                    <ThemedGap height="xxs" />
-                    <ThemedText type="Medium" size="lg">
-                        {formatRupiahDisplay(`${user?.balance}`)}
-                    </ThemedText>
-                </View>
-                <ThemedGap height="xl" />
-                <Controller
-                    name="submission_date"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <ThemedDatePicker
-                            label="Pilih tanggal pengajuan"
-                            onChange={field.onChange}
-                            error={fieldState.error?.message}
-                            minimumDate="today"
-                        />
+                <ScrollView
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <View style={styles.amountWrapper}>
+                        <ThemedText size="md" color={Color.Text.Secondary}>
+                            Saldo Anda
+                        </ThemedText>
+                        <ThemedGap height="xxs" />
+                        <ThemedText type="Medium" size="lg">
+                            {formatRupiahDisplay(`${user?.balance}`)}
+                        </ThemedText>
+                    </View>
+                    <ThemedGap height="xl" />
+                    <Controller
+                        name="submission_date"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                            <ThemedDatePicker
+                                label="Pilih tanggal pengajuan"
+                                onChange={field.onChange}
+                                error={fieldState.error?.message}
+                                minimumDate="today"
+                            />
+                        )}
+                    />
+                    <ThemedGap height="md" />
+                    <Controller
+                        name="tenor"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                            <View>
+                                <ThemedDropdown
+                                    items={optionTenor}
+                                    value={field.value}
+                                    label="Pilih tempo pembayaran"
+                                    placeholder="Pilih tempo pembayaran"
+                                    onValueChange={field.onChange}
+                                />
+                                <ThemedErrorMessage
+                                    message={fieldState.error?.message}
+                                />
+                            </View>
+                        )}
+                    />
+                    <ThemedGap height="md" />
+                    <Controller
+                        name="type"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                            <View>
+                                <ThemedDropdown
+                                    items={optionsType}
+                                    value={field.value}
+                                    label="Pilih metode pembayaran"
+                                    placeholder="Pilih metode pembayaran"
+                                    onValueChange={field.onChange}
+                                />
+                                <ThemedErrorMessage
+                                    message={fieldState.error?.message}
+                                />
+                            </View>
+                        )}
+                    />
+                    <ThemedGap height="md" />
+                    {typePayment === "transfer" && (
+                        <>
+                            <Controller
+                                name="accountNumber"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <ThemedInput
+                                        label="No Rekening / No E-Wallet"
+                                        placeholder="Contoh: xxxxxx"
+                                        keyboardType="numeric"
+                                        value={field.value}
+                                        onChangeText={(text) =>
+                                            field.onChange(text)
+                                        }
+                                        error={fieldState.error?.message}
+                                        style={{ height: 45 }}
+                                    />
+                                )}
+                            />
+                            <ThemedGap height="md" />
+                        </>
                     )}
-                />
-                <ThemedGap height="md" />
-                <Controller
-                    name="tenor"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <ThemedDropdown
-                            items={optionTenor}
-                            value={field.value}
-                            label="Pilih tempo pembayaran"
-                            placeholder="Pilih tempo pembayaran"
-                            onValueChange={field.onChange}
-                        />
-                    )}
-                />
-                <ThemedGap height="md" />
-                <Controller
-                    name="reason"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <ThemedTextarea
-                            label="Alasan"
-                            placeholder="Contoh: Uang makan siang"
-                            value={field.value}
-                            onChangeText={field.onChange}
-                            error={fieldState.error?.message}
-                        />
-                    )}
-                />
-                <ThemedGap height="md" />
-                <Controller
-                    name="amount"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                        <ThemedInput
-                            label="Jumlah"
-                            placeholder="Contoh: 100.000"
-                            keyboardType="numeric"
-                            value={field.value}
-                            onChangeText={(text) =>
-                                field.onChange(formatRupiahInput(text))
-                            }
-                            error={fieldState.error?.message}
-                            style={{ height: 45 }}
-                        />
-                    )}
-                />
+                    <Controller
+                        name="reason"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                            <ThemedTextarea
+                                label="Alasan"
+                                placeholder="Contoh: Uang makan siang"
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                error={fieldState.error?.message}
+                            />
+                        )}
+                    />
+                    <ThemedGap height="md" />
+                    <Controller
+                        name="amount"
+                        control={control}
+                        render={({ field, fieldState }) => (
+                            <ThemedInput
+                                label="Jumlah"
+                                placeholder="Contoh: 100.000"
+                                keyboardType="numeric"
+                                value={field.value}
+                                onChangeText={(text) =>
+                                    field.onChange(formatRupiahInput(text))
+                                }
+                                error={fieldState.error?.message}
+                                style={{ height: 45 }}
+                            />
+                        )}
+                    />
+                </ScrollView>
             </View>
 
             <View style={styles.footer}>
@@ -214,11 +285,8 @@ const CashAdvanceScreen = () => {
                 <ThemedGap height="xl" />
 
                 <View style={{ gap: 8 }}>
-                    <Row label="Alasan" value={getValues("reason")} />
-                    <Row
-                        label="Jumlah"
-                        value={formatRupiahDisplay(getValues("amount"))}
-                    />
+                    <Row label="Alasan" value={reason} />
+                    <Row label="Jumlah" value={formatRupiahDisplay(amount)} />
                 </View>
                 <ThemedGap height="xxl" />
                 <View style={GlobalStyles.rowCenter}>

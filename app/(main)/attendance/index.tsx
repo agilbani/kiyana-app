@@ -1,7 +1,4 @@
-import { ThemedGap, ThemedLoader, ThemedText } from "@/components";
-import AttendanceHeader from "@/components/screens/Attendance/AttendanceHeader";
-import AttendanceHeaderHost from "@/components/screens/Attendance/AttendanceHeaderHost";
-import AttendanceStatistics from "@/components/screens/Attendance/AttendanceStatistics";
+import { ThemedGap, ThemedText } from "@/components";
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
 import { useApp } from "@/context/AppContext";
@@ -14,11 +11,12 @@ import { Attendance } from "@/types/attendance";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { IcCalendar } from "@assets/icons";
-import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { ListRenderItem } from "@shopify/flash-list";
 import { router, useFocusEffect } from "expo-router";
 import moment from "moment";
 import React, { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import AttendancePage from "./attendanceScreen";
 
 const renderHistoryListItem: ListRenderItem<any> = ({ item }) => {
     return (
@@ -131,8 +129,8 @@ const AttendanceScreen = () => {
 
     useFocusEffect(
         useCallback(() => {
-            getDataAttendence();
-            getHistoryAttendance();
+            // getDataAttendence();
+            // getHistoryAttendance();
             return () => {
                 // Optional cleanup when screen goes out of focus
             };
@@ -140,44 +138,45 @@ const AttendanceScreen = () => {
     );
 
     return (
-        <View style={styles.page}>
-            {user?.is_host ? (
-                <AttendanceHeaderHost
-                    clockInTime={dataAttendance?.start_time}
-                    clockOutTime={dataAttendance?.end_time}
-                    onClockInPress={(data: any) => handleClockIn(data)}
-                    attendanceData={dataAttendance}
-                    onClickAbsence={handleAbsence}
-                    user={user ? user : undefined}
-                />
-            ) : (
-                <AttendanceHeader
-                    clockInTime={user?.shift?.start_time}
-                    clockOutTime={user?.shift?.end_time}
-                    onClockInPress={handleClockIn}
-                    attendanceData={dataAttendance}
-                    onClickAbsence={handleAbsence}
-                    user={user ? user : undefined}
-                />
-            )}
-            {loadingStatistic ? (
-                <ThemedLoader />
-            ) : (
-                <ScrollView>
-                    <AttendanceStatistics data={statistic} />
-                    <FlashList
-                        scrollEnabled={false}
-                        data={histories}
-                        keyExtractor={(_, index) => index.toString()}
-                        renderItem={renderHistoryListItem}
-                        estimatedItemSize={130}
-                        contentContainerStyle={styles.contentContainer}
-                        ItemSeparatorComponent={HistoryItemSeparator}
-                        ListHeaderComponent={renderHistoryHeader}
-                    />
-                </ScrollView>
-            )}
-        </View>
+        <AttendancePage />
+        //   <View style={styles.page}>
+        //       {user?.is_host ? (
+        //           <AttendanceHeaderHost
+        //               clockInTime={dataAttendance?.start_time}
+        //               clockOutTime={dataAttendance?.end_time}
+        //               onClockInPress={(data: any) => handleClockIn(data)}
+        //               attendanceData={dataAttendance}
+        //               onClickAbsence={handleAbsence}
+        //               user={user ? user : undefined}
+        //           />
+        //       ) : (
+        //           <AttendanceHeader
+        //               clockInTime={user?.shift?.start_time}
+        //               clockOutTime={user?.shift?.end_time}
+        //               onClockInPress={handleClockIn}
+        //               attendanceData={dataAttendance}
+        //               onClickAbsence={handleAbsence}
+        //               user={user ? user : undefined}
+        //           />
+        //       )}
+        //       {loadingStatistic ? (
+        //           <ThemedLoader />
+        //       ) : (
+        //           <ScrollView>
+        //               <AttendanceStatistics data={statistic} />
+        //               <FlashList
+        //                   scrollEnabled={false}
+        //                   data={histories}
+        //                   keyExtractor={(_, index) => index.toString()}
+        //                   renderItem={renderHistoryListItem}
+        //                   estimatedItemSize={130}
+        //                   contentContainerStyle={styles.contentContainer}
+        //                   ItemSeparatorComponent={HistoryItemSeparator}
+        //                   ListHeaderComponent={renderHistoryHeader}
+        //               />
+        //           </ScrollView>
+        //       )}
+        //   </View>
     );
 };
 

@@ -244,3 +244,46 @@ export const getAbsence = async (payload?: any): Promise<GetMyAttendanceResponse
     };
   }
 };
+
+export const getInfoAttendance = async (payload?: any): Promise<GetMyAttendanceResponse> => {
+  let url = `attendances/checked?${queryParams(payload)}`;
+  try {
+    const response = await api.get<GetMyAttendanceResponse>(
+      url,
+    );
+    // return response.data;
+    return {
+      success: true,
+      message: 'Berhasil mendapatkan data absence saat ini.',
+      status: response.status,
+      data: response.data,
+    };
+  } catch (error: any) {
+    console.log('Get current attendance error:', error?.response?.data || error.message);
+    return {
+      success: false,
+      message: error?.response?.data?.message || 'Gagal mendapatkan data absence saat ini.',
+      status: error?.response?.status,
+    };
+  }
+};
+
+export const editAttendance = async (
+  payload: any,
+) => {
+  try {
+    const response = await api.patch(`/attendances`, payload);
+
+    return {
+      success: true,
+      message: 'Data presensi berhasil dirubah.',
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message ||
+        "Terjadi kesalahan saat menambahkan data presensi.",
+    };
+  }
+};
