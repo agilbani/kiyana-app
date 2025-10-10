@@ -64,6 +64,10 @@ export const ROUTES = {
   TASK_DETAIL_SALE: "/task/sale/detail",
   TASK_LIST_CUSTOMER : "/task/customer",
   TASK_LIST_PRODUCT_VARIANT: "/task/warehouse/product-variant",
+  TASK_POINT_OF_SALE_V2: "/task/sale/point-of-sales/list-product",
+  TASK_POINT_OF_SALE_PREVIEW_PODUCT_V2: "/task/sale/point-of-sales/preview-product",
+  TASK_POINT_OF_SALE_PAYMENT_PRODUCT_V2: "/task/sale/point-of-sales/payment-product",
+  TASK_POINT_OF_SALE_PAYMENT_SUCCESS_PRODUCT_V2: "/task/sale/point-of-sales/payment-success-product",
 
   // Profile
   PROFILE: "/(main)/profile",
