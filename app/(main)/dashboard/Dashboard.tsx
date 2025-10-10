@@ -8,7 +8,7 @@ import { useApp } from "@/context/AppContext";
 import { getProfile } from "@/services/authService";
 import { scale } from "@/utils/scaleSize";
 import { router, useFocusEffect } from "expo-router";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import {
     Image,
     RefreshControl,
@@ -108,7 +108,7 @@ const Dashboard = () => {
                 {
                     icon: require("@assets/icons/CasheerIcon.png"),
                     label: "Kasir",
-                    action: () => router.push(ROUTES.TASK_POINT_OF_SALE),
+                    action: () => router.push(ROUTES.TASK_POINT_OF_SALE_V2),
                 },
                 {
                     icon: require("@assets/icons/DataCustomerIcon.png"),
