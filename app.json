@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ryan77.kiyana"
+      "bundleIdentifier": "com.ryan77.kiyana",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["whatsapp", "whatsapp-business"]
+      }
     },
     "android": {
       "package": "com.ryan77.kiyana",
