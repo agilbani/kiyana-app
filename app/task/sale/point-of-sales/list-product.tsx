@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-    Alert,
-    FlatList,
-    KeyboardAvoidingView,
-    Linking,
-    Modal,
-    Platform,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  KeyboardAvoidingView,
+  Linking,
+  Modal,
+  Platform,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import { ThemedContainer, ThemedHeader, ThemedText } from "@/components";
@@ -108,6 +108,8 @@ const MOCK_PRODUCTS: Product[] = [
   },
 ];
 
+type TabKey = "all" | "fav";
+
 // -----------------------------
 // Main Screen (Product List)
 // -----------------------------
@@ -116,21 +118,33 @@ const POSProductList: React.FC = () => {
   const [query, setQuery] = useState("");
   const [cartMap, setCartMap] = useState<Record<string, CartItem>>({}); // key by variantId
   const [scanOpen, setScanOpen] = useState(false);
+  const [tab, setTab] = useState<TabKey>("all");
 
   const navigation = useNavigation<any>();
-
   const items = useFlattenedItems(products);
 
+  // jumlah item favorit (untuk badge tab)
+  const favCount = useMemo(
+    () => items.filter((it) => it.isFavorite).length,
+    [items]
+  );
+
+  // filter awal berdasarkan tab
+  const tabFiltered = useMemo(() => {
+    return tab === "all" ? items : items.filter((it) => it.isFavorite);
+  }, [items, tab]);
+
+  // filter lanjutan berdasarkan query
   const filtered = useMemo(() => {
-    if (!query.trim()) return items;
+    if (!query.trim()) return tabFiltered;
     const q = query.toLowerCase();
-    return items.filter(
+    return tabFiltered.filter(
       (it) =>
         it.productName.toLowerCase().includes(q) ||
         it.variantName.toLowerCase().includes(q) ||
         `${it.productName} - ${it.variantName}`.toLowerCase().includes(q)
     );
-  }, [items, query]);
+  }, [tabFiltered, query]);
 
   const totals = useMemo(() => {
     const list = Object.values(cartMap);
@@ -193,8 +207,24 @@ const POSProductList: React.FC = () => {
             </ThemedText>
           </TouchableOpacity>
         </View>
+
+        <TabBar
+          active={tab}
+          onChange={(t) => setTab(t)}
+          favCount={favCount}
+        />
       </View>
 
+      {filtered.length === 0 ? (
+        <View style={{ padding: 24 }}>
+          <ThemedText type="SemiBold" size="md">Tidak ada produk</ThemedText>
+          <ThemedText size="sm" color={Color.Text.Secondary || "#5f6368"}>
+            {tab === "fav"
+              ? "Belum ada favorit. Ketuk ☆ pada produk untuk menandai sebagai favorit."
+              : "Coba ubah pencarian atau tab."}
+          </ThemedText>
+        </View>
+      ) : (
       <FlatList
         data={filtered}
         keyExtractor={(it) => it.key}
@@ -219,6 +249,7 @@ const POSProductList: React.FC = () => {
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
+      )}
 
       {/* Bottom Cart Summary */}
       <CartSummary
@@ -404,6 +435,48 @@ const ScanCameraModal: React.FC<{
     </Modal>
   );
 };
+
+const TabBar: React.FC<{
+  active: TabKey;
+  onChange: (t: TabKey) => void;
+  favCount?: number;
+}> = ({ active, onChange, favCount = 0 }) => {
+  return (
+    <View style={styles.tabBar}>
+      <TouchableOpacity
+        onPress={() => onChange("all")}
+        style={[styles.tabItem, active === "all" && styles.tabItemActive]}
+        accessibilityRole="tab"
+        accessibilityState={{ selected: active === "all" }}
+      >
+        <ThemedText type={active === "all" ? "SemiBold" : "Regular"} size="md">
+          Semua
+        </ThemedText>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => onChange("fav")}
+        style={[styles.tabItem, active === "fav" && styles.tabItemActive]}
+        accessibilityRole="tab"
+        accessibilityState={{ selected: active === "fav" }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <ThemedText type={active === "fav" ? "SemiBold" : "Regular"} size="md">
+            Favorit
+          </ThemedText>
+          {favCount > 0 && (
+            <View style={styles.tabBadge}>
+              <ThemedText type="SemiBold" size="xs" color="#fff">
+                {toBadgeText(favCount)}
+              </ThemedText>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 
 // -----------------------------
 // Styles
@@ -603,6 +676,36 @@ const styles = StyleSheet.create({
   },
   modalOK: {
     backgroundColor: "#2563eb",
+  },
+  //tab bar
+  tabBar: {
+    flexDirection: "row",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+  tabItem: {
+    paddingHorizontal: 14,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#f1f3f4",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  tabItemActive: {
+    backgroundColor: "#dbeafe", // biru muda
+    borderWidth: 1,
+    borderColor: "#93c5fd",
+  },
+  tabBadge: {
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
+    borderRadius: 9,
+    backgroundColor: "#ef4444",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
