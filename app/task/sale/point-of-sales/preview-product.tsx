@@ -53,6 +53,8 @@ const POSPreviewScreen: React.FC = () => {
     }
   }, [state]);
 
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
   const items: CartItem[] = useMemo(() => {
     if (Array.isArray(parsedState)) return parsedState;
 
@@ -61,8 +63,12 @@ const POSPreviewScreen: React.FC = () => {
   }, [parsedState]);
 
   useEffect(() => {
+    setCartItems(items || []);
+  }, [items]);
+
+  useEffect(() => {
     if (parsedState && !Array.isArray(parsedState) && parsedState.customer?.id) {
-        setSelectedCustomerId(parsedState.customer.id);
+      setSelectedCustomerId(parsedState.customer.id);
     }
   }, [parsedState]);
 
@@ -72,14 +78,44 @@ const POSPreviewScreen: React.FC = () => {
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(customers[0]?.id ?? null);
   const selectedCustomer = useMemo(() => customers.find(c => c.id === selectedCustomerId) || null, [customers, selectedCustomerId]);
 
-  const subtotal = useMemo(() => items.reduce((s, it) => s + it.qty * it.price, 0), [items]);
-  const numericDiscount = useMemo(() => parseInt((discountValue || "0").replace(/[^0-9]/g, ""), 10) || 0, [discountValue]);
-  const discountAmount = useMemo(() => discountType === "percent" ? Math.round(Math.max(0, Math.min(100, numericDiscount)) / 100 * subtotal) : Math.min(numericDiscount, subtotal), [discountType, numericDiscount, subtotal]);
+  const subtotal = useMemo(
+    () => cartItems.reduce((s, it) => s + it.qty * it.price, 0),
+    [cartItems]
+  );
+  const numericDiscount = useMemo(
+    () => parseInt((discountValue || "0").replace(/[^0-9]/g, ""), 10) || 0,
+    [discountValue]
+  );
+  const discountAmount = useMemo(
+    () =>
+      discountType === "percent"
+        ? Math.round(Math.max(0, Math.min(100, numericDiscount)) / 100 * subtotal)
+        : Math.min(numericDiscount, subtotal),
+    [discountType, numericDiscount, subtotal]
+  );
   const total = Math.max(0, subtotal - discountAmount);
+
+  const updateQty = useCallback((productId: string, variantId: string, delta: number) => {
+    setCartItems(prev => {
+      const idx = prev.findIndex(it => it.productId === productId && it.variantId === variantId);
+      if (idx === -1) return prev;
+      const next = [...prev];
+      const curr = next[idx];
+      const newQty = (curr.qty || 0) + delta;
+
+      if (newQty <= 0) {
+        // hapus item
+        next.splice(idx, 1);
+      } else {
+        next[idx] = { ...curr, qty: newQty };
+      }
+      return next;
+    });
+  }, []);
 
   const handleConfirm = useCallback(() => {
     const payload = {
-      items,
+      items: cartItems, // <<< was 'items'
       subtotal,
       discountType,
       discountValue: numericDiscount,
@@ -89,7 +125,7 @@ const POSPreviewScreen: React.FC = () => {
     };
     const stateParam = encodeURIComponent(JSON.stringify(payload));
     router.push({ pathname: ROUTES.TASK_POINT_OF_SALE_PAYMENT_PRODUCT_V2, params: { state: stateParam } });
-  }, [items, subtotal, discountType, numericDiscount, discountAmount, total, selectedCustomer, router]);
+  }, [cartItems, subtotal, discountType, numericDiscount, discountAmount, total, selectedCustomer, router]);
 
   return (
     <ThemedContainer>
@@ -114,17 +150,43 @@ const POSPreviewScreen: React.FC = () => {
           <ThemedText size="sm" color={Color.Text?.Secondary || "#6b7280"}>Belum ada item.</ThemedText>
         ) : (
           <FlatList
-            data={items}
+            data={cartItems}
             keyExtractor={(it) => `${it.productId}-${it.variantId}`}
             renderItem={({ item }) => (
               <View style={checkoutStyles.itemRow}>
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, paddingRight: 8 }}>
                   <ThemedText type="SemiBold" size="md">{item.displayName}</ThemedText>
                   <ThemedText size="sm" color={Color.Text?.Secondary || "#6b7280"}>
                     {formatCurrency(item.price)} × {item.qty}
                   </ThemedText>
                 </View>
-                <ThemedText type="SemiBold" size="md">{formatCurrency(item.price * item.qty)}</ThemedText>
+
+                {/* Stepper */}
+                <View style={checkoutStyles.stepper}>
+                  <TouchableOpacity
+                    accessibilityLabel="Kurangi"
+                    onPress={() => updateQty(item.productId, item.variantId, -1)}
+                    style={[checkoutStyles.stepperBtn, checkoutStyles.stepperMinus]}
+                  >
+                    <ThemedText type="SemiBold" size="md">−</ThemedText>
+                  </TouchableOpacity>
+
+                  <View style={checkoutStyles.stepperQty}>
+                    <ThemedText type="SemiBold">{item.qty}</ThemedText>
+                  </View>
+
+                  <TouchableOpacity
+                    accessibilityLabel="Tambah"
+                    onPress={() => updateQty(item.productId, item.variantId, +1)}
+                    style={[checkoutStyles.stepperBtn, checkoutStyles.stepperPlus]}
+                  >
+                    <ThemedText type="SemiBold" size="md">+</ThemedText>
+                  </TouchableOpacity>
+                </View>
+
+                <ThemedText type="SemiBold" size="md" style={{ minWidth: 100, textAlign: "right" }}>
+                  {formatCurrency(item.price * item.qty)}
+                </ThemedText>
               </View>
             )}
             ItemSeparatorComponent={() => <View style={checkoutStyles.sep} />}
@@ -303,6 +365,36 @@ const checkoutStyles = StyleSheet.create({
   iconGhost: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   formCard: { margin: 16, borderRadius: 16, backgroundColor: "#fff", padding: 16, gap: 10 },
   input: { height: 44, borderRadius: 12, backgroundColor: "#f3f4f6", paddingHorizontal: 12 },
+  //stepper
+  stepper: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginRight: 8,
+  },
+  stepperBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#f3f4f6",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  stepperMinus: {
+    backgroundColor: "#fee2e2", // merah muda lembut
+  },
+  stepperPlus: {
+    backgroundColor: "#dcfce7", // hijau muda lembut
+  },
+  stepperQty: {
+    minWidth: 36,
+    height: 32,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    backgroundColor: "#f9fafb",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 const segStyles = StyleSheet.create({
