@@ -11,3 +11,9 @@ export interface BatchInput {
   cutting_at?: string;
   cutting_by?: number | any;
 }
+
+export interface ChangeShiftForm {
+  date: string;
+  time: string;
+  reason: string;
+}

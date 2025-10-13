@@ -16,7 +16,6 @@ import {
 } from "@assets/index";
 import { FontAwesome, Fontisto } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
 import {
     FlatList,
     Image,
@@ -39,29 +38,31 @@ const AttendanceScreen = () => {
             icon: LoanIcon,
             title: "Hadir",
             onPress: () => router.push(ROUTES.PRESENCE_SCREEN),
+            isShow: true
         },
         {
             icon: IcBack,
             title: "Rekap Absensi",
             onPress: () => router.push(ROUTES.ATTENDANCE_SUMMARY),
+            isShow: true
         },
         {
             icon: PaperIcon,
             title: "Pengajuan Tukar Jadwal",
-            onPress: () => console.log("tukar jadwal"),
-            isShow: isKartap ? true : false,
+            onPress: () => router.push(ROUTES.REQUEST_CHANGE_SHIFT),
+            isShow: true,
         },
         {
             icon: HospitalIcon,
             title: "Pengajuan Izin & Sakit",
-            onPress: () => console.log("izin"),
-            isShow: isKartap ? true : false,
+            onPress: () => router.push(ROUTES.ABSENCE_HISTORY),
+            isShow: true,
         },
         {
             icon: IcBack,
             title: "Aktivitas Lembur",
             onPress: () => console.log("lembur"),
-            isShow: isKartap ? true : false,
+            isShow: true,
         },
         {
             icon: GrafikIcon,
@@ -241,7 +242,9 @@ const AttendanceScreen = () => {
                                 </TouchableOpacity>
                             );
                         } else {
-                            return <View style={{ width: "30%" }} />;
+                            if (isKartap) {
+                                return <View style={{ width: "30%" }} />;
+                            }
                         }
                     }}
                 />

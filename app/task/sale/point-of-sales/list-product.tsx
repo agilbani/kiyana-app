@@ -1,21 +1,20 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-    Alert,
-    FlatList,
-    KeyboardAvoidingView,
-    Linking,
-    Modal,
-    Platform,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  KeyboardAvoidingView,
+  Linking,
+  Modal,
+  Platform,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import { ThemedContainer, ThemedHeader, ThemedText } from "@/components";
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
-import { useNavigation } from "@react-navigation/native";
 import { CameraView, useCameraPermissions } from "expo-camera"; // Camera (Expo) with barcode support
 import { router } from "expo-router";
 
@@ -116,8 +115,6 @@ const POSProductList: React.FC = () => {
   const [query, setQuery] = useState("");
   const [cartMap, setCartMap] = useState<Record<string, CartItem>>({}); // key by variantId
   const [scanOpen, setScanOpen] = useState(false);
-
-  const navigation = useNavigation<any>();
 
   const items = useFlattenedItems(products);
 

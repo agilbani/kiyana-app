@@ -42,6 +42,7 @@ export const ROUTES = {
   EDIT_ATTENDANCE: `/(main)/attendance/editAttendance`,
   PRESENCE_SCREEN: "/(main)/attendance/presenceScreen",
   ATTENDANCE_SUMMARY: "/(main)/attendance/attendanceSummary",
+  REQUEST_CHANGE_SHIFT: "/(main)/attendance/requestChangeShift",
 
   // Task
   TASK: "/task",

@@ -2,17 +2,17 @@
 import { ThemedContainer, ThemedHeader, ThemedText } from "@/components";
 import { ROUTES } from "@/constants/Routes";
 import {
-    printBluetooth
+  printBluetooth
 } from "@/customLibrary/ThermalPrinter";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import {
-    Alert,
-    Linking,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    View,
+  Alert,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
 } from "react-native";
 
 // ===== Types (samakan dengan PaymentScreen) =====
@@ -118,9 +118,9 @@ const buildEscPosPayload = (tx: PaymentResult) => {
   const isCash = method === "cash";
 
   return (
-    `[C]<b>WARUNG INDO</b>\n` +
-    `[C]Jl. Melati No.1, Sleman\n` +
-    `[C]0812-0000-0000\n` +
+    `[C]<b>Kiyana Cloth</b>\n` +
+    `[C]Jl. Wijaya Kusuma, Gintung Tengah\n` +
+    `[C]0815-4961-9091\n` +
     `[L]\n` +
     `[L]No. Faktur: ${invoiceNo}\n` +
     `[L]Tanggal  : ${nowLine}\n` +
@@ -156,9 +156,9 @@ const buildWhatsAppMessage = (tx: PaymentResult) => {
   } = tx;
 
   const lines: string[] = [];
-  lines.push("WARUNG INDO");
-  lines.push("Jl. Melati No.1, Sleman");
-  lines.push("Telp: 0812-0000-0000");
+  lines.push("Kiyana Cloth");
+  lines.push("Jl. Wijaya Kusuma, Gintung Tengah");
+  lines.push("Telp: 0815-4961-9091");
   lines.push("");
   lines.push(`Nomor Faktur: ${invoiceNo}`);
   lines.push(`Tanggal     : ${formatDateTimeID(createdAt)}`);
