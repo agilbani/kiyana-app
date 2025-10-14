@@ -1,7 +1,8 @@
 import { ThemedText } from "@/components/ui";
 import Color from "@/constants/Color";
+import { formatRupiahDisplay } from "@/utils/currency";
 import { Entypo } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import RunningText from "./RunningText";
 
@@ -11,7 +12,7 @@ const DashboardAmountCard = ({
     onPressWithdraw,
     onPressHistory,
 }: any) => {
-    const [showAmount, setShowAmount] = useState(false);
+    const [showAmount, setShowAmount] = useState(true);
     const menu = [
         {
             icon: require("@assets/icons/LoanIcon.png"),
@@ -53,7 +54,9 @@ const DashboardAmountCard = ({
                     color={Color.Base.White}
                     style={{ alignSelf: "center" }}
                 >
-                    Rp 100.000
+                    {showAmount
+                        ? formatRupiahDisplay(user?.balance)
+                        : "********"}
                 </ThemedText>
                 <TouchableOpacity
                     onPress={() => setShowAmount((prev) => !prev)}

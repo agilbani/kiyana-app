@@ -1,6 +1,7 @@
 import {
     CustomDropdown,
     ThemedBadge,
+    ThemedContainer,
     ThemedGap,
     ThemedHeader,
     ThemedText,
@@ -30,6 +31,22 @@ import {
 
 const statusBarHeight = StatusBar.currentHeight;
 
+const getColor = (status: string) => {
+    let bgColor = "";
+    switch (status) {
+        case "Planned":
+            bgColor = Color.Yellow[500];
+            break;
+        case "Processed":
+            bgColor = Color.SemanticBlue[500];
+            break;
+        default:
+            bgColor = Color.Green[500];
+            break;
+    }
+    return bgColor;
+};
+
 const TaskItem = React.memo(({ item, onPress }: any) => {
     return (
         <TouchableOpacity
@@ -47,10 +64,29 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                 </ThemedText>
             </View>
             <ThemedGap height="sm" />
-            <ThemedText type="Medium" size="xs" color={Color.Text.Secondary}>
-                Status: {item.status}
-            </ThemedText>
-            <ThemedGap height="xs" />
+            <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+            >
+                <ThemedText
+                    type="Medium"
+                    size="xs"
+                    color={Color.Text.Secondary}
+                >
+                    Status:
+                </ThemedText>
+                <ThemedBadge
+                    text={
+                        item.status === "Planned"
+                            ? "Terjadwal"
+                            : item.status === "Processed"
+                            ? "Diproses"
+                            : "Selesai"
+                    }
+                    textColor={Color.Base.White}
+                    backgroundColor={getColor(item.status)}
+                />
+                <ThemedGap height="xs" />
+            </View>
             <View style={GlobalStyles.rowSpaceBetween}>
                 {item.deadline ? (
                     <View
@@ -129,7 +165,7 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
 });
 
 const TodayTask = () => {
-    const [status, setStatus] = useState("Planned");
+    const [status, setStatus] = useState("semua");
     const [loading, setLoading] = useState<boolean>(false);
     const [listTask, setListTask] = useState<any>([]);
     const [refreshing, setRefreshing] = useState(false);
@@ -157,7 +193,7 @@ const TodayTask = () => {
             const tasks = await getTasksByDate(
                 dateRange.startDate,
                 dateRange.endDate,
-                status ?? "Planned",
+                status === "semua" ? "" : status,
                 "productions/plans"
             );
             setLoading(false);
@@ -180,11 +216,7 @@ const TodayTask = () => {
     }, [status, rangeDate, refreshing]);
 
     return (
-        <View style={styles.page}>
-            <StatusBar
-                barStyle="dark-content"
-                backgroundColor={Color.Base.White}
-            />
+        <ThemedContainer>
             <ThemedHeader title="Produksi Hari ini" />
             <View style={{ padding: 15 }}>
                 <View
@@ -204,6 +236,7 @@ const TodayTask = () => {
                     <View style={{ width: "49%" }}>
                         <CustomDropdown
                             items={optionsStatus}
+                            placeholderText="Pilih status"
                             onSelectItem={(item) => setStatus(item.value)}
                             value={status}
                             label="Status Produksi"
@@ -245,7 +278,7 @@ const TodayTask = () => {
                     );
                 }}
             />
-        </View>
+        </ThemedContainer>
     );
 };
 

@@ -4,10 +4,9 @@ import GlobalStyles from "@/styles/common";
 import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
 import * as SystemUI from "expo-system-ui";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Appearance, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const RootLayout = () => {
     const [fontsLoaded] = useFonts({
@@ -27,13 +26,11 @@ const RootLayout = () => {
     }
 
     return (
-        <SafeAreaProvider>
-            <AuthProvider>
-                <GestureHandlerRootView style={GlobalStyles.flex}>
-                    <Slot />
-                </GestureHandlerRootView>
-            </AuthProvider>
-        </SafeAreaProvider>
+        <AuthProvider>
+            <GestureHandlerRootView style={GlobalStyles.flex}>
+                <Slot />
+            </GestureHandlerRootView>
+        </AuthProvider>
     );
 };
 

@@ -15,7 +15,7 @@ import {
     BottomTabNavigationOptions,
 } from "@react-navigation/bottom-tabs";
 import { Tabs, usePathname, useRouter, useSegments } from "expo-router";
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -38,7 +38,12 @@ const MainLayout = () => {
     const router = useRouter();
 
     const insets = useSafeAreaInsets();
-    const mainTabScreens = ["/dashboard/Dashboard", "/attendance", "/profile"];
+    const mainTabScreens = [
+        "/dashboard/Dashboard",
+        "/attendance",
+        "/log-activity",
+        "/profile",
+    ];
 
     useEffect(() => {
         if (pathname === "/") {
@@ -84,6 +89,12 @@ const MainLayout = () => {
                 name="attendance"
                 options={{
                     tabBarIcon: createTabBarIcon(IcActiveCalendar, IcCalendar),
+                }}
+            />
+            <Tabs.Screen
+                name="log-activity/index"
+                options={{
+                    tabBarIcon: createTabBarIcon(IcActiveHome, IcHome),
                 }}
             />
             <Tabs.Screen

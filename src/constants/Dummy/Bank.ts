@@ -42,4 +42,8 @@ export const BANKS = [
   { key: "MALUKU", value: "Bank Maluku Malut" },
   { key: "PAPUA", value: "Bank Papua" },
   { key: "ACEH", value: "Bank Aceh Syariah" },
+  { key: "GOPAY", value: "gopay" },
+  { key: "OVO", value: "ovo" },
+  { key: "DANA", value: "dana" },
+  { key: "SHOPEEPAY", value: "shopeepay" },
 ];

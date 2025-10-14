@@ -38,13 +38,13 @@ const AttendanceScreen = () => {
             icon: LoanIcon,
             title: "Hadir",
             onPress: () => router.push(ROUTES.PRESENCE_SCREEN),
-            isShow: true
+            isShow: true,
         },
         {
             icon: IcBack,
             title: "Rekap Absensi",
             onPress: () => router.push(ROUTES.ATTENDANCE_SUMMARY),
-            isShow: true
+            isShow: true,
         },
         {
             icon: PaperIcon,
@@ -61,13 +61,13 @@ const AttendanceScreen = () => {
         {
             icon: IcBack,
             title: "Aktivitas Lembur",
-            onPress: () => console.log("lembur"),
+            onPress: () => router.push(ROUTES.OVER_TIME_HISTORY),
             isShow: true,
         },
         {
             icon: GrafikIcon,
             title: "Absensi Karyawan Tidak Tetap",
-            onPress: () => console.log("karyawan tidak tetap"),
+            onPress: () => router.push(ROUTES.TEMPORARY_EMPLOYEE),
             isShow: isKartap ? false : true,
         },
     ];

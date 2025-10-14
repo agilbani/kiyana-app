@@ -30,6 +30,7 @@ export const ROUTES = {
   DASHBOARD_CREATE_PLAN_PRODUCTION: `/(main)/dashboard/task/createPlanProduction`,
   DASHBOARD_MONITORING_PRODUCTION: `/(main)/dashboard/task/productionMonitoring`,
   DASHBOARD_CREATE_PRODUCT_PRIORITAS: "/(main)/dashboard/task/createPriorityProduct",
+  DASHBOARD_REQUEST_MATERIAL: "/(main)/dashboard/task/material-request",
 
   // Attendance
   ATTENDANCE: "/(main)/attendance",
@@ -43,6 +44,11 @@ export const ROUTES = {
   PRESENCE_SCREEN: "/(main)/attendance/presenceScreen",
   ATTENDANCE_SUMMARY: "/(main)/attendance/attendanceSummary",
   REQUEST_CHANGE_SHIFT: "/(main)/attendance/requestChangeShift",
+  OVER_TIME_HISTORY: "/(main)/attendance/overtime-history",
+  TEMPORARY_EMPLOYEE: "/(main)/attendance/temporary-employee",
+
+  //status
+  LOG_ACTIVITY: "/(main)/log-activity",
 
   // Task
   TASK: "/task",

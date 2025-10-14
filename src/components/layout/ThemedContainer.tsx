@@ -11,7 +11,7 @@ const statusBarHeight = StatusBar.currentHeight;
 const ThemedContainer: React.FC<ThemedContainerProps> = ({
     children,
     backgroundColor = Color.Base.White,
-    statusBarStyle = "dark-content",
+    statusBarStyle = "light-content",
 }) => {
     return (
         <View style={[styles.page, { backgroundColor }]}>

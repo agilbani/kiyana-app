@@ -7,7 +7,7 @@ export interface BatchInput {
   batch: string;
   qty: number;
   notes?: string;
-  production_item_id?: number;
+  production_item_id?: string;
   cutting_at?: string;
   cutting_by?: number | any;
 }

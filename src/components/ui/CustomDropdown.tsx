@@ -3,7 +3,7 @@ import { ThemedText } from "@/components";
 import Color from "@/constants/Color";
 import { scale } from "@/utils/scaleSize";
 import { Feather } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     Image,
     ImageSourcePropType,
@@ -67,6 +67,7 @@ type DropDownProps = {
     numberOfLines?: number;
     testID?: string;
     listTestID?: string;
+    labelSize?: "md" | "sm" | "lg";
     widthdropdown?: string;
     typeValueText?: "Regular" | "Medium";
     isOpen?: (isOpen: boolean, item?: DropDownItem) => void;
@@ -77,6 +78,7 @@ const CustomDropDown = ({
     onSelectItem,
     disabled,
     onPressDropDown = () => null,
+    labelSize = "md",
 
     // Style
     style,
@@ -144,7 +146,7 @@ const CustomDropDown = ({
             {label && (
                 <ThemedText
                     type="Regular"
-                    size="md"
+                    size={labelSize}
                     color={Color.Gray[600]}
                     style={styles.spacing}
                 >

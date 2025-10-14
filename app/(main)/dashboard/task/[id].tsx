@@ -1,4 +1,5 @@
 import {
+    CustomDropdown,
     ThemedButton,
     ThemedGap,
     ThemedHeader,
@@ -13,6 +14,7 @@ import { ROUTES } from "@/constants/Routes";
 import { useApp as authContext } from "@/context/AppContext";
 import { useCameraPermission } from "@/hooks/useCameraPermission";
 import { createProduction } from "@/services/productionService";
+import { getTaskById } from "@/services/taskService";
 import GlobalStyles from "@/styles/common";
 import { BatchInput } from "@/types/form";
 import { scale } from "@/utils/scaleSize";
@@ -22,7 +24,7 @@ import ILCamera from "@assets/images/permissions/ILCamera.png";
 import { CameraView } from "expo-camera";
 import { router, useLocalSearchParams } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -50,13 +52,16 @@ const DetailTaskScreen = () => {
     const [currentBatch, setCurrentBatch] = useState<BatchInput>({
         batch: "",
         qty: 0,
-        production_item_id: Number(id),
+        production_item_id: "",
         cutting_at: moment(new Date()).format("YYYY-MM-DD HH:mm"),
         cutting_by: user?.id,
     });
 
     const [batches, setBatches] = useState<BatchInput[]>([]);
     const [loadingAction, setLoadingAction] = useState<boolean>(false);
+    const [detailData, setDetailData] = useState<any>({});
+    const [listItems, setListItems] = useState<any>([]);
+    const [loadings, setLoadings] = useState<boolean>(false);
 
     const { granted, loading, requestPermission } = useCameraPermission();
 
@@ -88,6 +93,7 @@ const DetailTaskScreen = () => {
                 ...currentBatch,
                 batch: "",
                 qty: 0,
+                production_item_id: "",
             });
         } else {
             Alert.alert(
@@ -112,6 +118,35 @@ const DetailTaskScreen = () => {
         }
     };
 
+    const getDetail = async () => {
+        setLoadings(true);
+        const result = await getTaskById(id);
+        setLoadings(false);
+        if (result.success && result.data) {
+            console.log("Task fetched:", result.data);
+            setDetailData(result);
+            const items = result.data.items
+                .filter((v: any) => {
+                    return v.status === "Sedang Dipotong";
+                })
+                .map((data: any) => ({
+                    name: `${data.sku ?? ""} | ${data?.variant ?? ""} - ${
+                        data.qty ?? ""
+                    } ${data.unit ?? ""}`,
+                    value: `${data.id}`,
+                }));
+            setListItems(items);
+        } else {
+            console.warn("Failed:", result.statusCode, result.message);
+        }
+    };
+    console.log("cek listItems", listItems);
+    console.log("cek currentBatch", currentBatch);
+
+    useEffect(() => {
+        getDetail();
+    }, []);
+
     if (loading || granted === null) {
         return (
             <View style={[GlobalStyles.flex, GlobalStyles.center]}>
@@ -134,7 +169,6 @@ const DetailTaskScreen = () => {
 
     return (
         <View style={styles.page}>
-            <StatusBar translucent barStyle="dark-content" />
             <ThemedHeader title="Pencatatan Mandiri" />
             <View style={styles.container}>
                 <ThemedKeyboardAvoiding withFlex={false}>
@@ -165,6 +199,27 @@ const DetailTaskScreen = () => {
                             <IcScan />
                         </TouchableOpacity>
                     </View>
+                    <ThemedGap height="md" />
+                    <CustomDropdown
+                        items={listItems}
+                        value={currentBatch.production_item_id}
+                        onSelectItem={(item: any) => {
+                            setCurrentBatch({
+                                ...currentBatch,
+                                production_item_id: `${item.value}`,
+                            });
+                        }}
+                        label="Pilih Item"
+                        labelSize="sm"
+                        placeholderText="Pilih salah satu item"
+                        containerStyle={{
+                            borderRadius: 12,
+                            width: "100%",
+                            marginTop: -1,
+                        }}
+                        maxHeight={200}
+                        widthdropdown="100%"
+                    />
                     <ThemedGap height="md" />
                     <ThemedInput
                         label="Jumlah Selesai"

@@ -42,3 +42,22 @@ export const getMyLoans = async (): Promise<GetMyLoansResponse> => {
     };
   }
 };
+
+export const getDetailLoans = async (id: any): Promise<GetMyLoansResponse> => {
+  try {
+    const res = await api.get<GetMyLoansResponse>(`/loans/${id}`);
+    // return res; // directly return the response shape
+    return {
+      success: true,
+      message: "Success fetch data loan",
+      data: res.data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message ??
+        "Terjadi kesalahan saat mengambil daftar pinjaman.",
+    };
+  }
+};

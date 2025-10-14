@@ -1,5 +1,6 @@
 import {
     ThemedButton,
+    ThemedContainer,
     ThemedGap,
     ThemedHeader,
     ThemedLoader,
@@ -14,20 +15,26 @@ import {
     startProcess,
 } from "@/services/taskService";
 import GlobalStyles from "@/styles/common";
+import { usePositionBottom } from "@/utils/bottomPosition";
 import { scale } from "@/utils/scaleSize";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useEffect, useState } from "react";
+import {
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 const statusBarHeight = StatusBar.currentHeight;
 
 const TaskDetailScreen = () => {
     const { user } = authContext();
-    const insets = useSafeAreaInsets();
+    const { bottom } = usePositionBottom();
     const { id } = useLocalSearchParams<{ id: string }>();
-    // console.log("cek code detail", id);
+    console.log("cek code detail", id);
 
     const [task, setTask] = useState<GetTaskByIdResult | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -45,9 +52,9 @@ const TaskDetailScreen = () => {
         }
     }
 
-    async function handleStartCutting() {
+    async function handleStartCutting(itemId: any) {
         setLoadingStart(true);
-        const res = await startProcess(task?.data?.code, task?.data?.id);
+        const res = await startProcess(task?.data?.code, itemId);
         setLoadingStart(false);
         if (res.success) {
             ShowToastMessage(res?.message);
@@ -83,8 +90,7 @@ const TaskDetailScreen = () => {
     const t = task.data;
 
     return (
-        <View style={styles.page}>
-            <StatusBar translucent barStyle="dark-content" />
+        <ThemedContainer>
             <ThemedHeader title="Detail Tugas" />
             {loading ? (
                 <ThemedLoader />
@@ -137,48 +143,79 @@ const TaskDetailScreen = () => {
                             Info Item:
                         </ThemedText>
                         {t.items.map((v, index) => (
-                            <View key={index.toString()}>
-                                <View style={GlobalStyles.rowCenter}>
-                                    <ThemedText type="SemiBold">
-                                        SKU:
-                                    </ThemedText>
-                                    <ThemedGap width="xs" />
-                                    <ThemedText>{v.sku}</ThemedText>
+                            <View
+                                key={index.toString()}
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "flex-start",
+                                    justifyContent: "space-between",
+                                    paddingVertical: 10,
+                                    borderBottomWidth: 1,
+                                    borderBottomColor: Color.Gray[300],
+                                }}
+                            >
+                                <View style={{ width: "65%" }}>
+                                    <View style={GlobalStyles.rowCenter}>
+                                        <ThemedText type="SemiBold">
+                                            SKU:
+                                        </ThemedText>
+                                        <ThemedGap width="xs" />
+                                        <ThemedText>{v.sku}</ThemedText>
+                                    </View>
+                                    <View style={GlobalStyles.rowCenter}>
+                                        <ThemedText type="SemiBold">
+                                            Qty:
+                                        </ThemedText>
+                                        <ThemedGap width="xs" />
+                                        <ThemedText>
+                                            {v.qty} {v.unit}
+                                        </ThemedText>
+                                    </View>
+                                    <View style={GlobalStyles.rowCenter}>
+                                        <ThemedText type="SemiBold">
+                                            Size:
+                                        </ThemedText>
+                                        <ThemedGap width="xs" />
+                                        <ThemedText>
+                                            {v.qty}{" "}
+                                            {v.variant_metadata.size.name}
+                                        </ThemedText>
+                                    </View>
+                                    <View style={GlobalStyles.rowCenter}>
+                                        <ThemedText type="SemiBold">
+                                            Color:
+                                        </ThemedText>
+                                        <ThemedGap width="xs" />
+                                        <ThemedText>
+                                            {v.qty} {v.variant_metadata.color}
+                                        </ThemedText>
+                                    </View>
                                 </View>
-                                <View style={GlobalStyles.rowCenter}>
-                                    <ThemedText type="SemiBold">
-                                        Qty:
+                                <TouchableOpacity
+                                    activeOpacity={0.9}
+                                    disabled={v.status === "Sedang Dipotong"}
+                                    style={[
+                                        styles.btnStart,
+                                        {
+                                            backgroundColor:
+                                                v.status === "Sedang Dipotong"
+                                                    ? Color.Gray[300]
+                                                    : Color.Green[500],
+                                        },
+                                    ]}
+                                    onPress={() => handleStartCutting(v.id)}
+                                >
+                                    <ThemedText color={Color.Base.White}>
+                                        Mulai Produksi
                                     </ThemedText>
-                                    <ThemedGap width="xs" />
-                                    <ThemedText>
-                                        {v.qty} {v.unit}
-                                    </ThemedText>
-                                </View>
-                                <View style={GlobalStyles.rowCenter}>
-                                    <ThemedText type="SemiBold">
-                                        Size:
-                                    </ThemedText>
-                                    <ThemedGap width="xs" />
-                                    <ThemedText>
-                                        {v.qty} {v.variant_metadata.size.name}
-                                    </ThemedText>
-                                </View>
-                                <View style={GlobalStyles.rowCenter}>
-                                    <ThemedText type="SemiBold">
-                                        Color:
-                                    </ThemedText>
-                                    <ThemedGap width="xs" />
-                                    <ThemedText>
-                                        {v.qty} {v.variant_metadata.color}
-                                    </ThemedText>
-                                </View>
+                                </TouchableOpacity>
                             </View>
                         ))}
                     </View>
                 </ScrollView>
             )}
-            <View style={[styles.footer, { bottom: insets.bottom }]}>
-                <View style={{ width: "48%" }}>
+            <View style={[styles.footer, { bottom: bottom }]}>
+                {/* <View style={{ width: "48%" }}>
                     <ThemedButton
                         title="Mulai Produksi"
                         style={{ marginTop: 10 }}
@@ -186,25 +223,32 @@ const TaskDetailScreen = () => {
                         onPress={handleStartCutting}
                         loading={loading}
                     />
-                </View>
-                <View style={{ width: "48%" }}>
+                </View> */}
+                <View style={{ width: "100%" }}>
                     <ThemedButton
                         title="Tambah Batch Produksi"
                         style={{ marginTop: 10 }}
                         disabled={t.status === "Planned"}
                         onPress={() =>
-                            router.push(
-                                ROUTES.DASHBOARD_TASK_DETAIL(t.id) as any
-                            )
+                            router.push(ROUTES.DASHBOARD_TASK_DETAIL(id) as any)
                         }
                     />
                 </View>
             </View>
-        </View>
+        </ThemedContainer>
     );
 };
 
 const styles = StyleSheet.create({
+    btnStart: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 4,
+        justifyContent: "center",
+        width: "35%",
+        borderRadius: 6,
+        backgroundColor: Color.Green[500],
+    },
     footer: {
         width: "100%",
         flexDirection: "row",

@@ -2,11 +2,12 @@ import {
     ThemedButton,
     ThemedContainer,
     ThemedDatePicker,
+    ThemedDropdown,
+    ThemedErrorMessage,
     ThemedGap,
     ThemedHeader,
     ThemedInput,
     ThemedModal,
-    ThemedSelect,
     ThemedText,
     ThemedTextarea,
 } from "@/components";
@@ -23,8 +24,8 @@ import { ShowToastMessage } from "@/utils/toastMessage";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
 import moment from "moment";
-import React, { useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 import * as yup from "yup";
 
@@ -37,7 +38,19 @@ type FormValues = {
     amount: string;
     note: string;
     date: string;
+    type: string;
 };
+
+const optionsType = [
+    {
+        label: "Cash",
+        value: "cash",
+    },
+    {
+        label: "Transfer",
+        value: "transfer",
+    },
+];
 
 const Row = ({
     label,
@@ -79,11 +92,13 @@ const WithdrawalScreen = () => {
                 return numeric <= user?.balance;
             }),
         note: yup.string().default(""),
+        type: yup.string().required("Silahkan pilih metode pembayaran"),
     });
 
     const confirmModalRef = useRef<ThemedModal | null>(null);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [optionsTransfer, setOptionsTransfer] = useState<any>([]);
 
     const { control, handleSubmit, setError, clearErrors, reset, getValues } =
         useForm<FormValues>({
@@ -93,9 +108,12 @@ const WithdrawalScreen = () => {
                 accountNumber: "",
                 amount: "",
                 date: "",
+                type: "",
             },
             resolver: yupResolver(schema),
         });
+
+    const typePayment = useWatch({ control, name: "type" });
 
     const onSubmit = (data: FormValues) => {
         clearErrors();
@@ -182,6 +200,21 @@ const WithdrawalScreen = () => {
         }
     };
 
+    const getOptionTransfer = () => {
+        let opt = [];
+        for (let i = 0; i < BANKS.length; i++) {
+            opt.push({
+                label: BANKS[i].key,
+                value: BANKS[i].value,
+            });
+        }
+        setOptionsTransfer(opt);
+    };
+
+    useEffect(() => {
+        getOptionTransfer();
+    }, []);
+
     return (
         <ThemedContainer>
             <ThemedHeader title="Ambil Uang" />
@@ -217,34 +250,64 @@ const WithdrawalScreen = () => {
                         />
                         <ThemedGap height="md" />
                         <Controller
+                            name="type"
                             control={control}
-                            name="bank"
                             render={({ field, fieldState }) => (
-                                <ThemedSelect
-                                    label="Bank Tujuan"
-                                    value={field.value}
-                                    data={BANKS}
-                                    onChangeText={field.onChange}
-                                    error={fieldState.error?.message}
-                                />
+                                <View>
+                                    <ThemedDropdown
+                                        items={optionsType}
+                                        value={field.value}
+                                        label="Pilih metode pembayaran"
+                                        placeholder="Pilih metode pembayaran"
+                                        onValueChange={field.onChange}
+                                    />
+                                    <ThemedErrorMessage
+                                        message={fieldState.error?.message}
+                                    />
+                                </View>
                             )}
                         />
-                        <ThemedGap height="md" />
-                        <Controller
-                            control={control}
-                            name="accountNumber"
-                            render={({ field, fieldState }) => (
-                                <ThemedInput
-                                    label="Nomor Rekening"
-                                    placeholder="Masukkan nomor rekening tujuan"
-                                    keyboardType="numeric"
-                                    value={field.value}
-                                    onChangeText={field.onChange}
-                                    error={fieldState.error?.message}
-                                    style={{ height: 45 }}
+                        {typePayment === "transfer" && (
+                            <>
+                                <ThemedGap height="md" />
+                                <Controller
+                                    name="bank"
+                                    control={control}
+                                    render={({ field, fieldState }) => (
+                                        <View>
+                                            <ThemedDropdown
+                                                items={optionsTransfer}
+                                                value={field.value}
+                                                label="Pilih tujuan transfer"
+                                                placeholder="Pilih tujuan transfer"
+                                                onValueChange={field.onChange}
+                                            />
+                                            <ThemedErrorMessage
+                                                message={
+                                                    fieldState.error?.message
+                                                }
+                                            />
+                                        </View>
+                                    )}
                                 />
-                            )}
-                        />
+                                <ThemedGap height="md" />
+                                <Controller
+                                    control={control}
+                                    name="accountNumber"
+                                    render={({ field, fieldState }) => (
+                                        <ThemedInput
+                                            label="Nomor Rekening"
+                                            placeholder="Masukkan nomor rekening tujuan"
+                                            keyboardType="numeric"
+                                            value={field.value}
+                                            onChangeText={field.onChange}
+                                            error={fieldState.error?.message}
+                                            style={{ height: 45 }}
+                                        />
+                                    )}
+                                />
+                            </>
+                        )}
                         <ThemedGap height="md" />
                         <Controller
                             control={control}

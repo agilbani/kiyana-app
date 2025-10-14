@@ -79,6 +79,7 @@ export interface TaskItem {
   variant_metadata: VariantMetadata;
   sku: string;
   qty: number;
+  status: string;
   cutting_at: string;
   unit: string;
 }

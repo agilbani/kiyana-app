@@ -1,6 +1,5 @@
 import Color from "@/constants/Color";
 import { IcBell } from "@assets/index";
-import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "../ui";
 
@@ -15,7 +14,9 @@ const DashboardCardSection = ({ onPressLoan, onPressWithdraw, user }: any) => {
                 }}
             >
                 <View style={{ gap: 8 }}>
-                    <ThemedText type="Medium">Hi Fulan</ThemedText>
+                    <ThemedText type="Medium">
+                        Hi {`${user?.first_name} ${user?.last_name}`}
+                    </ThemedText>
                     <ThemedText type="Medium" size="xl">
                         Semangat Bekerja
                     </ThemedText>

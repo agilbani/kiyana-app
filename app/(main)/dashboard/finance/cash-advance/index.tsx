@@ -12,6 +12,7 @@ import {
     ThemedTextarea,
 } from "@/components";
 import Color from "@/constants/Color";
+import { BANKS } from "@/constants/Dummy/Bank";
 import Radius from "@/constants/Radius";
 import { useApp } from "@/context/AppContext";
 import { createLoan } from "@/services/loanService";
@@ -21,7 +22,7 @@ import { scale, verticalScale } from "@/utils/scaleSize";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
-import React, { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 import * as yup from "yup";
@@ -33,6 +34,7 @@ type FormValues = {
     tenor: string;
     type: string;
     accountNumber?: string;
+    transfer_option?: string;
 };
 
 const optionsType = [
@@ -80,6 +82,7 @@ const CashAdvanceScreen = () => {
     const confirmModalRef = useRef<ThemedModal | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [confirmedRecipientName, setConfirmedRecipientName] = useState("");
+    const [optionsTransfer, setOptionsTransfer] = useState<any>([]);
 
     const optionTenor = [
         {
@@ -101,6 +104,7 @@ const CashAdvanceScreen = () => {
                 tenor: "",
                 type: "",
                 accountNumber: "",
+                transfer_option: "",
             },
             resolver: yupResolver(schema),
         });
@@ -139,6 +143,21 @@ const CashAdvanceScreen = () => {
             ShowToastMessage(res.message);
         }
     };
+
+    const getOptionTransfer = () => {
+        let opt = [];
+        for (let i = 0; i < BANKS.length; i++) {
+            opt.push({
+                label: BANKS[i].key,
+                value: BANKS[i].value,
+            });
+        }
+        setOptionsTransfer(opt);
+    };
+
+    useEffect(() => {
+        getOptionTransfer();
+    }, []);
 
     return (
         <ThemedContainer>
@@ -211,6 +230,25 @@ const CashAdvanceScreen = () => {
                     <ThemedGap height="md" />
                     {typePayment === "transfer" && (
                         <>
+                            <Controller
+                                name="transfer_option"
+                                control={control}
+                                render={({ field, fieldState }) => (
+                                    <View>
+                                        <ThemedDropdown
+                                            items={optionsTransfer}
+                                            value={field.value}
+                                            label="Pilih tujuan transfer"
+                                            placeholder="Pilih tujuan transfer"
+                                            onValueChange={field.onChange}
+                                        />
+                                        <ThemedErrorMessage
+                                            message={fieldState.error?.message}
+                                        />
+                                    </View>
+                                )}
+                            />
+                            <ThemedGap height="md" />
                             <Controller
                                 name="accountNumber"
                                 control={control}

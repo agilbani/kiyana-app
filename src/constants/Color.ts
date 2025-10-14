@@ -88,6 +88,20 @@ const Color = {
     Purple: "#4F1ED8",
   },
 
+  SemanticBlue: {
+      50: "#E7F6FE",
+      100: "#CFEEFC",
+      200: "#9FDDF9",
+      300: "#6FCBF6",
+      400: "#3FBAF3",
+      500: "#0EA4E9",
+      600: "#0C87C0",
+      700: "#096590",
+      800: "#064460",
+      900: "#032230",
+      950: "#011118"
+   },
+
   Button: {
     "Surface-Primary": "#FEFEFE",
     "Background-Primary": "#7A5AF8",

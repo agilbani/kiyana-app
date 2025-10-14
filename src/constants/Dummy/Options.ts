@@ -23,6 +23,10 @@ export const optionsDate = [
 
 export const optionsStatus = [
    {
+      name: 'Semua',
+      value: 'semua'
+   },
+   {
       name: 'Terjadwal',
       value: 'Planned'
    },

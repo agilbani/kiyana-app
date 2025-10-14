@@ -1,4 +1,4 @@
-import { ThemedText } from "@/components";
+import { ThemedContainer, ThemedText } from "@/components";
 import DashboardCardSection from "@/components/card/DashboardCardSection";
 import DashboardAmountCard from "@/components/screens/Dashboard/DashboardAmountCard";
 import DashboardScanCard from "@/components/screens/Dashboard/DashboardScanCard";
@@ -47,6 +47,12 @@ const Dashboard = () => {
                     label: "Monitoring Produksi",
                     action: () =>
                         router.push(ROUTES.DASHBOARD_MONITORING_PRODUCTION),
+                },
+                {
+                    icon: require("@assets/icons/ApprovalIcon.png"),
+                    label: "Permintaan Bahan",
+                    action: () =>
+                        router.push(ROUTES.DASHBOARD_REQUEST_MATERIAL),
                 },
             ],
         },
@@ -163,15 +169,11 @@ const Dashboard = () => {
             };
         }, [])
     );
+    console.log("cek user", user);
 
     return (
-        <View style={styles.page}>
-            <StatusBar
-                translucent
-                backgroundColor={Color.Base.White}
-                barStyle="dark-content"
-            />
-            <DashboardCardSection />
+        <ThemedContainer>
+            <DashboardCardSection user={user} />
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scroll}
@@ -237,7 +239,7 @@ const Dashboard = () => {
                     </View>
                 ))}
             </ScrollView>
-        </View>
+        </ThemedContainer>
     );
 };
 

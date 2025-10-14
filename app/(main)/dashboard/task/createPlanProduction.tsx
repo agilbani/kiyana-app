@@ -14,7 +14,7 @@ import { ShowToastMessage } from "@/utils/toastMessage";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     ScrollView,
     StatusBar,
@@ -101,16 +101,27 @@ const CreatePlanProduction = () => {
         }
 
         if (listProductVariant.success) {
-            let arr = [];
-            for (let i = 0; i < listProductVariant?.data?.length; i++) {
-                arr.push({
-                    name: `${listProductVariant?.data[i].sku} - ${listProductVariant.data[i].color}`,
-                    value: listProductVariant.data[i].id,
-                });
-            }
-            setListVariant(arr);
+            // let arr = [];
+            // for (let i = 0; i < listProductVariant?.data?.length; i++) {
+            //     arr.push({
+            //         name: `${listProductVariant?.data[i].sku} - ${listProductVariant.data[i].color}`,
+            //         value: listProductVariant.data[i].id,
+            //     });
+            // }
+            setListVariant(listProductVariant?.data);
         }
     };
+
+    const filteredVariant = useMemo(() => {
+        if (!selectedProduct) return [];
+
+        return listVariant
+            .filter((variant: any) => variant.product.id === selectedProduct)
+            .map((variant: any) => ({
+                name: `${variant.sku ?? ""} - ${variant.color ?? ""}`,
+                value: variant.id,
+            }));
+    }, [listVariant, selectedProduct]);
 
     const onSubmit = async () => {
         let itemProduction = [];
@@ -191,15 +202,15 @@ const CreatePlanProduction = () => {
                         <View key={`${index}`} style={styles.parentViewProduct}>
                             <View style={styles.viewDropdown}>
                                 <CustomDropdown
-                                    items={listVariant}
+                                    items={filteredVariant}
                                     value={v.sku}
-                                    onSelectItem={(item: any) =>
-                                        updateRow(v.id, "sku", item.value)
-                                    }
+                                    onSelectItem={(item: any) => {
+                                        updateRow(v.id, "sku", item.value);
+                                    }}
                                     placeholderText="Pilih salah satu opsi"
                                     containerStyle={{
                                         borderRadius: 12,
-                                        width: "100%",
+                                        width: "95%",
                                         marginTop: -1,
                                     }}
                                     maxHeight={200}
