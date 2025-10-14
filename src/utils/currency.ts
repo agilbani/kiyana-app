@@ -17,7 +17,7 @@ export const formatRupiahInput = (value: string): string => {
  */
 export const formatRupiahDisplay = (num: number | string): string => {
   const numeric =
-    typeof num === "number" ? num : parseInt(num.replace(/[^0-9]/g, ""));
+    typeof num === "number" ? num : parseInt(num?.replace(/[^0-9]/g, ""));
   if (isNaN(numeric)) return "Rp 0";
   return "Rp " + numeric.toLocaleString("id-ID");
 };
