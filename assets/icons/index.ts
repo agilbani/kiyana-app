@@ -17,6 +17,7 @@ export { default as IcBack } from "./IcBack.png";
 export { default as IcBell } from "./IcBell.svg";
 export { default as IcBrokenImage } from "./IcBrokenImage.svg";
 export { default as IcCalendar } from "./IcCalendar.svg";
+export { default as IcClipBoardClock } from "./IcClipBoardClock.svg";
 export { default as IcClock } from "./IcClock.svg";
 export { default as IcClose } from "./IcClose.svg";
 export { default as IcConvertCard } from "./IcConvertCard.svg";
