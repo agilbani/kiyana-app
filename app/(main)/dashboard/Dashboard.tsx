@@ -106,6 +106,21 @@ const Dashboard = () => {
                     label: "Stok Baru",
                     action: () => console.log("task cutting"),
                 },
+                {
+                    icon: require("@assets/icons/NewStockIcon.png"),
+                    label: "Tambah Bahan",
+                    action: () => router.push(ROUTES.BAHAN),
+                },
+                {
+                    icon: require("@assets/icons/NewStockIcon.png"),
+                    label: "Aksesoris",
+                    action: () => router.push(ROUTES.AKSESORIS),
+                },
+                {
+                    icon: require("@assets/icons/NewStockIcon.png"),
+                    label: "Produk",
+                    action: () => router.push(ROUTES.PRODUK),
+                },
             ],
         },
         {
