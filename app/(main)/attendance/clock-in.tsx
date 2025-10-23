@@ -12,11 +12,12 @@ import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcArrowLeft, IcMarker } from "@assets/icons";
 import ILClockIn from "@assets/images/ILClock.svg";
 import ILLocation from "@assets/images/permissions/ILocation.png";
+import { FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
 import { GoogleMaps } from "expo-maps";
 import { router } from "expo-router";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
     Alert,
     StatusBar,
@@ -31,7 +32,9 @@ const AttendanceClockInScreen = () => {
     const { attendance, user, dataSetting, setCoords, dataSelectedAttendance } =
         useApp();
 
-    console.log("attendance clockin", attendance);
+    const [refresh, setRefresh] = useState(false);
+
+    //  console.log("attendance clockin", attendance);
     // console.log("clockin user", user);
     // console.log("dataSelectedAttendance", dataSelectedAttendance);
 
@@ -66,10 +69,11 @@ const AttendanceClockInScreen = () => {
             checkLocation().catch(() =>
                 Alert.alert("Error Lokasi", "Gagal mendapatkan lokasi.")
             );
+            setRefresh(false);
         };
 
         init();
-    }, []);
+    }, [refresh]);
 
     const markers = coords
         ? [
@@ -206,9 +210,32 @@ const AttendanceClockInScreen = () => {
                     <ILClockIn width={scale(64)} height={scale(64)} />
                 </LinearGradient>
                 <ThemedGap height="md" />
-                <ThemedText type="Medium" size="sm">
-                    PROFIL SAYA
-                </ThemedText>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <ThemedText type="Medium" size="sm">
+                        PROFIL SAYA
+                    </ThemedText>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 8,
+                        }}
+                    >
+                        <TouchableOpacity
+                            onPress={() => setRefresh(true)}
+                            activeOpacity={0.9}
+                        >
+                            <FontAwesome name="refresh" size={18} />
+                        </TouchableOpacity>
+                        <ThemedText type="Medium">Perbaharui Lokasi</ThemedText>
+                    </View>
+                </View>
                 <ThemedGap height="xs" />
                 <View style={styles.cardProfile}>
                     <ThemedImage

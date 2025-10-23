@@ -15,7 +15,6 @@ const Middleware = () => {
         if (loading) {
             return;
         }
-        console.log("effek user", user);
 
         const checkAndRedirect = async () => {
             try {
@@ -30,10 +29,10 @@ const Middleware = () => {
                     router.replace(ROUTES.ONBOARDING);
                 } else if (!hasHandledPermissions) {
                     router.replace(ROUTES.PERMISSIONS);
-                } else if (!user) {
-                    router.replace(ROUTES.LOGIN);
-                } else {
+                } else if (user?.id) {
                     router.replace(ROUTES.DASHBOARD);
+                } else {
+                    router.replace(ROUTES.LOGIN);
                 }
             } catch (error) {
                 router.replace(ROUTES.LOGIN);

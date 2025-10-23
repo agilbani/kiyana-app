@@ -7,6 +7,7 @@ import * as SystemUI from "expo-system-ui";
 import { useEffect } from "react";
 import { Appearance, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ViewLoading from "../src/components/ui/ViewLoading";
 
 const RootLayout = () => {
     const [fontsLoaded] = useFonts({
@@ -30,6 +31,7 @@ const RootLayout = () => {
             <GestureHandlerRootView style={GlobalStyles.flex}>
                 <Slot />
             </GestureHandlerRootView>
+            <ViewLoading />
         </AuthProvider>
     );
 };

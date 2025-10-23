@@ -3,7 +3,10 @@ import AttendanceScedule from "@/components/screens/Attendance/AttendanceSchedul
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
 import { useApp } from "@/context/AppContext";
+import { getCurrentAttendance } from "@/services/attendanceService";
+import { getAllSettings } from "@/services/settingService";
 import { usePositionBottom } from "@/utils/bottomPosition";
+import LoadingManager from "@/utils/LoadingManager";
 import { scale } from "@/utils/scaleSize";
 import {
     FaceRecognationIcon,
@@ -14,8 +17,8 @@ import {
     LoanIcon,
     PaperIcon,
 } from "@assets/index";
-import { FontAwesome, Fontisto } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
     FlatList,
     Image,
@@ -29,40 +32,42 @@ import {
 const statusBarHeight = StatusBar.currentHeight;
 
 const AttendanceScreen = () => {
-    const { user, updateUser } = useApp();
+    const { user, saveDataSetting } = useApp();
     const isKartap = user?.type === "TETAP";
     const isHost = user?.is_host;
     const { bottom } = usePositionBottom();
+    const [dataHost, setDataHost] = useState<any>([]);
+    const [dataShift, setDataShift] = useState<any>({});
     const menu = [
         {
             icon: LoanIcon,
             title: "Hadir",
             onPress: () => router.push(ROUTES.PRESENCE_SCREEN),
-            isShow: true,
+            isShow: isKartap ? true : false,
         },
         {
             icon: IcBack,
             title: "Rekap Absensi",
             onPress: () => router.push(ROUTES.ATTENDANCE_SUMMARY),
-            isShow: true,
+            isShow: isKartap ? true : false,
         },
         {
             icon: PaperIcon,
             title: "Pengajuan Tukar Jadwal",
             onPress: () => router.push(ROUTES.REQUEST_CHANGE_SHIFT),
-            isShow: true,
+            isShow: isKartap ? true : false,
         },
         {
             icon: HospitalIcon,
             title: "Pengajuan Izin & Sakit",
             onPress: () => router.push(ROUTES.ABSENCE_HISTORY),
-            isShow: true,
+            isShow: isKartap ? true : false,
         },
         {
             icon: IcBack,
             title: "Aktivitas Lembur",
             onPress: () => router.push(ROUTES.OVER_TIME_HISTORY),
-            isShow: true,
+            isShow: isKartap ? true : false,
         },
         {
             icon: GrafikIcon,
@@ -71,6 +76,32 @@ const AttendanceScreen = () => {
             isShow: isKartap ? false : true,
         },
     ];
+
+    const getData = async () => {
+        LoadingManager.show();
+        const res = await getCurrentAttendance(isHost ? "host" : "shifted");
+        LoadingManager.hide();
+        console.log("res att", res);
+        if (isHost) {
+            setDataHost(res.data);
+        } else {
+            if (res.success) {
+                setDataShift(res.data);
+            }
+        }
+    };
+
+    const getListSetting = async () => {
+        const res = await getAllSettings();
+        if (res.success && res.data) {
+            saveDataSetting(res.data);
+        }
+    };
+
+    useEffect(() => {
+        getData();
+        getListSetting();
+    }, []);
 
     return (
         <View style={styles.page}>
@@ -128,75 +159,6 @@ const AttendanceScreen = () => {
                         />
                     </TouchableOpacity>
                 </View>
-                <AttendanceScedule />
-                {
-                    //section info user
-                }
-                <View style={styles.infoUser}>
-                    <View
-                        style={{
-                            width: "80%",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 10,
-                        }}
-                    >
-                        <View style={styles.roundedPhoto}>
-                            <ThemedText>Poto</ThemedText>
-                        </View>
-                        <View style={{ width: "90%", gap: 6 }}>
-                            <ThemedText
-                                size="lg"
-                                type="Medium"
-                                color={Color.Green[500]}
-                            >
-                                Rahmat demawan
-                            </ThemedText>
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    gap: 4,
-                                }}
-                            >
-                                <FontAwesome name="map-marker" size={20} />
-                                <ThemedText size="xs">
-                                    Cirebon, Ciwaringin
-                                </ThemedText>
-                            </View>
-                        </View>
-                    </View>
-                    <TouchableOpacity
-                        activeOpacity={0.9}
-                        style={{
-                            width: "20%",
-                            gap: 4,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "flex-end",
-                        }}
-                    >
-                        <FontAwesome
-                            name="refresh"
-                            size={15}
-                            color={Color.Green[500]}
-                        />
-                        <ThemedText>Aktivitas</ThemedText>
-                    </TouchableOpacity>
-                </View>
-                {
-                    //info presensi section
-                }
-                <View style={styles.viewBgInfo}>
-                    <Fontisto name="date" size={18} color={Color.Green[500]} />
-                    <ThemedText
-                        size="md"
-                        type="Medium"
-                        color={Color.Green[500]}
-                    >
-                        Presensi keluar, Rabu 10 Sep 2025 17:00
-                    </ThemedText>
-                </View>
                 <FlatList
                     data={menu}
                     keyExtractor={(v, i) => `${i}`}
@@ -248,13 +210,27 @@ const AttendanceScreen = () => {
                         }
                     }}
                 />
+                <AttendanceScedule
+                    isHost={isHost ?? false}
+                    dataHost={dataHost}
+                    dataShift={user?.shift}
+                />
             </ScrollView>
-            <View style={[styles.footer, { bottom }]}>
-                <Image source={FaceRecognationIcon} style={styles.imgFace} />
-                <ThemedText type="Medium" color={Color.Base.White}>
-                    Absen sekarang, Sebelum Telat
-                </ThemedText>
-            </View>
+            {isKartap && !isHost && (
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={() => router.push(ROUTES.ATTENDANCE_CLOCKIN)}
+                    style={[styles.footer, { bottom }]}
+                >
+                    <Image
+                        source={FaceRecognationIcon}
+                        style={styles.imgFace}
+                    />
+                    <ThemedText type="Medium" color={Color.Base.White}>
+                        Absen sekarang, Sebelum Telat
+                    </ThemedText>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };
