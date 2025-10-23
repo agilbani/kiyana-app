@@ -50,6 +50,14 @@ export const ROUTES = {
   //status
   LOG_ACTIVITY: "/(main)/log-activity",
 
+  //warehouse
+  AKSESORIS: "/task/warehouse/aksesoris",
+  AKSESORIS_ADD: "/task/warehouse/aksesoris-add",
+  BAHAN: "/task/warehouse/bahan",
+  BAHAN_ADD: "/task/warehouse/bahan-add",
+  PRODUK: "/task/warehouse/produk",
+  PRODUK_ADD: "/task/warehouse/produk-add",
+
   // Task
   TASK: "/task",
   TASK_LIST_OF_PRODUCTS: "/task/warehouse/list-products",
