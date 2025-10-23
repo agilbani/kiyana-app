@@ -91,3 +91,79 @@ export function groupAttendanceByDate(data: Attendance[]): GroupedAttendance[] {
 
   return grouped;
 }
+
+export function getAttendanceButtonType(data: any) {
+  const now = moment();
+
+  // parse start & end sebagai hari ini dulu
+  let startTime = moment(data.start_time, "HH:mm");
+  let endTime = moment(data.end_time, "HH:mm");
+
+  // jika endTime <= startTime (shift lewat tengah malam), taruh endTime ke hari berikutnya
+  if (endTime.isSameOrBefore(startTime)) {
+    endTime.add(1, "day");
+  }
+
+  // jika sekarang sudah lewat endTime (jadwal hari ini sudah selesai),
+  // anggap jadwal ini untuk besok -> bump start & end ke +1 day
+  if (now.isAfter(endTime)) {
+    startTime.add(1, "day");
+    endTime.add(1, "day");
+  }
+
+  // === CONDITION: tampilkan tombol "masuk" ===
+  // Jika belum clock_in, dan waktu sekarang BELUM lewat start_time, dan BELUM lewat end_time
+  if (data.clock_in === null && now.isBefore(startTime) && now.isBefore(endTime)) {
+    return "masuk";
+  }
+
+  // === CONDITION: tampilkan tombol "pulang" ===
+  // Jika sudah clock_in tapi belum clock_out, dan sekarang SUDAH lewat end_time
+  if (data.clock_in !== null && data.clock_out === null && now.isAfter(endTime)) {
+    return "pulang";
+  }
+
+  return null;
+}
+
+export function getAttendanceStatus(data: any) {
+  const now = moment();
+  let startTime = moment(data.start_time, "HH:mm");
+  let endTime = moment(data.end_time, "HH:mm");
+
+  // Jika end_time lebih kecil dari start_time (shift lewat tengah malam)
+  if (endTime.isSameOrBefore(startTime)) {
+    endTime.add(1, "day");
+  }
+
+  // Jika waktu sekarang sudah lewat end_time → jadwal selesai
+  if (now.isAfter(endTime)) {
+    return "Jadwal telah selesai";
+  }
+
+  // Hitung selisih waktu dari sekarang ke end_time (dalam jam)
+  const diffHours = endTime.diff(now, "hours");
+
+  // Jika waktu sekarang masih jauh dari end_time (>= 3 jam sebelumnya)
+  if (diffHours >= 3) {
+    return "Jadwal mendatang";
+  }
+
+  // Jika tidak memenuhi dua kondisi di atas, berarti jadwal sedang berlangsung
+  return "Jadwal sedang berjalan";
+}
+
+export function getWorkType(data: any) {
+  const startTime = moment(data.start_time, "HH:mm");
+  const hour = startTime.hour(); // ambil jam dalam bentuk angka (0–23)
+
+  if ([12, 18, 21].includes(hour)) {
+    return "Primetime";
+  }
+
+  if (hour === 0) {
+    return "Extratime";
+  }
+
+  return "Regular";
+}
