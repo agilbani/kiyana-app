@@ -1,5 +1,6 @@
 import api from '@/api/api';
 import { AbsencePayload, ClockInPayload, ClockInResponse, GetMyAttendanceResponse } from '@/types/attendance';
+import { MasterResponse } from '@/types/master';
 import { queryParams } from '@/utils/getQueryParams';
 
 export interface GetCurrentAttendanceResult {
@@ -284,6 +285,96 @@ export const editAttendance = async (
       message:
         error?.response?.data?.message ||
         "Terjadi kesalahan saat menambahkan data presensi.",
+    };
+  }
+};
+
+export const getListShift = async (): Promise<MasterResponse> => {
+  try {
+    const res = await api.get<MasterResponse>("/attendances/shifted/list");
+    return {
+      success: true,
+      message: "Success fetch data loan",
+      data: res.data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message ??
+        "Terjadi kesalahan saat mengambil data kategori.",
+    };
+  }
+};
+
+export const getListAttendance = async (): Promise<MasterResponse> => {
+  try {
+    const res = await api.get<MasterResponse>("/attendances/host/list?current=true");
+    return {
+      success: true,
+      message: "Success fetch data host",
+      data: res.data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message ??
+        "Terjadi kesalahan saat mengambil data host.",
+    };
+  }
+};
+
+export const postRequestChangeAttendance = async (payload: any, type = 'shifted'): Promise<MasterResponse> => {
+  try {
+    const res = await api.post<MasterResponse>(`/attendances/${type}/swap-requests`, payload);
+    return {
+      success: true,
+      message: "Success fetch data loan",
+      data: res.data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message ??
+        "Terjadi kesalahan saat mengambil data kategori.",
+    };
+  }
+};
+
+export const getAttendanceTemporaryEmployee = async (): Promise<MasterResponse> => {
+  try {
+    const res = await api.get<MasterResponse>("/attendances/temporary/today");
+    return {
+      success: true,
+      message: "Success fetch data host",
+      data: res.data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message ??
+        "Terjadi kesalahan saat mengambil data host.",
+    };
+  }
+};
+
+export const patchAttendanceTemporary = async (payload: any): Promise<MasterResponse> => {
+  try {
+    const res = await api.patch<MasterResponse>(`/attendances/temporary/status`, payload);
+    return {
+      success: true,
+      message: "Success update attendance temporary employee.",
+      data: res.data,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message ??
+        "Terjadi kesalahan saat update attendance temporary employee.",
     };
   }
 };

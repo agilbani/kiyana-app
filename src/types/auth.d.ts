@@ -58,7 +58,8 @@ export interface User {
   division?: Division | null;
   detail?: Detail | null;
   token?: string | null;
-  shift: Shift | null;
+  shift?: Shift | null;
+  shift_id?: string | null;
 }
 
 export interface LoginResponse {

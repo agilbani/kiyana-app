@@ -1,8 +1,14 @@
+import { Attendance } from "@/types/attendance";
 import moment from "moment";
 
 type YearOption = {
    name: string;
    value: string;
+};
+
+type GroupedAttendance = {
+  date: string;
+  items: Attendance[];
 };
 
 export function getDateRange(value: string) {
@@ -67,3 +73,21 @@ export const generateYears = (): YearOption[] => {
 
    return years;
 };
+
+/**
+ * Group attendance data by date and sort by newest first
+ * @param data - array of attendance objects
+ * @returns grouped array sorted by date (newest first)
+ */
+export function groupAttendanceByDate(data: Attendance[]): GroupedAttendance[] {
+  const grouped = Object.entries(
+    data.reduce((acc, curr) => {
+      (acc[curr.date] ||= []).push(curr);
+      return acc;
+    }, {} as Record<string, Attendance[]>)
+  )
+    .map(([date, items]) => ({ date, items }))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  return grouped;
+}

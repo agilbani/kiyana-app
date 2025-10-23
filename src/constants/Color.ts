@@ -101,6 +101,12 @@ const Color = {
       900: "#032230",
       950: "#011118"
    },
+   brand: {
+      default: '#2264DC',
+      3: '#2264DC',
+      focus: '#A5B4FC',
+      hover: '#63B3F7'
+   },
 
   Button: {
     "Surface-Primary": "#FEFEFE",
