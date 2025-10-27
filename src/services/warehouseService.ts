@@ -55,6 +55,8 @@ export async function getMaterialOne(
 }
 
 export const addMaterial = async (payload: any) => {
+   console.log('payload bahan', payload);
+   
   try {
     const formData = new FormData();
 
@@ -217,6 +219,8 @@ export async function getAccesoriceOne(
 }
 
 export const addAccessory = async (payload: any) => {
+   console.log('payload aksesoris', payload);
+   
   try {
     const formData = new FormData();
 

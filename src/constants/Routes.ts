@@ -31,6 +31,7 @@ export const ROUTES = {
   DASHBOARD_MONITORING_PRODUCTION: `/(main)/dashboard/task/productionMonitoring`,
   DASHBOARD_CREATE_PRODUCT_PRIORITAS: "/(main)/dashboard/task/createPriorityProduct",
   DASHBOARD_REQUEST_MATERIAL: "/(main)/dashboard/task/material-request",
+  EDIT_ATTENDANCE: `/(main)/dashboard/editAttendance`,
 
   // Attendance
   ATTENDANCE: "/(main)/attendance",
@@ -40,7 +41,6 @@ export const ROUTES = {
   ATTENDANCE_DETAIL: (id: string | number) => `/(main)/attendance/${id}`,
   ABSENCE_HISTORY: `/(main)/attendance/absence`,
   ABSENCE_ADD: `/(main)/attendance/add-absence`,
-  EDIT_ATTENDANCE: `/(main)/attendance/editAttendance`,
   PRESENCE_SCREEN: "/(main)/attendance/presenceScreen",
   ATTENDANCE_SUMMARY: "/(main)/attendance/attendanceSummary",
   REQUEST_CHANGE_SHIFT: "/(main)/attendance/requestChangeShift",

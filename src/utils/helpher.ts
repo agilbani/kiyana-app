@@ -167,3 +167,20 @@ export function getWorkType(data: any) {
 
   return "Regular";
 }
+
+export function getAttendanceStatusShift(data: any) {
+  const today = new Date().toISOString().split('T')[0]; // format YYYY-MM-DD
+
+  // Jika tanggal absensi bukan hari ini
+  if (data.date !== today) {
+    return 'Bukan hari ini';
+  }
+
+  // Jika belum absen (clock_in masih null)
+  if (data.clock_in === null) {
+    return 'Belum absen';
+  }
+
+  // Jika sudah absen masuk
+  return 'Sudah absen masuk';
+}

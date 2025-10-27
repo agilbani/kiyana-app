@@ -145,6 +145,8 @@ const CreatePlanProduction = () => {
         if (res.success) {
             ShowToastMessage("Rencana Produksi Berhasil Dibuat");
             router.back();
+        } else {
+            ShowToastMessage(res.message);
         }
     };
 
@@ -182,8 +184,10 @@ const CreatePlanProduction = () => {
                     <CustomDropdown
                         items={listProduct}
                         onSelectItem={(item: any) => {
+                            console.log("produk selected", item);
+
                             setSelectedProduct(item.value);
-                            setMaterial(item.data.material.name);
+                            setMaterial(item.data.material?.name);
                         }}
                         value={selectedProduct}
                         label="Produk"

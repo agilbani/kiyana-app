@@ -17,7 +17,7 @@ import { scale, verticalScale } from "@/utils/scaleSize";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { router, useLocalSearchParams } from "expo-router";
 import moment from "moment";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 
 const AttendanceFormScreen = () => {
@@ -79,9 +79,15 @@ const AttendanceFormScreen = () => {
     return (
         <ThemedContainer>
             <ThemedHeader
-                title={`Selfie To ${
-                    attendance?.clock_in === null ? "Clock In" : "Clock Out"
-                }`}
+                title={
+                    user?.is_host
+                        ? dataSelectedAttendance.lat_in === null
+                            ? "Clock In"
+                            : "Clock Out"
+                        : attendance === null
+                        ? "Clock In"
+                        : "Clock Out"
+                }
             />
             <View style={styles.container}>
                 <View style={styles.card}>
@@ -130,8 +136,17 @@ const AttendanceFormScreen = () => {
             </View>
             <View style={styles.footer}>
                 <ThemedButton
+                    //   title={
+                    //       attendance?.lat_in === null ? "Clock In" : "Clock Out"
+                    //   }
                     title={
-                        attendance?.lat_in === null ? "Clock In" : "Clock Out"
+                        user?.is_host
+                            ? dataSelectedAttendance.lat_in === null
+                                ? "Clock In"
+                                : "Clock Out"
+                            : attendance === null
+                            ? "Clock In"
+                            : "Clock Out"
                     }
                     onPress={onSubmit}
                     loading={loading}
@@ -142,7 +157,7 @@ const AttendanceFormScreen = () => {
                 <View style={GlobalStyles.center}>
                     <ThemedText type="SemiBold" size="lg">
                         {attendance?.lat_in === null ? "Clock-In" : "Clock-Out"}{" "}
-                        Successful!
+                        Absensi Berhasil!
                     </ThemedText>
                     <ThemedGap height="md" />
                     <ThemedText
@@ -150,16 +165,18 @@ const AttendanceFormScreen = () => {
                         size="sm"
                         color={Color.Text.Secondary}
                     >
-                        {`You’re all set! Your ${
-                            attendance?.lat_in === null
-                                ? "clock-in"
-                                : "clock-out"
-                        } was successful. Head\n over to your dashboard to see your assigned tasks.`}
+                        {user?.is_host
+                            ? dataSelectedAttendance.lat_in === null
+                                ? "Jadwal absensi mu telah disimpan, selamat bekerja"
+                                : "Jadwal absensi mu telah disimpan, selamat istirahat"
+                            : attendance === null
+                            ? "Jadwal absensi mu telah disimpan, selamat bekerja"
+                            : "Jadwal absensi mu telah disimpan, selamat istirahat"}
                     </ThemedText>
                 </View>
                 <ThemedGap height="lg" />
                 <ThemedButton
-                    title="Go To Attendance Page"
+                    title="Kembali ke halaman Utama"
                     onPress={() => router.replace(ROUTES.ATTENDANCE)}
                 />
             </ThemedBottomSheet>

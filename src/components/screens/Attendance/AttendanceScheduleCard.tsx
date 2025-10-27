@@ -4,6 +4,7 @@ import { ROUTES } from "@/constants/Routes";
 import {
     getAttendanceButtonType,
     getAttendanceStatus,
+    getAttendanceStatusShift,
     getWorkType,
 } from "@/utils/helpher";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -257,7 +258,7 @@ function CardShift({ dataShift }: any) {
                     </ThemedText>
                 </View>
                 <ThemedBadge
-                    text="Aktif"
+                    text={getAttendanceStatusShift(dataShift)}
                     backgroundColor={Color.Green[50]}
                     textColor={Color.Green[500]}
                 />

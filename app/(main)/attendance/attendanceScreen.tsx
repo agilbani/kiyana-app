@@ -32,7 +32,8 @@ import {
 const statusBarHeight = StatusBar.currentHeight;
 
 const AttendanceScreen = () => {
-    const { user, saveDataSetting } = useApp();
+    const { user, saveDataSetting, saveAttendance, setSelectAttendance } =
+        useApp();
     const isKartap = user?.type === "TETAP";
     const isHost = user?.is_host;
     const { bottom } = usePositionBottom();
@@ -82,11 +83,12 @@ const AttendanceScreen = () => {
         const res = await getCurrentAttendance(isHost ? "host" : "shifted");
         LoadingManager.hide();
         console.log("res att", res);
-        if (isHost) {
+        if (isHost && res.data) {
             setDataHost(res.data);
         } else {
             if (res.success) {
                 setDataShift(res.data);
+                saveAttendance(res.data);
             }
         }
     };
@@ -214,6 +216,9 @@ const AttendanceScreen = () => {
                     isHost={isHost ?? false}
                     dataHost={dataHost}
                     dataShift={user?.shift}
+                    setSelectAttendance={(data: any) =>
+                        setSelectAttendance(data)
+                    }
                 />
             </ScrollView>
             {isKartap && !isHost && (
@@ -227,7 +232,9 @@ const AttendanceScreen = () => {
                         style={styles.imgFace}
                     />
                     <ThemedText type="Medium" color={Color.Base.White}>
-                        Absen sekarang, Sebelum Telat
+                        {dataShift?.clock_in
+                            ? "Absen Pulang"
+                            : "Absen sekarang, Sebelum Telat"}
                     </ThemedText>
                 </TouchableOpacity>
             )}
