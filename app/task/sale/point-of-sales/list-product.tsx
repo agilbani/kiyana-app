@@ -21,6 +21,8 @@ import {
 import { ThemedContainer, ThemedHeader, ThemedText } from "@/components";
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
+import { getProductVariant } from "@/services/warehouseService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CameraView, useCameraPermissions } from "expo-camera"; // Camera (Expo) with barcode support
 import { router } from "expo-router";
 
@@ -78,20 +80,20 @@ const toBadgeText = (qty: number) => (qty > 9 ? "9+" : String(qty));
 
 // Flatten products->variants to render rows easily
 const useFlattenedItems = (products: Product[]) => {
-    return useMemo(() => {
-        return products.flatMap((p) =>
-            p.variants.map((v) => ({
-                key: `${p.id}-${v.id}`,
-                productId: p.id,
-                variantId: v.id,
-                productName: p.name,
-                variantName: v.name,
-                price: v.price,
-                sku: v.sku,
-                isFavorite: !!p.isFavorite,
-            }))
-        );
-    }, [products]);
+  return useMemo(() => {
+    return products.flatMap((p) =>
+      p.variants.map((v) => ({
+        key: `${p.id}-${v.id}`,
+        productId: p.id,
+        variantId: `${p.id}-${v.id}`, // penting! biar cartMap punya ID unik
+        productName: p.name,
+        variantName: v.name,
+        price: v.price,
+        sku: v.sku,
+        isFavorite: !!p.isFavorite,
+      }))
+    );
+  }, [products]);
 };
 
 // -----------------------------
@@ -124,11 +126,75 @@ type TabKey = "all" | "fav";
 // Main Screen (Product List)
 // -----------------------------
 const POSProductList: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const [query, setQuery] = useState("");
     const [cartMap, setCartMap] = useState<Record<string, CartItem>>({}); // key by variantId
     const [scanOpen, setScanOpen] = useState(false);
     const [tab, setTab] = useState<TabKey>("all");
+    const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+
+    const loadFavorites = useCallback(async () => {
+    try {
+        const saved = await AsyncStorage.getItem("@pos_favorites");
+        if (saved) {
+        const ids = JSON.parse(saved);
+        setFavoriteIds(ids);
+        }
+    } catch (err) {
+        console.warn("Gagal memuat favorite dari storage", err);
+    }
+    }, []);
+
+    const fetchProducts = useCallback(async () => {
+    try {
+        setLoading(true);
+        const res = await getProductVariant();
+
+        const saved = await AsyncStorage.getItem("@pos_favorites");
+        const ids = saved ? JSON.parse(saved) : [];
+
+        const grouped = res.reduce((acc: Record<string, Product>, item: any) => {
+        const pid = String(item.product?.id || item.product_id);
+        const pname = item.product?.name || "Produk Tanpa Nama";
+
+        if (!acc[pid]) {
+            acc[pid] = {
+            id: pid,
+            name: pname,
+            variants: [],
+            isFavorite: ids.includes(pid), // ✅ merge dari storage langsung
+            };
+        }
+
+        const variantNameParts: string[] = [];
+        if (item.color) variantNameParts.push(item.color);
+        if (item.size?.name) variantNameParts.push(item.size.name);
+
+        const variantName =
+            variantNameParts.length > 0 ? variantNameParts.join(" - ") : "Default";
+
+        acc[pid].variants.push({
+            id: String(item.id),
+            name: variantName,
+            price: Number(item.price || 0),
+            sku: item.sku || "",
+        });
+
+        return acc;
+        }, {});
+
+        setProducts(Object.values(grouped));
+    } catch (err) {
+        console.error("❌ Gagal memuat produk:", err);
+        Alert.alert("Error", "Gagal memuat produk dari server");
+    } finally {
+        setLoading(false);
+    }
+    }, []);
+
+
+
 
     const items = useFlattenedItems(products);
 
@@ -166,37 +232,51 @@ const POSProductList: React.FC = () => {
 
     const snapshotItems = useMemo(() => Object.values(cartMap), [cartMap]);
 
-    const toggleFavorite = useCallback((productId: string) => {
+    const toggleFavorite = useCallback(async (productId: string) => {
+    try {
         setProducts((prev) =>
-            prev.map((p) =>
-                p.id === productId ? { ...p, isFavorite: !p.isFavorite } : p
-            )
+        prev.map((p) =>
+            p.id === productId ? { ...p, isFavorite: !p.isFavorite } : p
+        )
         );
+
+        setFavoriteIds((prev) => {
+        const updated = prev.includes(productId)
+            ? prev.filter((id) => id !== productId)
+            : [...prev, productId];
+        AsyncStorage.setItem("@pos_favorites", JSON.stringify(updated));
+        return updated;
+        });
+    } catch (err) {
+        console.warn("Gagal mengubah favorite", err);
+    }
     }, []);
 
+
+
     const addToCart = useCallback(
-        (
-            productId: string,
-            variantId: string,
-            displayName: string,
-            price: number
-        ) => {
-            setCartMap((prev) => {
-                const existing = prev[variantId];
-                const nextQty = (existing?.qty || 0) + 1;
-                return {
-                    ...prev,
-                    [variantId]: {
-                        productId,
-                        variantId,
-                        displayName,
-                        price,
-                        qty: nextQty,
-                    },
-                };
-            });
-        },
-        []
+    (productId: string, variantId: string, displayName: string, price: number) => {
+        if (!variantId) {
+        console.warn("⚠️ variantId kosong, cart tidak bisa update:", { productId, displayName });
+        return;
+        }
+
+        setCartMap((prev) => {
+        const existing = prev[variantId];
+        const nextQty = (existing?.qty || 0) + 1;
+        return {
+            ...prev,
+            [variantId]: {
+            productId,
+            variantId,
+            displayName,
+            price,
+            qty: nextQty,
+            },
+        };
+        });
+    },
+    []
     );
 
     const onScanCode = useCallback(
@@ -225,6 +305,23 @@ const POSProductList: React.FC = () => {
             params: { state },
         });
     }, [router, snapshotItems]);
+
+    useEffect(() => {
+    (async () => {
+        await loadFavorites();  // ✅ pastikan favorites siap dulu
+        await fetchProducts();  // baru fetch dan merge isFavorite
+    })();
+    }, []);
+
+    if (loading) {
+    return (
+        <ThemedContainer>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ThemedText size="md">Memuat data produk...</ThemedText>
+        </View>
+        </ThemedContainer>
+    );
+    }
 
     return (
         <ThemedContainer>
@@ -267,7 +364,12 @@ const POSProductList: React.FC = () => {
                 <FlatList
                     data={filtered}
                     keyExtractor={(it) => it.key}
-                    contentContainerStyle={{ paddingBottom: 120 }}
+                    style={{
+                        height: 100
+                    }}
+                    contentContainerStyle={{
+                        paddingBottom: totals.qty > 0 ? 100 : 24,
+                    }}
                     renderItem={({ item }) => (
                         <ProductRow
                             initials={getInitials(item.productName)}
@@ -733,17 +835,18 @@ const styles = StyleSheet.create({
         left: 12,
         right: 12,
         bottom: 24,
+        zIndex: 99, // 🔥 selalu di atas elemen lain
         borderRadius: 16,
         padding: 14,
-        backgroundColor: "white",
+        backgroundColor: "#fff",
         flexDirection: "row",
         alignItems: "center",
-        gap: 12,
+        justifyContent: "space-between", // biar rapi
         shadowColor: "#000",
         shadowOpacity: 0.15,
         shadowRadius: 8,
         shadowOffset: { width: 0, height: 3 },
-        elevation: 6,
+        elevation: 8, // 🔥 supaya muncul di Android
     },
     cartBarBtn: {
         paddingHorizontal: 16,
