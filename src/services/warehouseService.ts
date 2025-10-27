@@ -26,6 +26,15 @@ export async function getSuppliers(
   return response.data;
 }
 
+export async function getCategory(
+
+): Promise<Task[]> {
+  const response = await api.get<ListTask[]>(
+    `/master/categories`
+  );
+  return response.data;
+}
+
 //Material
 export async function getMaterial(
 
