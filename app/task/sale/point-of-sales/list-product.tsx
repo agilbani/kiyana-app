@@ -34,6 +34,7 @@ export type Variant = {
     name: string; // e.g., "Level 1", "Pedas", dll.
     price: number; // variant price
     sku?: string; // optional barcode/QR code string used for scanning
+    isFavorite?: any
 };
 
 export type Product = {
@@ -82,15 +83,15 @@ const toBadgeText = (qty: number) => (qty > 9 ? "9+" : String(qty));
 const useFlattenedItems = (products: Product[]) => {
   return useMemo(() => {
     return products.flatMap((p) =>
-      p.variants.map((v) => ({
+      p.variants.map((v: any) => ({
         key: `${p.id}-${v.id}`,
         productId: p.id,
-        variantId: `${p.id}-${v.id}`, // penting! biar cartMap punya ID unik
+        variantId: v.id,
         productName: p.name,
         variantName: v.name,
         price: v.price,
         sku: v.sku,
-        isFavorite: !!p.isFavorite,
+        isFavorite: !!v.isFavorite, // ✅ ambil dari variant
       }))
     );
   }, [products]);
@@ -132,17 +133,17 @@ const POSProductList: React.FC = () => {
     const [cartMap, setCartMap] = useState<Record<string, CartItem>>({}); // key by variantId
     const [scanOpen, setScanOpen] = useState(false);
     const [tab, setTab] = useState<TabKey>("all");
-    const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+    const [favoriteVariantIds, setFavoriteVariantIds] = useState<string[]>([]);
 
     const loadFavorites = useCallback(async () => {
     try {
-        const saved = await AsyncStorage.getItem("@pos_favorites");
+        const saved = await AsyncStorage.getItem("@pos_favorite_variants");
         if (saved) {
         const ids = JSON.parse(saved);
-        setFavoriteIds(ids);
+        setFavoriteVariantIds(ids);
         }
     } catch (err) {
-        console.warn("Gagal memuat favorite dari storage", err);
+        console.warn("Gagal memuat favorite variant dari storage", err);
     }
     }, []);
 
@@ -151,20 +152,16 @@ const POSProductList: React.FC = () => {
         setLoading(true);
         const res = await getProductVariant();
 
-        const saved = await AsyncStorage.getItem("@pos_favorites");
-        const ids = saved ? JSON.parse(saved) : [];
+        // ambil data favorit variant dari storage
+        const saved = await AsyncStorage.getItem("@pos_favorite_variants");
+        const favVariantIds = saved ? JSON.parse(saved) : [];
 
         const grouped = res.reduce((acc: Record<string, Product>, item: any) => {
         const pid = String(item.product?.id || item.product_id);
         const pname = item.product?.name || "Produk Tanpa Nama";
 
         if (!acc[pid]) {
-            acc[pid] = {
-            id: pid,
-            name: pname,
-            variants: [],
-            isFavorite: ids.includes(pid), // ✅ merge dari storage langsung
-            };
+            acc[pid] = { id: pid, name: pname, variants: [] };
         }
 
         const variantNameParts: string[] = [];
@@ -179,6 +176,7 @@ const POSProductList: React.FC = () => {
             name: variantName,
             price: Number(item.price || 0),
             sku: item.sku || "",
+            isFavorite: favVariantIds.includes(String(item.id)), // ✅ cek per variant
         });
 
         return acc;
@@ -192,9 +190,6 @@ const POSProductList: React.FC = () => {
         setLoading(false);
     }
     }, []);
-
-
-
 
     const items = useFlattenedItems(products);
 
@@ -232,25 +227,31 @@ const POSProductList: React.FC = () => {
 
     const snapshotItems = useMemo(() => Object.values(cartMap), [cartMap]);
 
-    const toggleFavorite = useCallback(async (productId: string) => {
+    const toggleFavorite = useCallback(async (variantId: string) => {
     try {
+        // update di state produk
         setProducts((prev) =>
-        prev.map((p) =>
-            p.id === productId ? { ...p, isFavorite: !p.isFavorite } : p
-        )
+        prev.map((p) => ({
+            ...p,
+            variants: p.variants.map((v: any) =>
+            v.id === variantId ? { ...v, isFavorite: !v.isFavorite } : v
+            ),
+        }))
         );
 
-        setFavoriteIds((prev) => {
-        const updated = prev.includes(productId)
-            ? prev.filter((id) => id !== productId)
-            : [...prev, productId];
-        AsyncStorage.setItem("@pos_favorites", JSON.stringify(updated));
+        // update di list variant favorit
+        setFavoriteVariantIds((prev) => {
+        const updated = prev.includes(variantId)
+            ? prev.filter((id) => id !== variantId)
+            : [...prev, variantId];
+        AsyncStorage.setItem("@pos_favorite_variants", JSON.stringify(updated));
         return updated;
         });
     } catch (err) {
-        console.warn("Gagal mengubah favorite", err);
+        console.warn("Gagal mengubah favorite variant", err);
     }
     }, []);
+
 
 
 
@@ -372,23 +373,22 @@ const POSProductList: React.FC = () => {
                     }}
                     renderItem={({ item }) => (
                         <ProductRow
-                            initials={getInitials(item.productName)}
-                            name={`${item.productName} - ${item.variantName}`}
-                            price={item.price}
-                            isFavorite={item.isFavorite}
-                            inCartQty={cartMap[item.variantId]?.qty || 0}
-                            onToggleFavorite={() =>
-                                toggleFavorite(item.productId)
-                            }
-                            onAdd={() =>
-                                addToCart(
-                                    item.productId,
-                                    item.variantId,
-                                    `${item.productName} - ${item.variantName}`,
-                                    item.price
-                                )
-                            }
+                        initials={getInitials(item.productName)}
+                        name={`${item.productName} - ${item.variantName}`}
+                        price={item.price}
+                        isFavorite={item.isFavorite}
+                        inCartQty={cartMap[item.variantId]?.qty || 0}
+                        onToggleFavorite={() => toggleFavorite(item.variantId)}
+                        onAdd={() =>
+                            addToCart(
+                            item.productId,
+                            item.variantId,
+                            `${item.productName} - ${item.variantName}`,
+                            item.price
+                            )
+                        }
                         />
+
                     )}
                     ItemSeparatorComponent={() => (
                         <View style={styles.separator} />
