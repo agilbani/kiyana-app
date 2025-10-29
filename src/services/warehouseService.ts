@@ -8,6 +8,89 @@ import { ListTask, Task } from '@/types/task';
  * @param end_date YYYY-MM-DD
  */
 
+export async function getCustomer(
+
+): Promise<Task[]> {
+  const response = await api.get<ListTask[]>(
+    `/master/customers`
+  );
+  return response.data;
+}
+
+export const addCustomer = async (payload: any) => {
+  console.log("payload customer:", payload);
+
+  try {
+    const response = await api.post("/master/customers", {
+      name: payload.name,
+      contact: payload.contact,
+      address: payload.address,
+    });
+
+    return {
+      success: true,
+      message: response.data?.message || "Tambah customer berhasil",
+      status: response.status,
+      data: response.data,
+    };
+  } catch (error: any) {
+    console.log("❌ addCustomer error:", error?.response?.data || error.message);
+    return {
+      success: false,
+      message: error?.response?.data?.message || "Tambah customer gagal",
+      status: error?.response?.status,
+    };
+  }
+};
+
+export const updateCustomer = async (customerId: string, payload: any) => {
+  console.log("update customer:", { customerId, payload });
+
+  try {
+    const response = await api.patch(`/master/customers/${customerId}`, {
+      name: payload.name,
+      contact: payload.contact,
+      address: payload.address,
+    });
+
+    return {
+      success: true,
+      message: response.data?.message || "Perbarui customer berhasil",
+      status: response.status,
+      data: response.data,
+    };
+  } catch (error: any) {
+    console.log("❌ updateCustomer error:", error?.response?.data || error.message);
+    return {
+      success: false,
+      message: error?.response?.data?.message || "Perbarui customer gagal",
+      status: error?.response?.status,
+    };
+  }
+};
+
+export const deleteCustomer = async (customerId: string) => {
+  console.log("hapus customer:", customerId);
+
+  try {
+    const response = await api.delete(`/master/customers/${customerId}`);
+
+    return {
+      success: true,
+      message: response.data?.message || "Hapus customer berhasil",
+      status: response.status,
+      data: response.data,
+    };
+  } catch (error: any) {
+    console.log("❌ deleteCustomer error:", error?.response?.data || error.message);
+    return {
+      success: false,
+      message: error?.response?.data?.message || "Hapus customer gagal",
+      status: error?.response?.status,
+    };
+  }
+};
+
 export async function getUnit(
 
 ): Promise<Task[]> {
