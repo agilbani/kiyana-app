@@ -47,7 +47,7 @@ const Aksesoris: React.FC = () => {
             const res: any = await getAccesorice();
             setData(res || []);
         } catch (err) {
-            console.log("Fetch accessories error:", err);
+            // console.log("Fetch accessories error:", err);
             Alert.alert("Error", "Gagal memuat data aksesoris");
         } finally {
             setLoading(false);

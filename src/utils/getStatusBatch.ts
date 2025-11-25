@@ -9,10 +9,8 @@ interface Data {
 
 export const getStatusBatch = (data: Data, type: "sewn" | "finishing") => {
    let status = '';
-   console.log('cek ty[e', type);
    
    if (type === 'sewn') {
-      console.log('is senw');
       
       if (data.sewing_by === null) {
          status = 'Belum ada penjahit'
@@ -28,7 +26,6 @@ export const getStatusBatch = (data: Data, type: "sewn" | "finishing") => {
          }
       }
    } else {
-      console.log('is not senw');
       if (data.finishing_by === null) {
          status = 'Produk perlu diproses finishing'
       } else {

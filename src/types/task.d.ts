@@ -35,7 +35,7 @@ export interface ProductMetadata {
   level: string;
   weight: string;
   category: Category;
-  material: Material;
+  materials: Material[];
   other_fee: number;
   created_at: string;
   sewing_fee: number;

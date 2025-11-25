@@ -25,7 +25,7 @@ import { ShowToastMessage } from "@/utils/toastMessage";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     Alert,
     FlatList,
@@ -244,7 +244,6 @@ const AddProductScreen = () => {
         formatFile.forEach((item: any, index: any) => {
             formData.append(`images[${index}]`, item);
         });
-        console.log("payload add", formData);
 
         setLoading(true);
         let res: any = {};
@@ -254,7 +253,6 @@ const AddProductScreen = () => {
             res = await addNewProduct(formData);
         }
         setLoading(false);
-        console.log("res", res);
 
         if (res.success) {
             ShowToastMessage(res.message);

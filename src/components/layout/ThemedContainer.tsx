@@ -11,7 +11,7 @@ const statusBarHeight = StatusBar.currentHeight;
 const ThemedContainer: React.FC<ThemedContainerProps> = ({
     children,
     backgroundColor = Color.Base.White,
-    statusBarStyle = "light-content",
+    statusBarStyle = "dark-content",
 }) => {
     return (
         <View style={[styles.page, { backgroundColor }]}>
@@ -20,9 +20,11 @@ const ThemedContainer: React.FC<ThemedContainerProps> = ({
                 backgroundColor={Color.Base.White}
                 barStyle={statusBarStyle}
             />
+            {/* <ScrollView> */}
             <ThemedKeyboardAvoiding backgroundColor={backgroundColor}>
                 {children}
             </ThemedKeyboardAvoiding>
+            {/* </ScrollView> */}
         </View>
     );
 };

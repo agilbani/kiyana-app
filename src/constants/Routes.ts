@@ -16,6 +16,7 @@ export const ROUTES = {
   DASHBOARD_DETAIL_CASHADVANCE: "/(main)/dashboard/finance/cash-advance/Detail",
   DASHBOARD_TRANSFER: "/(main)/dashboard/finance/transfer",
   DASHBOARD_WITHDRAWAL: "/(main)/dashboard/finance/withdrawal",
+  DASHBOARD_HISTORY_WITHDRAWAL: "/(main)/dashboard/finance/withdrawal/Withdraw",
   DASHBOARD_HISTORY_TRANSACTION: "/(main)/dashboard/finance/history",
   DASHBOARD_TASK_DETAIL: (id: string | number) =>
     `/(main)/dashboard/task/${id}`,
@@ -30,7 +31,9 @@ export const ROUTES = {
   DASHBOARD_CREATE_PLAN_PRODUCTION: `/(main)/dashboard/task/createPlanProduction`,
   DASHBOARD_MONITORING_PRODUCTION: `/(main)/dashboard/task/productionMonitoring`,
   DASHBOARD_CREATE_PRODUCT_PRIORITAS: "/(main)/dashboard/task/createPriorityProduct",
+  DASHBOARD_CREATE_MASSIVE_PRODUCT_PRIORITAS: "/(main)/dashboard/task/createMassivePriorityProduction",
   DASHBOARD_REQUEST_MATERIAL: "/(main)/dashboard/task/material-request",
+  DASHBOARD_REQUEST_ACCESSORIES: "/(main)/dashboard/task/accessories-request",
   EDIT_ATTENDANCE: `/(main)/dashboard/editAttendance`,
 
   // Attendance
@@ -83,6 +86,8 @@ export const ROUTES = {
   TASK_POINT_OF_SALE_PREVIEW_PODUCT_V2: "/task/sale/point-of-sales/preview-product",
   TASK_POINT_OF_SALE_PAYMENT_PRODUCT_V2: "/task/sale/point-of-sales/payment-product",
   TASK_POINT_OF_SALE_PAYMENT_SUCCESS_PRODUCT_V2: "/task/sale/point-of-sales/payment-success-product",
+  TASK_ADD_STOCK : "/task/warehouse/add-stock",
+  TASK_CALCULATE_STOCK : "/task/warehouse/calculate-stock",
 
   // Profile
   PROFILE: "/(main)/profile",

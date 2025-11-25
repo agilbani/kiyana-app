@@ -16,12 +16,12 @@ import { ShowToastMessage } from "@/utils/toastMessage";
 import { IcCalendar } from "@assets/icons";
 import { router, useLocalSearchParams } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 
 const AttendanceDetailScreen = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
-    console.log("id attendance", id);
+    //  console.log("id attendance", id);
 
     const [detail, setDetail] = useState<AttendanceHistory>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -30,7 +30,7 @@ const AttendanceDetailScreen = () => {
         setLoading(true);
         const res = await getAttendanceDetail(id);
         setLoading(false);
-        console.log("res detail", res);
+        //   console.log("res detail", res);
         if (res.success) {
             setDetail(res.data);
         } else {

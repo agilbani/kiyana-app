@@ -1,6 +1,5 @@
 import {
     ThemedButton,
-    ThemedContainer,
     ThemedDatePicker,
     ThemedDropdown,
     ThemedErrorMessage,
@@ -26,7 +25,7 @@ import { router } from "expo-router";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import * as yup from "yup";
 
 const SALDO = 100000;
@@ -73,10 +72,11 @@ const WithdrawalScreen = () => {
     const { user } = useApp();
     const { bottom } = usePositionBottom();
     const schema = yup.object().shape({
-        accountOwner: yup
-            .string()
-            .required("Nama pemilik rekening harus diisi")
-            .min(5, "Nama pemilik rekening minimal 5 karakter"),
+        //   accountOwner: yup
+        //       .string()
+        //       .required("Nama pemilik rekening harus diisi")
+        //       .min(5, "Nama pemilik rekening minimal 5 karakter"),
+        accountOwner: yup.string().optional(),
         bank: yup.string().required("Pilih bank tujuan"),
         accountNumber: yup.string().required("Nomor rekening harus diisi"),
         date: yup.string().required("Tanggal penarikan harus diisi"),
@@ -177,7 +177,7 @@ const WithdrawalScreen = () => {
     const confirmTransfer = async () => {
         confirmModalRef.current?.hide();
         const dataForm = getValues();
-        console.log("cek dataForm", dataForm);
+        //   console.log("cek dataForm", dataForm);
 
         setIsLoading(true);
         const res = await postPayout({
@@ -187,7 +187,7 @@ const WithdrawalScreen = () => {
             nominal: Number(dataForm.amount.replace(/\./g, "")),
         });
         setIsLoading(false);
-        console.log("res payout", res);
+        //   console.log("res payout", res);
 
         if (res.success) {
             ShowToastMessage("Pengajuan anda berhasil dikirim");
@@ -216,7 +216,14 @@ const WithdrawalScreen = () => {
     }, []);
 
     return (
-        <ThemedContainer>
+        <View
+            style={{
+                flex: 1,
+                backgroundColor: Color.Base.White,
+                paddingTop: StatusBar.currentHeight,
+            }}
+        >
+            <StatusBar barStyle={"light-content"} />
             <ThemedHeader title="Ambil Uang" />
             <View style={{ flex: 1 }}>
                 <ScrollView
@@ -233,21 +240,6 @@ const WithdrawalScreen = () => {
                                 {formatRupiahDisplay(`${user?.balance}`)}
                             </ThemedText>
                         </View>
-                        <ThemedGap height="xl" />
-                        <Controller
-                            control={control}
-                            name="accountOwner"
-                            render={({ field, fieldState }) => (
-                                <ThemedInput
-                                    label="Nama Pemilik Rekening"
-                                    placeholder="Masukkan nama sesuai rekening"
-                                    value={field.value}
-                                    onChangeText={field.onChange}
-                                    error={fieldState.error?.message}
-                                    style={{ height: 45 }}
-                                />
-                            )}
-                        />
                         <ThemedGap height="md" />
                         <Controller
                             name="type"
@@ -288,6 +280,21 @@ const WithdrawalScreen = () => {
                                                 }
                                             />
                                         </View>
+                                    )}
+                                />
+                                <ThemedGap height="xl" />
+                                <Controller
+                                    control={control}
+                                    name="accountOwner"
+                                    render={({ field, fieldState }) => (
+                                        <ThemedInput
+                                            label="Nama Pemilik Rekening"
+                                            placeholder="Masukkan nama sesuai rekening"
+                                            value={field.value}
+                                            onChangeText={field.onChange}
+                                            error={fieldState.error?.message}
+                                            style={{ height: 45 }}
+                                        />
                                     )}
                                 />
                                 <ThemedGap height="md" />
@@ -355,7 +362,7 @@ const WithdrawalScreen = () => {
                         />
                     </View>
                 </ScrollView>
-                <View style={[styles.footer, { bottom: bottom }]}>
+                <View style={[styles.footer, { bottom: 0 }]}>
                     <ThemedButton
                         title="Ambil Uang"
                         onPress={handleSubmit(onSubmit)}
@@ -414,7 +421,7 @@ const WithdrawalScreen = () => {
                     </View>
                 </View>
             </ThemedModal>
-        </ThemedContainer>
+        </View>
     );
 };
 

@@ -15,7 +15,7 @@ import {
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { Entypo, Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Image,
@@ -151,11 +151,11 @@ const ConfirmNewProduct = () => {
             should_revision: revisionAt,
             reject_reason: reason,
         };
-        console.log("payload reject", payload);
+        //   console.log("payload reject", payload);
 
         setIsLoading(true);
         const res = await rejectNewProduct(dataProduct?.id, payload);
-        console.log("cek res reject", res);
+        //   console.log("cek res reject", res);
 
         setIsLoading(false);
         if (res.success) {
@@ -180,7 +180,7 @@ const ConfirmNewProduct = () => {
         setLoadingFetch(true);
         const res = await getDetailProduct(id);
         setLoadingFetch(false);
-        console.log("res detail", res);
+        //   console.log("res detail", res);
         if (res.success && res.data) {
             let arr = [
                 {
@@ -475,7 +475,7 @@ const ConfirmNewProduct = () => {
                 visible={showReject}
                 onCancel={() => setShowReject(false)}
                 onConfirm={(options, reason) => {
-                    console.log("Selected:", options, "Reason:", reason);
+                    //   console.log("Selected:", options, "Reason:", reason);
                     // setShowReject(false);
                     handleReject(options, reason);
                 }}

@@ -14,7 +14,7 @@ import ILStore from "@assets/images/tasks/ILStore.png";
 import ILTablet from "@assets/images/tasks/ILTablet.png";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 
 const statusBarHeight = StatusBar.currentHeight;
@@ -126,7 +126,6 @@ const TaskScreen = () => {
         MENU_PENJUALAN[0],
         MENU_PRODUK[0],
     ];
-    console.log("cek menu", menu);
 
     const checkPermission = () => {
         switch (user?.role?.name) {

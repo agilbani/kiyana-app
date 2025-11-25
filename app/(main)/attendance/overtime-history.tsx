@@ -42,7 +42,6 @@ const OvertimeHistory = () => {
         LoadingManager.show();
         const res = await getMyOvertime();
         LoadingManager.hide();
-        console.log("res overtime", res);
         if (res.success) {
             setDataOvertime(res.data);
         }
@@ -51,7 +50,6 @@ const OvertimeHistory = () => {
     useEffect(() => {
         getData();
     }, []);
-    console.log("cek detail", dataOvertime);
 
     return (
         <ThemedContainer>

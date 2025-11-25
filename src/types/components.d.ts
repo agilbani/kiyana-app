@@ -130,6 +130,7 @@ export type ThemedContainerProps = {
   children: ReactNode;
   backgroundColor?: string;
   statusBarStyle?: "light-content" | "dark-content";
+  scrollable?: boolean;
 };
 
 // BottomSheet

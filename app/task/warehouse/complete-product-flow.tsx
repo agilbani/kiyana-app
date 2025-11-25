@@ -50,7 +50,7 @@ const CompleteProductFlow = () => {
         1: [],
         2: [],
     });
-    console.log("cek images", images);
+    //  console.log("cek images", images);
 
     const [loading, setLoading] = useState(false);
     const [listEmployee, setListEmployee] = useState<Array<employee>>([]);
@@ -99,7 +99,7 @@ const CompleteProductFlow = () => {
     };
 
     const proccessStep = async () => {
-        console.log("cek img", images[currentStep]);
+        //   console.log("cek img", images[currentStep]);
         const formData = new FormData();
         let formatFile = [];
         for (let i = 0; i < images[currentStep].length; i++) {
@@ -122,7 +122,7 @@ const CompleteProductFlow = () => {
             });
             setLoading(true);
             const res = await proccessProduct(formData, id, "pattern-images");
-            console.log("res pola", res);
+            // console.log("res pola", res);
 
             setLoading(false);
             if (res && res.success) {
@@ -141,7 +141,7 @@ const CompleteProductFlow = () => {
             formData.append("sewing_by", selectedEmploye);
             setLoading(true);
             const res = await proccessProduct(formData, id, "cutting-images");
-            console.log("res sample", res);
+            // console.log("res sample", res);
             setLoading(false);
             if (res && res.success) {
                 setCurrentStep(2);
@@ -156,7 +156,7 @@ const CompleteProductFlow = () => {
                 id,
                 "product-result-images"
             );
-            console.log("res result", res);
+            // console.log("res result", res);
             setLoading(false);
             if (res && res.success) {
                 if (dataDetail?.reject_reason !== null) {
@@ -174,7 +174,7 @@ const CompleteProductFlow = () => {
         const getDetail = getDetailProduct(id);
         const getEmployee = getSewingEmployee();
         const [detail, employee] = await Promise.all([getDetail, getEmployee]);
-        console.log("detail", detail);
+        //   console.log("detail", detail);
 
         if (detail && detail.success) {
             setDataDetail(detail.data);

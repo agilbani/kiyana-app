@@ -15,7 +15,7 @@ const DashboardCardSection = ({ onPressLoan, onPressWithdraw, user }: any) => {
             >
                 <View style={{ gap: 8 }}>
                     <ThemedText type="Medium">
-                        Hi {`${user?.first_name} ${user?.last_name}`}
+                        Hi {`${user?.first_name} ${user?.last_name ?? ""}`}
                     </ThemedText>
                     <ThemedText type="Medium" size="xl">
                         Semangat Bekerja

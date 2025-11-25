@@ -18,7 +18,7 @@ import { CameraView } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import moment from "moment";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
     Alert,
@@ -163,7 +163,7 @@ const AddAbsence = () => {
     };
 
     const onSubmit = async (data: any) => {
-        console.log("data submited", data);
+        //   console.log("data submited", data);
 
         let formatFile = [];
         for (let i = 0; i < data?.attachments.length; i++) {
@@ -179,7 +179,7 @@ const AddAbsence = () => {
             reason: data?.reason,
             attachments: formatFile,
         };
-        console.log("cek obj req", obj);
+        //   console.log("cek obj req", obj);
         setLoading(true);
         const res = await requestAbsence(obj);
         setLoading(false);

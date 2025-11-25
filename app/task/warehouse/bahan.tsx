@@ -1,4 +1,4 @@
-import { ThemedContainer, ThemedHeader, ThemedText } from "@/components";
+import { ThemedHeader, ThemedText } from "@/components";
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
 import { deleteMaterial, getMaterial } from "@/services/warehouseService";
@@ -8,6 +8,7 @@ import {
     ActivityIndicator,
     Alert,
     FlatList,
+    StatusBar,
     StyleSheet,
     TouchableOpacity,
     View,
@@ -39,10 +40,10 @@ const BahanScreen: React.FC = () => {
         try {
             setLoading(true);
             const res: any = await getMaterial();
-            console.log("API Response:", res);
+            // console.log("API Response:", res);
             setMaterials(res || []);
         } catch (err: any) {
-            console.log("Fetch material error:", err);
+            // console.log("Fetch material error:", err);
             Alert.alert("Error", "Gagal memuat data material");
         } finally {
             setLoading(false);
@@ -141,7 +142,13 @@ const BahanScreen: React.FC = () => {
 
     // --- Render screen ---
     return (
-        <ThemedContainer>
+        <View
+            style={{
+                flex: 1,
+                backgroundColor: Color.Base.White,
+                paddingTop: StatusBar.currentHeight,
+            }}
+        >
             {/* Header + Add Button */}
             <ThemedHeader title="Daftar Bahan / Material" />
             <View style={styles.headerWrap}>
@@ -185,7 +192,7 @@ const BahanScreen: React.FC = () => {
                     )}
                 />
             )}
-        </ThemedContainer>
+        </View>
     );
 };
 

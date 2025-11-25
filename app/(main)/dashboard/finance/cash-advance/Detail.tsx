@@ -16,7 +16,7 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
 const DetailLoan = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
-    console.log("id loan", id);
+    //  console.log("id loan", id);
 
     const [dataDetail, setDataDetail] = useState<any>({});
     const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ const DetailLoan = () => {
         setLoading(true);
         const res = await getDetailLoans(id);
         setLoading(false);
-        console.log("res detail loan", res);
+        //   console.log("res detail loan", res);
         if (res.success) {
             setDataDetail(res.data);
         }
@@ -146,40 +146,54 @@ const DetailLoan = () => {
                             <ThemedText size="lg" type="Medium">
                                 Pembayaran Cicilan
                             </ThemedText>
-                            {dataDetail?.histories.map((v: any, index: any) => (
-                                <View key={`${index}`} style={{ gap: 12 }}>
-                                    <ThemedText
-                                        size="md"
-                                        color={Color.Gray[500]}
-                                    >
-                                        Tenor {index + 1}
-                                    </ThemedText>
-                                    <View style={styles.rowBetween}>
-                                        <ThemedText
-                                            size="md"
-                                            color={Color.Gray[500]}
+                            {Object.keys(dataDetail).length > 0 &&
+                                dataDetail?.histories?.map(
+                                    (v: any, index: any) => (
+                                        <View
+                                            key={`${index}`}
+                                            style={{ gap: 12 }}
                                         >
-                                            Nominal
-                                        </ThemedText>
-                                        <ThemedText size="md" type="Medium">
-                                            {formatRupiahDisplay(v.amount)}
-                                        </ThemedText>
-                                    </View>
-                                    <View style={styles.rowBetween}>
-                                        <ThemedText
-                                            size="md"
-                                            color={Color.Gray[500]}
-                                        >
-                                            Status
-                                        </ThemedText>
-                                        <ThemedText size="md" type="Medium">
-                                            {v.status === "Unpaid"
-                                                ? "Belum Dibayar"
-                                                : "Dibayar"}
-                                        </ThemedText>
-                                    </View>
-                                </View>
-                            ))}
+                                            <ThemedText
+                                                size="md"
+                                                color={Color.Gray[500]}
+                                            >
+                                                Tenor {index + 1}
+                                            </ThemedText>
+                                            <View style={styles.rowBetween}>
+                                                <ThemedText
+                                                    size="md"
+                                                    color={Color.Gray[500]}
+                                                >
+                                                    Nominal
+                                                </ThemedText>
+                                                <ThemedText
+                                                    size="md"
+                                                    type="Medium"
+                                                >
+                                                    {formatRupiahDisplay(
+                                                        v.amount
+                                                    )}
+                                                </ThemedText>
+                                            </View>
+                                            <View style={styles.rowBetween}>
+                                                <ThemedText
+                                                    size="md"
+                                                    color={Color.Gray[500]}
+                                                >
+                                                    Status
+                                                </ThemedText>
+                                                <ThemedText
+                                                    size="md"
+                                                    type="Medium"
+                                                >
+                                                    {v.status === "Unpaid"
+                                                        ? "Belum Dibayar"
+                                                        : "Dibayar"}
+                                                </ThemedText>
+                                            </View>
+                                        </View>
+                                    )
+                                )}
                         </View>
                     </ScrollView>
                 </View>

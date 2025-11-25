@@ -41,7 +41,6 @@ const TemporaryEmployee = () => {
         LoadingManager.show();
         const res = await getAttendanceTemporaryEmployee();
         LoadingManager.hide();
-        console.log("res", res);
         if (res.success) {
             setTodayAttendance(res.data?.attendance);
         }

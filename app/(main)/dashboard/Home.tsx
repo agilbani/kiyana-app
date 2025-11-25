@@ -10,7 +10,7 @@ import GlobalStyles from "@/styles/common";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import TaskMenu from "@app/task";
 import { router, useFocusEffect } from "expo-router";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { RefreshControl, StatusBar, StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -20,8 +20,8 @@ const HomeScreen = () => {
     const { user, token, logout, updateUser } = useApp();
     const [refresh, setRefresh] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    console.log("user home", user);
-    console.log("user token", token);
+    //  console.log("user home", user);
+    //  console.log("user token", token);
 
     const handleLogout = async () => {
         router.replace(ROUTES.LOGIN);
@@ -30,7 +30,7 @@ const HomeScreen = () => {
 
     const getUser = async () => {
         const res = await getProfile();
-        console.log("cek res user", res);
+        //   console.log("cek res user", res);
         updateUser(res.data);
     };
 

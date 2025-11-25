@@ -12,6 +12,7 @@ import Radius from "@/constants/Radius";
 import { ROUTES } from "@/constants/Routes";
 import { useApp } from "@/context/AppContext";
 import { clockIn, clockOut } from "@/services/attendanceService";
+import { deleteItem } from "@/store/asyncStore";
 import GlobalStyles from "@/styles/common";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { ShowToastMessage } from "@/utils/toastMessage";
@@ -21,9 +22,17 @@ import { useRef, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 
 const AttendanceFormScreen = () => {
-    const { attendance, dataCoords, user, dataSelectedAttendance } = useApp();
-    console.log("cek attendance form", attendance);
-    console.log("cek dataSelectedAttendance form", dataSelectedAttendance);
+    const {
+        attendance,
+        dataCoords,
+        user,
+        dataSelectedAttendance,
+        setLateScheduleId,
+        savedIdLateSchedule,
+    } = useApp();
+    //  console.log("cek attendance form", attendance);
+    //  console.log("cek dataSelectedAttendance form", dataSelectedAttendance);
+    //  console.log("cek coord", dataCoords);
 
     const [loading, setLoading] = useState(false);
     const { data } = useLocalSearchParams<{ data: string }>();
@@ -40,38 +49,51 @@ const AttendanceFormScreen = () => {
         delete objPhoto.coords;
         const dataClockin = {
             time: `${moment().unix()}`,
-            lat_in: dataCoords.latitude,
-            lng_in: dataCoords.longitude,
+            lat_in: dataCoords?.latitude,
+            lng_in: dataCoords?.longitude,
             image_in: objPhoto,
         };
 
         setLoading(true);
         let res = null;
-        if (
-            user?.is_host
-                ? dataSelectedAttendance.lat_in === null
-                : attendance === null
-        ) {
-            console.log("clock in");
-
-            res = await clockIn(
-                user?.is_host ? dataSelectedAttendance.id : user?.shift?.id,
-                dataClockin,
-                user?.is_host ? "host" : "shifted"
-            );
+        if (savedIdLateSchedule) {
+            res = await clockOut(savedIdLateSchedule, dataClockin, "host");
+            setLateScheduleId(null);
+            await deleteItem("savedIdLateSchedule");
         } else {
-            console.log("clock out");
-            res = await clockOut(
-                user?.is_host ? dataSelectedAttendance.id : attendance?.id,
-                dataClockin,
-                user?.is_host ? "host" : "shifted"
-            );
-        }
-        setLoading(false);
-        if (res.success) {
-            ref.current?.show();
-        } else {
-            ShowToastMessage(res.message);
+            if (
+                user?.is_host
+                    ? dataSelectedAttendance.lat_in === null
+                    : attendance === null
+            ) {
+                //  console.log("clock in");
+                if (
+                    user?.is_host &&
+                    dataSelectedAttendance.start_time === "21:00"
+                ) {
+                    setLateScheduleId(dataSelectedAttendance?.id);
+                }
+                res = await clockIn(
+                    user?.is_host ? dataSelectedAttendance.id : user?.shift?.id,
+                    dataClockin,
+                    user?.is_host ? "host" : "shifted"
+                );
+            } else {
+                //  console.log("clock out");
+                res = await clockOut(
+                    user?.is_host ? dataSelectedAttendance.id : attendance?.id,
+                    dataClockin,
+                    user?.is_host ? "host" : "shifted"
+                );
+                setLateScheduleId(null);
+                await deleteItem("savedIdLateSchedule");
+            }
+            setLoading(false);
+            if (res.success) {
+                ref.current?.show();
+            } else {
+                ShowToastMessage(res.message);
+            }
         }
     };
 

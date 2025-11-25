@@ -13,7 +13,7 @@ import { formatRupiahDisplay } from "@/utils/currency";
 import { calculateTax } from "@/utils/helpher";
 import { useLocalSearchParams } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Image,
     ScrollView,
@@ -24,7 +24,7 @@ import {
 
 const DetailSelling = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
-    console.log("id selling", id);
+    //  console.log("id selling", id);
 
     const [info, setInfo] = useState<any>([]);
     const [image, setImage] = useState("");
@@ -37,7 +37,7 @@ const DetailSelling = () => {
         setLoading(true);
         const res = await getDetailSelling(id);
         setLoading(false);
-        console.log("res detail selling", res);
+        //   console.log("res detail selling", res);
         if (res.success) {
             const data = res.data;
             const arr = [

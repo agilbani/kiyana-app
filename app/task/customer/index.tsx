@@ -10,7 +10,7 @@ import {
 } from "@/services/customerService";
 import { Customer } from "@/types/customer";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
@@ -42,14 +42,14 @@ const ListCustomer = () => {
         setLoading(true);
         const res = await getCustomer();
         setLoading(false);
-        console.log("res customer", res);
+        //   console.log("res customer", res);
         if (res.success) {
             setListCustomer(res.data);
         }
     };
 
     const handleAddCustomer = async (data: any) => {
-        console.log("customer form add", data);
+        //   console.log("customer form add", data);
         setLoadingAdd(true);
         const res = await createCustomer(data);
         setLoadingAdd(false);
@@ -59,7 +59,7 @@ const ListCustomer = () => {
     };
 
     const handleEditCustomer = async (data: any) => {
-        console.log("customer form add", data);
+        //   console.log("customer form add", data);
         setLoadingAdd(true);
         const res = await editCustomer(data, selectedCustomer?.id);
         setLoadingAdd(false);

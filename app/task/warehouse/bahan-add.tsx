@@ -4,6 +4,7 @@ import {
     ThemedHeader,
     ThemedText,
 } from "@/components";
+import Color from "@/constants/Color";
 import { PATH } from "@/constants/PathAsset";
 import {
     addMaterial,
@@ -21,6 +22,7 @@ import {
     Alert,
     Image,
     ScrollView,
+    StatusBar,
     StyleSheet,
     TextInput,
     TouchableOpacity,
@@ -30,13 +32,20 @@ import {
 // -----------------------------
 // Types
 // -----------------------------
+
+type ImageData = {
+    uri: string;
+    type?: string;
+    name?: string;
+};
+
 type Variant = {
     id?: string;
     color_id: string;
     price: string;
     stock: string;
     min_stock: string;
-    image?: any;
+    image?: ImageData;
     preview?: string;
 };
 
@@ -62,7 +71,20 @@ const BahanAdd: React.FC = () => {
         name: "",
         supplier_id: "",
         unit_id: "",
-        variants: [{ color_id: "", price: "", stock: "", min_stock: "" }],
+        variants: [
+            {
+                color_id: "",
+                price: "",
+                stock: "",
+                min_stock: "",
+                preview: "",
+                image: {
+                    uri: "",
+                    name: "",
+                    type: "",
+                },
+            },
+        ],
     });
 
     const [variantList, setVariantList] = useState<any[]>([]);
@@ -96,6 +118,7 @@ const BahanAdd: React.FC = () => {
             setLoading(true);
             const res: any = await getMaterialOne(slug);
             const data = res?.data || res;
+            // console.log("detail e", data);
 
             setForm({
                 name: data.name || "",
@@ -108,6 +131,7 @@ const BahanAdd: React.FC = () => {
                     stock: String(v.stock || ""),
                     min_stock: String(v.min_stock || ""),
                     preview: v.image || undefined,
+                    image: { uri: "" },
                 })) || [{ color_id: "", price: "", stock: "", min_stock: "" }],
             });
         } catch (err) {
@@ -151,7 +175,7 @@ const BahanAdd: React.FC = () => {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: ["images"],
             allowsEditing: true,
             quality: 0.8,
         });
@@ -168,7 +192,7 @@ const BahanAdd: React.FC = () => {
                 name: fileName,
                 type,
             });
-            handleVariantChange(index, "preview", localUri);
+            // handleVariantChange(index, "preview", localUri);
         }
     };
 
@@ -202,7 +226,7 @@ const BahanAdd: React.FC = () => {
 
     // 🔹 Submit handler
     const handleSubmit = async () => {
-        console.log("cek form", form);
+        //   console.log("cek form", form);
 
         try {
             setSubmitting(true);
@@ -224,6 +248,7 @@ const BahanAdd: React.FC = () => {
             setSubmitting(false);
         }
     };
+    //  console.log("cek form bahan", form);
 
     // -----------------------------
     // UI
@@ -240,7 +265,13 @@ const BahanAdd: React.FC = () => {
     }
 
     return (
-        <ThemedContainer>
+        <View
+            style={{
+                flex: 1,
+                paddingTop: StatusBar.currentHeight,
+                backgroundColor: Color.Base.White,
+            }}
+        >
             <ThemedHeader
                 title={
                     isAdd
@@ -334,7 +365,7 @@ const BahanAdd: React.FC = () => {
                             {/* Gambar */}
                             <View style={{ marginTop: 6 }}>
                                 <ThemedText>Gambar</ThemedText>
-                                {v.preview ? (
+                                {v.preview && v.image?.uri === "" ? (
                                     <TouchableOpacity
                                         disabled={isView}
                                         onPress={() => handlePickImage(i)}
@@ -342,6 +373,23 @@ const BahanAdd: React.FC = () => {
                                         <Image
                                             source={{
                                                 uri: `${PATH}${v.preview}`,
+                                            }}
+                                            style={{
+                                                width: "100%",
+                                                height: 150,
+                                                borderRadius: 10,
+                                            }}
+                                            resizeMode="cover"
+                                        />
+                                    </TouchableOpacity>
+                                ) : v.image?.uri ? (
+                                    <TouchableOpacity
+                                        disabled={isView}
+                                        onPress={() => handlePickImage(i)}
+                                    >
+                                        <Image
+                                            source={{
+                                                uri: v.image.uri,
                                             }}
                                             style={{
                                                 width: "100%",
@@ -437,7 +485,7 @@ const BahanAdd: React.FC = () => {
                     </TouchableOpacity>
                 )}
             </ScrollView>
-        </ThemedContainer>
+        </View>
     );
 };
 

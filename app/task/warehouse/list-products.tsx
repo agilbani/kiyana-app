@@ -112,7 +112,6 @@ const ListOfProductScreen = () => {
 
     const getList = async () => {
         const res = await getListProduct();
-        console.log("res lis", res);
         if (res.success) {
             setListProduct(res.data ?? []);
         }

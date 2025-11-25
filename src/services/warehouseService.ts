@@ -212,13 +212,14 @@ export const updateMaterial = async (
         formData.append(`variants[${index}][price]`, variant.price);
         formData.append(`variants[${index}][stock]`, variant.stock);
         formData.append(`variants[${index}][min_stock]`, variant.min_stock);
-        if (variant.image) {
+        if (variant.image.uri) {
           formData.append(`variants[${index}][image]`, variant.image);
         }
       });
     }
-
-    const response = await api.patch(
+    console.log('edit form', formData);
+    
+    const response = await api.post(
       `/warehouse/materials/${materialSlug}`,
       formData,
       {
@@ -326,7 +327,7 @@ export const addAccessory = async (payload: any) => {
         formData.append(`variants[${index}][price]`, variant.price);
         formData.append(`variants[${index}][stock]`, variant.stock);
         formData.append(`variants[${index}][min_stock]`, variant.min_stock);
-        if (variant.image) {
+        if (variant.image.uri) {
           formData.append(`variants[${index}][image]`, variant.image);
         }
       });
@@ -381,7 +382,7 @@ export const updateAccessory = async (
       });
     }
 
-    const response = await api.patch(
+    const response = await api.post(
       `/warehouse/accessories/${accessoriesSlug}`,
       formData,
       {

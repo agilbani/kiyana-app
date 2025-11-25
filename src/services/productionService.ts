@@ -1,5 +1,5 @@
 import api from "@/api/api";
-import { EntryProductionPayload, Production, RejectProductionPayload, UpdateProductionPayload, UpdateProductionResponse } from '@/types/production';
+import { EntryProductionPayload, Production, RejectProductionPayload, UpdateProductionResponse } from '@/types/production';
 import { ApiResponse, Product } from "@/types/warehouse";
 
 export interface GetTaskByBatchResult {
@@ -92,28 +92,64 @@ export async function createProduction(payload: any): Promise<UpdateProductionRe
 
 export const updateProduction = async (
   batch: string,
-  payload: UpdateProductionPayload
+  formData: any
 ): Promise<UpdateProductionResponse> => {
-  try {
-    const response = await api.patch<Production>(`/productions/${batch}/update`, payload);
-
+   try {
+    const response = await api.post<Production>(`/productions/${batch}/update`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
     return {
       success: true,
       status: response.status,
-      message: "Production updated successfully",
+      message: "Task rejected successfully",
       data: response.data,
     };
   } catch (error: any) {
-    console.error("Error updating production:", error?.response || error);
-
-    return {
-      success: false,
-      status: error?.response?.status ?? 500,
-      message:
-        error?.response?.data?.message || "Failed to update production",
-    };
+    console.log('cek error', error.response.data);
+    
+    if (error.response) {
+      // Server responded with a status outside 2xx
+      return {
+        success: false,
+        status: error.response.status,
+        message: error.response.data?.message || "Failed to fetch task",
+      };
+    } else if (error.request) {
+      // Request made but no response
+      return {
+        success: false,
+        status: 0,
+        message: "No response from server",
+      };
+    } else {
+      // Something unexpected happened
+      return {
+        success: false,
+        status: 0,
+        message: error.message || "Unexpected error",
+      };
+    }
   }
-};
+}
+
+//     return {
+//       success: true,
+//       status: response.status,
+//       message: "Production updated successfully",
+//       data: response.data,
+//     };
+//   } catch (error: any) {
+
+//     return {
+//       success: false,
+//       status: error?.response?.status ?? 500,
+//       message:
+//         error?.response?.data?.message || "Failed to update production",
+//     };
+//   }
+
 
 export async function approveProduction(batch: string): Promise<GetTaskByBatchResult> {
   try {
@@ -264,7 +300,7 @@ export async function addNewProduct(payload: any): Promise<Result> {
 
 export async function editNewProduct(payload: any, id: string): Promise<Result> {
   try {
-    const response = await api.patch(`/new-products/${id}`, payload, {
+    const response = await api.post(`/new-products/${id}`, payload, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

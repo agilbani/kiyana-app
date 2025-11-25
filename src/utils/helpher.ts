@@ -93,6 +93,8 @@ export function groupAttendanceByDate(data: Attendance[]): GroupedAttendance[] {
 }
 
 export function getAttendanceButtonType(data: any) {
+   // console.log('data host', data);
+   
   const now = moment();
 
   // parse start & end sebagai hari ini dulu
@@ -114,13 +116,13 @@ export function getAttendanceButtonType(data: any) {
   // === CONDITION: tampilkan tombol "masuk" ===
   // Jika belum clock_in, dan waktu sekarang BELUM lewat start_time, dan BELUM lewat end_time
   if (data.clock_in === null && now.isBefore(startTime) && now.isBefore(endTime)) {
-    return "masuk";
+    return "Masuk";
   }
-
   // === CONDITION: tampilkan tombol "pulang" ===
   // Jika sudah clock_in tapi belum clock_out, dan sekarang SUDAH lewat end_time
-  if (data.clock_in !== null && data.clock_out === null && now.isAfter(endTime)) {
-    return "pulang";
+//   if (data.clock_in !== null && data.clock_out === null && moment(new Date()).format('HH:mm') > data.end_time) {
+   if (data.clock_in !== null && data.clock_out === null) {   
+    return "Pulang";
   }
 
   return null;
@@ -170,7 +172,7 @@ export function getWorkType(data: any) {
 
 export function getAttendanceStatusShift(data: any) {
   const today = new Date().toISOString().split('T')[0]; // format YYYY-MM-DD
-
+   if (!data) return 'Belum absen'
   // Jika tanggal absensi bukan hari ini
   if (data.date !== today) {
     return 'Bukan hari ini';
@@ -181,6 +183,30 @@ export function getAttendanceStatusShift(data: any) {
     return 'Belum absen';
   }
 
+  if (data.clock_in && data.clock_out) {
+   return 'Hadir'
+  }
+
   // Jika sudah absen masuk
   return 'Sudah absen masuk';
 }
+
+/**
+ * Mengecek apakah tombol "Masuk" boleh tampil.
+ *
+ * @param {string} jamMasukStr - Jam masuk dari BE (format "HH:mm")
+ * @param {string} [jamBatasStr='06:30'] - Jam batas maksimal (opsional, default +30 menit dari jam masuk)
+ * @returns {boolean} true jika tombol boleh tampil, false jika tidak
+ */
+export const canShowMasukButton = (jamMasukStr: string, jamBatasStr?: string) => {
+  const jamMasuk = moment(jamMasukStr, 'HH:mm');
+  const batasAkhir = jamBatasStr
+    ? moment(jamBatasStr, 'HH:mm')
+    : moment(jamMasuk).add(30, 'minutes'); // default: 30 menit setelah jam masuk
+
+  const now = moment();
+
+  if (now.isBefore(jamMasuk)) return true; // sebelum jam masuk
+  if (now.isBetween(jamMasuk, batasAkhir, undefined, '[]')) return true; // di antara jam masuk & batas akhir
+  return false; // sudah lewat
+};

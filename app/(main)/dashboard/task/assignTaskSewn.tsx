@@ -22,7 +22,7 @@ import { IcClose, IcScan } from "@assets/icons";
 import ILCamera from "@assets/images/permissions/ILCamera.png";
 import { CameraView } from "expo-camera";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -96,7 +96,7 @@ const AssignTaskSewn = () => {
 
     const getListSewn = async () => {
         const res = await getSewnEmployee();
-        console.log("list sewn", res);
+        //   console.log("list sewn", res);
         if (res.success) {
             let arr = [];
             for (let i = 0; i < res.data.length; i++) {
@@ -114,7 +114,7 @@ const AssignTaskSewn = () => {
         batches.map((v) => {
             newBatch.push(v.batch);
         });
-        console.log("cek newBatch", newBatch);
+        //   console.log("cek newBatch", newBatch);
         const payload = {
             employee_id: selectedEmployee,
             batchs: newBatch,
@@ -125,6 +125,8 @@ const AssignTaskSewn = () => {
         if (res.success) {
             ShowToastMessage("Daftar batch telah diberikan ke penjahit");
             router.back();
+        } else {
+            ShowToastMessage(res.message);
         }
     };
 

@@ -17,7 +17,10 @@ const AttendanceScedule = ({
     dataShift,
     dataHost,
     setSelectAttendance,
+    shift_id,
+    shiftName,
 }: any) => {
+    // && Object.keys(dataShift).length > 0
     return (
         <>
             {isHost ? (
@@ -25,8 +28,38 @@ const AttendanceScedule = ({
                     dataHost={dataHost}
                     setSelectAttendance={setSelectAttendance}
                 />
+            ) : shift_id ? (
+                Object.keys(dataShift).length > 0 ? (
+                    <CardShift dataShift={dataShift} shiftName={shiftName} />
+                ) : (
+                    <View
+                        style={[
+                            styles.viewInfoAttendance,
+                            {
+                                justifyContent: "center",
+                                alignItems: "center",
+                                paddingVertical: 15,
+                            },
+                        ]}
+                    >
+                        <ThemedText>
+                            Belum ada presensi hari ini, silahkan presensi masuk
+                        </ThemedText>
+                    </View>
+                )
             ) : (
-                <CardShift dataShift={dataShift} />
+                <View
+                    style={[
+                        styles.viewInfoAttendance,
+                        {
+                            justifyContent: "center",
+                            alignItems: "center",
+                            paddingVertical: 15,
+                        },
+                    ]}
+                >
+                    <ThemedText>Anda belum memiliki shift</ThemedText>
+                </View>
             )}
         </>
     );
@@ -119,7 +152,7 @@ function CardHost({ dataHost, setSelectAttendance }: any) {
                             >
                                 {v.start_time}
                             </ThemedText>
-                            {getAttendanceButtonType(v) === "masuk" && (
+                            {v.clock_in === null && (
                                 <TouchableOpacity
                                     activeOpacity={0.9}
                                     style={{
@@ -142,10 +175,37 @@ function CardHost({ dataHost, setSelectAttendance }: any) {
                                         size="sm"
                                         color={Color.Base.White}
                                     >
-                                        Absen Sekarang
+                                        Absen {getAttendanceButtonType(v)}
                                     </ThemedText>
                                 </TouchableOpacity>
                             )}
+                            {/* {getAttendanceButtonType(v) === "Masuk" && (
+                                <TouchableOpacity
+                                    activeOpacity={0.9}
+                                    style={{
+                                        borderRadius: 6,
+                                        paddingVertical: 6,
+                                        paddingHorizontal: 12,
+                                        backgroundColor: Color.Green[500],
+                                    }}
+                                    onPress={() => {
+                                        setSelectAttendance(v);
+                                        setTimeout(() => {
+                                            router.push(
+                                                ROUTES.ATTENDANCE_CLOCKIN
+                                            );
+                                        }, 500);
+                                    }}
+                                >
+                                    <ThemedText
+                                        type="SemiBold"
+                                        size="sm"
+                                        color={Color.Base.White}
+                                    >
+                                        Absen {getAttendanceButtonType(v)}
+                                    </ThemedText>
+                                </TouchableOpacity>
+                            )} */}
                         </View>
                     </View>
                     <View
@@ -196,7 +256,7 @@ function CardHost({ dataHost, setSelectAttendance }: any) {
                             >
                                 {v.end_time}
                             </ThemedText>
-                            {getAttendanceButtonType(v) === "pulang" && (
+                            {getAttendanceButtonType(v) === "Pulang" && (
                                 <TouchableOpacity
                                     activeOpacity={0.9}
                                     style={{
@@ -219,7 +279,7 @@ function CardHost({ dataHost, setSelectAttendance }: any) {
                                         size="sm"
                                         color={Color.Base.White}
                                     >
-                                        Absen Sekarang
+                                        Absen {getAttendanceButtonType(v)}
                                     </ThemedText>
                                 </TouchableOpacity>
                             )}
@@ -231,8 +291,8 @@ function CardHost({ dataHost, setSelectAttendance }: any) {
     );
 }
 
-function CardShift({ dataShift }: any) {
-    console.log("cek dataShift", dataShift);
+function CardShift({ dataShift, shiftName }: any) {
+    //  console.log("cek dataShift", dataShift);
 
     return (
         <View style={styles.viewInfoAttendance}>
@@ -251,7 +311,7 @@ function CardShift({ dataShift }: any) {
                         type="Medium"
                         color={Color.Base.Black}
                     >
-                        {dataShift?.name}
+                        {shiftName}
                     </ThemedText>
                     <ThemedText size="sm" color={Color.Text.Secondary}>
                         Jam Kerja Regular

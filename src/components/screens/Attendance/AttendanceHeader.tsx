@@ -20,7 +20,7 @@ const AttendanceHeader: React.FC<AttendanceHeaderProps> = ({
     onClickAbsence,
     user,
 }) => {
-    console.log("cek attendanceData shift", attendanceData);
+    //  console.log("cek attendanceData shift", attendanceData);
 
     return (
         <View style={styles.header}>

@@ -7,7 +7,7 @@ import { getProductVariant } from "@/services/productVariantService";
 import { getSelling } from "@/services/sellingService";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
@@ -40,7 +40,7 @@ const ListTransaction = () => {
         setLoading(true);
         const res = await getSelling(params);
         setLoading(false);
-        console.log("res selling", res);
+        //   console.log("res selling", res);
         if (res.success) {
             setListSelling(res.data.data);
             setDataWidget(res.data.stats);
@@ -64,7 +64,7 @@ const ListTransaction = () => {
             }
             setListVariant(arr);
         }
-        console.log("res product", product);
+        //   console.log("res product", product);
 
         if (product.success) {
             let arr = [];
@@ -92,7 +92,7 @@ const ListTransaction = () => {
                 visible={modalFilter}
                 onClose={() => setModalFilter(false)}
                 setState={(data: any) => {
-                    console.log("applied data", data);
+                    //   console.log("applied data", data);
                 }}
                 listVariant={listVariant}
                 listProduct={listProduct}

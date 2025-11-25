@@ -9,6 +9,7 @@ import {
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
 import { useApp as authContext } from "@/context/AppContext";
+import { updateStatusFixing } from "@/services/masterService";
 import {
     getTaskById,
     GetTaskByIdResult,
@@ -16,11 +17,14 @@ import {
 } from "@/services/taskService";
 import GlobalStyles from "@/styles/common";
 import { usePositionBottom } from "@/utils/bottomPosition";
+import LoadingManager from "@/utils/LoadingManager";
 import { scale } from "@/utils/scaleSize";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { router, useLocalSearchParams } from "expo-router";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import {
+    Alert,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -30,31 +34,54 @@ import {
 
 const statusBarHeight = StatusBar.currentHeight;
 
+type Item = {
+    id: string;
+    qty: string;
+    sku: string;
+    status: string;
+};
+
+type Data = {
+    items: Item[];
+};
+
 const TaskDetailScreen = () => {
     const { user } = authContext();
     const { bottom } = usePositionBottom();
     const { id } = useLocalSearchParams<{ id: string }>();
-    console.log("cek code detail", id);
+    //  console.log("cek code detail", id);
 
     const [task, setTask] = useState<GetTaskByIdResult | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingStart, setLoadingStart] = useState<boolean>(false);
 
     async function getDetail() {
-        setLoading(true);
+        LoadingManager.show();
+        //   setLoading(true);
         const result = await getTaskById(id);
-        setLoading(false);
+        //   setLoading(false);
+        LoadingManager.hide();
         if (result.success && result.data) {
             setTask(result);
-            console.log("Task fetched:", result.data);
+            // console.log("Task fetched:", result);
         } else {
-            console.warn("Failed:", result.statusCode, result.message);
+            // console.warn("Failed:", result.statusCode, result.message);
+            Alert.alert(`Failed ${result.statusCode}`, result.message);
         }
     }
 
     async function handleStartCutting(itemId: any) {
+        //   console.log("item id", itemId);
+
         setLoadingStart(true);
-        const res = await startProcess(task?.data?.code, itemId);
+        const res = await startProcess(
+            task?.data?.code,
+            itemId,
+            { cutting_at: moment(new Date()).format("YYYY-MM-DD HH:mm") }
+            // task?.data?.product_metadata.id
+        );
+        //   console.log("res start cuting", res);
+
         setLoadingStart(false);
         if (res.success) {
             ShowToastMessage(res?.message);
@@ -62,6 +89,47 @@ const TaskDetailScreen = () => {
         } else {
             ShowToastMessage(res?.message);
         }
+    }
+
+    const startFixing = async (batch: string) => {
+        const payload = {
+            batch: batch,
+            stage: "cutting",
+            status: "Being Repaired",
+        };
+        LoadingManager.show();
+        const res = await updateStatusFixing(payload);
+        LoadingManager.hide();
+        if (res.success) {
+            ShowToastMessage(res.message);
+            getDetail();
+        } else {
+            ShowToastMessage(res.message);
+        }
+    };
+
+    const endFixing = async (batch: string) => {
+        const payload = {
+            batch: batch,
+            stage: "cutting",
+            status: "Finished Repaired",
+        };
+        LoadingManager.show();
+        const res = await updateStatusFixing(payload);
+        LoadingManager.hide();
+        if (res.success) {
+            ShowToastMessage(res.message);
+            getDetail();
+        } else {
+            ShowToastMessage(res.message);
+        }
+    };
+
+    function checkStatus(data: Data): boolean {
+        const allDone = data.items.every(
+            (item) => item.status === "Selesai Dipotong"
+        );
+        return !allDone;
     }
 
     useEffect(() => {
@@ -119,7 +187,7 @@ const TaskDetailScreen = () => {
                             <ThemedText type="SemiBold">Material:</ThemedText>
                             <ThemedGap width="xs" />
                             <ThemedText>
-                                {t.product_metadata.material.name}
+                                {t.product_metadata.materials[0]?.name}
                             </ThemedText>
                         </View>
                         <View style={GlobalStyles.rowCenter}>
@@ -191,31 +259,83 @@ const TaskDetailScreen = () => {
                                         </ThemedText>
                                     </View>
                                 </View>
-                                <TouchableOpacity
-                                    activeOpacity={0.9}
-                                    disabled={v.status === "Sedang Dipotong"}
-                                    style={[
-                                        styles.btnStart,
-                                        {
-                                            backgroundColor:
-                                                v.status === "Sedang Dipotong"
-                                                    ? Color.Gray[300]
-                                                    : Color.Green[500],
-                                        },
-                                    ]}
-                                    onPress={() => handleStartCutting(v.id)}
-                                >
-                                    <ThemedText color={Color.Base.White}>
-                                        Mulai Produksi
-                                    </ThemedText>
-                                </TouchableOpacity>
+                                {v.cutting_approvals.length === 0 ? (
+                                    <TouchableOpacity
+                                        activeOpacity={0.9}
+                                        disabled={
+                                            v.status === "Sedang Dipotong"
+                                        }
+                                        style={[
+                                            styles.btnStart,
+                                            {
+                                                backgroundColor:
+                                                    v.status ===
+                                                    "Sedang Dipotong"
+                                                        ? Color.Gray[300]
+                                                        : Color.Green[500],
+                                            },
+                                        ]}
+                                        onPress={() => handleStartCutting(v.id)}
+                                    >
+                                        <ThemedText color={Color.Base.White}>
+                                            Mulai Produksi
+                                        </ThemedText>
+                                    </TouchableOpacity>
+                                ) : v.cutting_approvals.length > 0 &&
+                                  v.cutting_approvals[0]?.status ===
+                                      "Pending" ? null : (
+                                    v.cutting_approvals.length > 0 &&
+                                    v.cutting_approvals[0]?.status !==
+                                        "Finished Repaired" && (
+                                        <TouchableOpacity
+                                            activeOpacity={0.9}
+                                            style={[
+                                                styles.btnStart,
+                                                {
+                                                    backgroundColor:
+                                                        v.status ===
+                                                        "Sedang Dipotong"
+                                                            ? Color.Gray[300]
+                                                            : Color.Green[500],
+                                                },
+                                            ]}
+                                            onPress={() => {
+                                                if (
+                                                    v.cutting_approvals[0]
+                                                        .status ===
+                                                    "Reject (Bisa Diperbaiki)"
+                                                ) {
+                                                    startFixing(
+                                                        v.cutting_approvals[0]
+                                                            .batch
+                                                    );
+                                                } else {
+                                                    endFixing(
+                                                        v.cutting_approvals[0]
+                                                            .batch
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            <ThemedText
+                                                color={Color.Base.White}
+                                            >
+                                                {v.cutting_approvals[0]
+                                                    .status ===
+                                                "Reject (Bisa Diperbaiki)"
+                                                    ? "Mulai Perbaiki"
+                                                    : "Selesai Perbaikan"}
+                                            </ThemedText>
+                                        </TouchableOpacity>
+                                    )
+                                )}
                             </View>
                         ))}
                     </View>
                 </ScrollView>
             )}
-            <View style={[styles.footer, { bottom: bottom }]}>
-                {/* <View style={{ width: "48%" }}>
+            {/* <View style={[styles.footer, { bottom: bottom }]}>
+                <View style={{ width: "48%" }}>
                     <ThemedButton
                         title="Mulai Produksi"
                         style={{ marginTop: 10 }}
@@ -223,8 +343,8 @@ const TaskDetailScreen = () => {
                         onPress={handleStartCutting}
                         loading={loading}
                     />
-                </View> */}
-                <View style={{ width: "100%" }}>
+                </View>
+                <View style={{ width: "48%" }}>
                     <ThemedButton
                         title="Tambah Batch Produksi"
                         style={{ marginTop: 10 }}
@@ -234,7 +354,32 @@ const TaskDetailScreen = () => {
                         }
                     />
                 </View>
-            </View>
+            </View> */}
+            {checkStatus(t) && (
+                <View style={[styles.footer, { bottom: bottom }]}>
+                    {/* <View style={{ width: "48%" }}>
+                        <ThemedButton
+                            title="Mulai Produksi"
+                            style={{ marginTop: 10 }}
+                            disabled={t.status !== "Planned"}
+                            onPress={handleStartCutting}
+                            loading={loading}
+                        />
+                    </View> */}
+                    <View style={{ width: "100%" }}>
+                        <ThemedButton
+                            title="Tambah Batch Produksi"
+                            style={{ marginTop: 10 }}
+                            disabled={t.status === "Planned"}
+                            onPress={() =>
+                                router.push(
+                                    ROUTES.DASHBOARD_TASK_DETAIL(id) as any
+                                )
+                            }
+                        />
+                    </View>
+                </View>
+            )}
         </ThemedContainer>
     );
 };

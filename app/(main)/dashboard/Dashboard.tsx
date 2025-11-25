@@ -1,5 +1,6 @@
-import { ThemedContainer, ThemedText } from "@/components";
+import { ThemedText } from "@/components";
 import DashboardCardSection from "@/components/card/DashboardCardSection";
+import ModalRequest from "@/components/modal/ModalRequest";
 import DashboardAmountCard from "@/components/screens/Dashboard/DashboardAmountCard";
 import DashboardScanCard from "@/components/screens/Dashboard/DashboardScanCard";
 import Color from "@/constants/Color";
@@ -24,6 +25,7 @@ const statusBarHeight = StatusBar.currentHeight;
 const Dashboard = () => {
     const { user, updateUser } = useApp();
     const [refreshing, setRefreshing] = useState(false);
+    const [modalRequest, setModalRequest] = useState(false);
     const MenuOptions = [
         {
             label: "Produksi",
@@ -50,9 +52,9 @@ const Dashboard = () => {
                 },
                 {
                     icon: require("@assets/icons/ApprovalIcon.png"),
-                    label: "Permintaan Bahan",
-                    action: () =>
-                        router.push(ROUTES.DASHBOARD_REQUEST_MATERIAL),
+                    label: "Request Bahan",
+                    action: () => setModalRequest(true),
+                    // router.push(ROUTES.DASHBOARD_REQUEST_MATERIAL),
                 },
             ],
         },
@@ -65,11 +67,19 @@ const Dashboard = () => {
                     action: () =>
                         router.push(ROUTES.DASHBOARD_ALL_TASKPRIORITY),
                 },
+                //  {
+                //      icon: require("@assets/icons/ApprovalIcon.png"),
+                //      label: "Tambah Data",
+                //      action: () =>
+                //          router.push(ROUTES.DASHBOARD_CREATE_PRODUCT_PRIORITAS),
+                //  },
                 {
                     icon: require("@assets/icons/ApprovalIcon.png"),
                     label: "Tambah Data",
                     action: () =>
-                        router.push(ROUTES.DASHBOARD_CREATE_PRODUCT_PRIORITAS),
+                        router.push(
+                            ROUTES.DASHBOARD_CREATE_MASSIVE_PRODUCT_PRIORITAS
+                        ),
                 },
             ],
         },
@@ -103,21 +113,26 @@ const Dashboard = () => {
                 },
                 {
                     icon: require("@assets/icons/NewStockIcon.png"),
-                    label: "Stok Baru",
-                    action: () => console.log("task cutting"),
+                    label: "Tambah Stok",
+                    action: () => router.push(ROUTES.TASK_ADD_STOCK),
                 },
                 {
-                    icon: require("@assets/icons/NewStockIcon.png"),
+                    icon: require("@assets/icons/scaner.png"),
+                    label: "Hitung Stok",
+                    action: () => router.push(ROUTES.TASK_CALCULATE_STOCK),
+                },
+                {
+                    icon: require("@assets/icons/benang.png"),
                     label: "Tambah Bahan",
                     action: () => router.push(ROUTES.BAHAN),
                 },
                 {
-                    icon: require("@assets/icons/NewStockIcon.png"),
+                    icon: require("@assets/icons/tailor.png"),
                     label: "Aksesoris",
                     action: () => router.push(ROUTES.AKSESORIS),
                 },
                 {
-                    icon: require("@assets/icons/NewStockIcon.png"),
+                    icon: require("@assets/icons/database.png"),
                     label: "Produk",
                     action: () => router.push(ROUTES.PRODUK),
                 },
@@ -184,10 +199,11 @@ const Dashboard = () => {
             };
         }, [])
     );
-    console.log("cek user", user);
+    //  console.log("cek user", user);
 
     return (
-        <ThemedContainer>
+        <View style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
+            <StatusBar barStyle={"light-content"} />
             <DashboardCardSection user={user} />
             <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -204,7 +220,7 @@ const Dashboard = () => {
                         router.push(ROUTES.DASHBOARD_HISTORYCASHADVANCE)
                     }
                     onPressWithdraw={() =>
-                        router.push(ROUTES.DASHBOARD_WITHDRAWAL)
+                        router.push(ROUTES.DASHBOARD_HISTORY_WITHDRAWAL)
                     }
                     onPressHistory={() =>
                         router.push(ROUTES.DASHBOARD_HISTORY_TRANSACTION)
@@ -235,7 +251,15 @@ const Dashboard = () => {
                                     key={`${index}`}
                                     activeOpacity={0.9}
                                     onPress={k.action}
-                                    style={styles.btnMenu}
+                                    style={[
+                                        styles.btnMenu,
+                                        {
+                                            width:
+                                                v.data.length > 3
+                                                    ? "21%"
+                                                    : "23%",
+                                        },
+                                    ]}
                                 >
                                     <Image
                                         source={k.icon}
@@ -254,7 +278,19 @@ const Dashboard = () => {
                     </View>
                 ))}
             </ScrollView>
-        </ThemedContainer>
+            <ModalRequest
+                visible={modalRequest}
+                onClose={() => setModalRequest(false)}
+                onPressMats={() => {
+                    setModalRequest(false);
+                    router.push(ROUTES.DASHBOARD_REQUEST_MATERIAL);
+                }}
+                onPressAcc={() => {
+                    setModalRequest(false);
+                    router.push(ROUTES.DASHBOARD_REQUEST_ACCESSORIES);
+                }}
+            />
+        </View>
     );
 };
 
@@ -274,7 +310,7 @@ const styles = StyleSheet.create({
     btnMenu: {
         justifyContent: "center",
         alignItems: "center",
-        width: "20%",
+        width: "21%",
         gap: 4,
     },
     card: {

@@ -1,12 +1,9 @@
 import { ThemedText } from "@/components";
 import Color from "@/constants/Color";
 import moment from "moment";
-import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const CardTransaction = ({ keyComponent, data, onPress }: any) => {
-    console.log("datane", data);
-
     const getColorStatus = () => {
         let color = "";
         let obj = { color: "", bgColor: "", border: "" };

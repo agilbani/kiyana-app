@@ -1,15 +1,19 @@
 import {
     CustomDropdown,
     ThemedButton,
-    ThemedContainer,
     ThemedDatePicker,
     ThemedHeader,
     ThemedText,
 } from "@/components";
 import Color from "@/constants/Color";
-import { getCuttingEmployee, getListProduct } from "@/services/masterService";
+import {
+    getCuttingEmployee,
+    getListProduct,
+    getProductProduction,
+} from "@/services/masterService";
 import { createProductionPlan } from "@/services/productionService";
 import { getProductVariant } from "@/services/productVariantService";
+import LoadingManager from "@/utils/LoadingManager";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -30,9 +34,8 @@ const CreatePlanProduction = () => {
     const [productItem, setProductItem] = useState<any>([
         {
             id: Date.now(),
-            sku: "",
-            qty: 0,
-            unit: "Pcs",
+            material_details: [],
+            product_variant_id: "",
         },
     ]);
     const [listEmployee, setListEmployee] = useState<any>([]);
@@ -43,12 +46,26 @@ const CreatePlanProduction = () => {
     const [selectedProduct, setSelectedProduct] = useState("");
     const [material, setMaterial] = useState("");
     const [loading, setLoading] = useState(false);
+    const [detailMaterial, setDetailMaterial] = useState<any>([]);
 
     const addMoreProductItem = () => {
-        setProductItem([
-            ...productItem,
-            { id: Date.now(), sku: "", qty: 0, unit: "Pcs" },
-        ]);
+        setProductItem((prev: any[]) => {
+            // ambil data material_details dari item terakhir, kalau belum ada, buat array kosong
+            const lastMaterialDetails =
+                prev.length > 0 ? prev[prev.length - 1].material_details : [];
+
+            return [
+                ...prev,
+                {
+                    id: Date.now(),
+                    product_variant_id: "",
+                    // salin struktur material_details agar tidak mereferensi langsung array sebelumnya
+                    material_details: lastMaterialDetails.map((m: any) => ({
+                        ...m,
+                    })),
+                },
+            ];
+        });
     };
 
     const onDelete = (id: any) => {
@@ -67,16 +84,32 @@ const CreatePlanProduction = () => {
         );
     };
 
+    const updateMaterialQty = (parentId: any, index: number, value: string) => {
+        setProductItem((prev: any[]) =>
+            prev.map((item) => {
+                if (item.id !== parentId) return item; // kalau bukan parent yang diubah, biarkan
+                return {
+                    ...item,
+                    material_details: item.material_details.map(
+                        (mat: any, i: number) =>
+                            i === index ? { ...mat, qty: value } : mat
+                    ),
+                };
+            })
+        );
+    };
+
     const getList = async () => {
+        LoadingManager.show();
         const getEmployee = getCuttingEmployee();
         const getProduct = getListProduct();
         const getListVariant = getProductVariant();
         const [cuttingEmployee, product, listProductVariant] =
             await Promise.all([getEmployee, getProduct, getListVariant]);
-
-        console.log("res product", product);
-        console.log("res cuttingEmployee", cuttingEmployee);
-        console.log("res listProductVariant", listProductVariant);
+        LoadingManager.hide();
+        //   console.log("res product", product);
+        //   console.log("res cuttingEmployee", cuttingEmployee);
+        //   console.log("res listProductVariant", listProductVariant);
         if (cuttingEmployee.success) {
             let arr = [];
             for (let i = 0; i < cuttingEmployee.data.length; i++) {
@@ -93,7 +126,7 @@ const CreatePlanProduction = () => {
             for (let i = 0; i < product.data.length; i++) {
                 arr.push({
                     name: `${product.data[i].name}`,
-                    value: product.data[i].id,
+                    value: product.data[i].slug,
                     data: product.data[i],
                 });
             }
@@ -101,13 +134,6 @@ const CreatePlanProduction = () => {
         }
 
         if (listProductVariant.success) {
-            // let arr = [];
-            // for (let i = 0; i < listProductVariant?.data?.length; i++) {
-            //     arr.push({
-            //         name: `${listProductVariant?.data[i].sku} - ${listProductVariant.data[i].color}`,
-            //         value: listProductVariant.data[i].id,
-            //     });
-            // }
             setListVariant(listProductVariant?.data);
         }
     };
@@ -116,29 +142,51 @@ const CreatePlanProduction = () => {
         if (!selectedProduct) return [];
 
         return listVariant
-            .filter((variant: any) => variant.product.id === selectedProduct)
+            .filter((variant: any) => variant.product.slug === selectedProduct)
             .map((variant: any) => ({
                 name: `${variant.sku ?? ""} - ${variant.color ?? ""}`,
                 value: variant.id,
             }));
     }, [listVariant, selectedProduct]);
+    //  console.log("cek filteredVariant", filteredVariant);
+
+    const getMaterialNeeded = async () => {
+        LoadingManager.show();
+        const res = await getProductProduction(selectedProduct);
+        LoadingManager.hide();
+        //   console.log("res material", res);
+        if (res.success) {
+            const materials = res.data.product_materials.map((item: any) => ({
+                qty: item.usage_quantity,
+                material_name: item.material.name,
+                unit: item.material.unit.name,
+            }));
+            const getNameMats = res.data.product_materials
+                .map((item: any) => item.material.name)
+                .join(", ");
+            setDetailMaterial(materials);
+            setMaterial(getNameMats);
+        }
+    };
 
     const onSubmit = async () => {
         let itemProduction = [];
         for (let i = 0; i < productItem.length; i++) {
             itemProduction.push({
-                product_variant_id: productItem[i].sku,
-                qty: productItem[i].qty,
-                unit: productItem[i].unit,
+                product_variant_id: productItem[i].product_variant_id,
+                material_details: productItem[i].material_details,
             });
         }
+        let getProductId = listProduct.filter((item: any) => {
+            return item.value === selectedProduct;
+        });
+
         const payload = {
             date: moment(selectedDate, "DD-MM-YYYY").format("YYYY-MM-DD"),
             cutting_by: selectedEmployee,
-            product_id: selectedProduct,
+            product_id: getProductId[0].data.id,
             items: itemProduction,
         };
-        console.log("cek payload", payload);
         setLoading(true);
         const res = await createProductionPlan(payload);
         setLoading(false);
@@ -150,12 +198,47 @@ const CreatePlanProduction = () => {
         }
     };
 
+    const resetProductItem = () => {
+        const arr = [
+            {
+                id: Date.now(),
+                material_details: [],
+                product_variant_id: "",
+            },
+        ];
+        setProductItem(arr);
+    };
+
+    useEffect(() => {
+        if (detailMaterial.length > 0) {
+            let prodItem = [...productItem];
+
+            prodItem[0].material_details = detailMaterial;
+            setProductItem(prodItem);
+        }
+    }, [detailMaterial]);
+
+    useEffect(() => {
+        if (selectedProduct) {
+            setTimeout(() => {
+                getMaterialNeeded();
+            }, 800);
+        }
+    }, [selectedProduct]);
+
     useEffect(() => {
         getList();
     }, []);
-    console.log("create plan");
+    //  console.log("create plan productItem", productItem);
+
     return (
-        <ThemedContainer>
+        <View
+            style={{
+                flex: 1,
+                backgroundColor: Color.Base.White,
+                paddingTop: StatusBar.currentHeight,
+            }}
+        >
             <StatusBar
                 backgroundColor={Color.Base.White}
                 barStyle="dark-content"
@@ -165,6 +248,7 @@ const CreatePlanProduction = () => {
                 <ScrollView
                     contentContainerStyle={styles.containerStyle}
                     showsVerticalScrollIndicator={false}
+                    nestedScrollEnabled
                 >
                     <ThemedDatePicker
                         labelSize="md"
@@ -184,10 +268,8 @@ const CreatePlanProduction = () => {
                     <CustomDropdown
                         items={listProduct}
                         onSelectItem={(item: any) => {
-                            console.log("produk selected", item);
-
                             setSelectedProduct(item.value);
-                            setMaterial(item.data.material?.name);
+                            resetProductItem();
                         }}
                         value={selectedProduct}
                         label="Produk"
@@ -203,86 +285,110 @@ const CreatePlanProduction = () => {
                         />
                     </View>
                     {productItem.map((v: any, index: any) => (
-                        <View key={`${index}`} style={styles.parentViewProduct}>
-                            <View style={styles.viewDropdown}>
-                                <CustomDropdown
-                                    items={filteredVariant}
-                                    value={v.sku}
-                                    onSelectItem={(item: any) => {
-                                        updateRow(v.id, "sku", item.value);
-                                    }}
-                                    placeholderText="Pilih salah satu opsi"
-                                    containerStyle={{
-                                        borderRadius: 12,
-                                        width: "95%",
-                                        marginTop: -1,
-                                    }}
-                                    maxHeight={200}
-                                    widthdropdown="100%"
-                                />
-                            </View>
-                            <View style={styles.viewInputQty}>
-                                <View
-                                    style={{
-                                        width: "100%",
-                                        borderRadius: 12,
-                                        marginTop: 3,
-                                    }}
-                                >
-                                    <TextInput
-                                        placeholder="0"
+                        <View key={`${index}`}>
+                            <ThemedText>Produksi Item</ThemedText>
+                            <View style={styles.cardMaterial}>
+                                <View style={{ gap: 6 }}>
+                                    <ThemedText>Product Variant</ThemedText>
+                                    <TouchableOpacity
                                         style={{
-                                            height: 45,
-                                            backgroundColor: Color.Base.White,
+                                            width: "7%",
+                                            alignItems: "flex-end",
+                                            position: "absolute",
+                                            top: 0,
+                                            left: "92%",
                                         }}
-                                        value={v.qty}
-                                        onChangeText={(text) => {
+                                        onPress={() => onDelete(v.id)}
+                                    >
+                                        <Feather
+                                            name="trash-2"
+                                            color={"red"}
+                                            size={20}
+                                        />
+                                    </TouchableOpacity>
+                                    <CustomDropdown
+                                        items={filteredVariant}
+                                        value={v.product_variant_id}
+                                        onSelectItem={(item: any) => {
                                             updateRow(
                                                 v.id,
-                                                "qty",
-                                                Number(text)
+                                                "product_variant_id",
+                                                item.value
                                             );
                                         }}
+                                        placeholderText="Pilih salah satu opsi"
+                                        containerStyle={{
+                                            borderRadius: 12,
+                                            width: "100%",
+                                        }}
+                                        maxHeight={200}
+                                        widthdropdown="100%"
                                     />
                                 </View>
+                                {v.material_details.map(
+                                    (mats: any, index: any) => (
+                                        <View
+                                            key={`${index}`}
+                                            style={{ marginTop: 10 }}
+                                        >
+                                            <ThemedText>
+                                                Kebutuhan Material
+                                            </ThemedText>
+                                            <View style={styles.viewNeed}>
+                                                <View>
+                                                    <ThemedText>
+                                                        Nama Material
+                                                    </ThemedText>
+                                                    <View
+                                                        style={
+                                                            styles.viewMaterial
+                                                        }
+                                                    >
+                                                        <ThemedText>
+                                                            {mats.material_name}
+                                                        </ThemedText>
+                                                    </View>
+                                                </View>
+                                                <View>
+                                                    <ThemedText>
+                                                        Jumlah
+                                                    </ThemedText>
+                                                    <TextInput
+                                                        value={mats.qty}
+                                                        style={
+                                                            styles.txtInputQty
+                                                        }
+                                                        placeholder="Masukkan Jumlah Kuantitas"
+                                                        onChangeText={(
+                                                            text: string
+                                                        ) =>
+                                                            updateMaterialQty(
+                                                                v.id,
+                                                                index,
+                                                                text
+                                                            )
+                                                        }
+                                                    />
+                                                </View>
+                                                <View>
+                                                    <ThemedText>
+                                                        Satuan
+                                                    </ThemedText>
+                                                    <View
+                                                        style={
+                                                            styles.viewSatuan
+                                                        }
+                                                    >
+                                                        <ThemedText>
+                                                            {mats.unit}
+                                                        </ThemedText>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    )
+                                )}
                             </View>
-                            <View style={styles.viewInputUnit}>
-                                <View
-                                    style={{
-                                        width: "100%",
-                                        borderRadius: 12,
-                                        marginTop: 3,
-                                    }}
-                                >
-                                    <TextInput
-                                        placeholder="Pcs"
-                                        style={{
-                                            height: 45,
-                                            backgroundColor: Color.Base.White,
-                                        }}
-                                        value={v.unit}
-                                        onChangeText={(text) => {
-                                            updateRow(v.id, "unit", text);
-                                        }}
-                                    />
-                                </View>
-                            </View>
-                            <TouchableOpacity
-                                style={{
-                                    width: "7%",
-                                    alignItems: "flex-end",
-                                    position: "absolute",
-                                    top: 18,
-                                    left: "92%",
-                                }}
-                                onPress={() => onDelete(v.id)}
-                            >
-                                <Feather
-                                    name="trash-2"
-                                    color={"red"}
-                                    size={20}
-                                />
-                            </TouchableOpacity>
                         </View>
                     ))}
                     <View
@@ -313,7 +419,7 @@ const CreatePlanProduction = () => {
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
-                <View style={[styles.footer, { bottom: insets.bottom }]}>
+                <View style={[styles.footer, { bottom: 0 }]}>
                     <ThemedButton
                         loading={loading}
                         disabled={loading}
@@ -322,11 +428,52 @@ const CreatePlanProduction = () => {
                     />
                 </View>
             </View>
-        </ThemedContainer>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
+    viewNeed: {
+        gap: 6,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: Color.Gray[200],
+        padding: 16,
+        marginTop: 10,
+    },
+    cardMaterial: {
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: Color.Gray[200],
+        padding: 16,
+        marginTop: 10,
+    },
+    viewSatuan: {
+        backgroundColor: Color.Gray[300],
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: Color.Gray[200],
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        marginTop: 10,
+    },
+    txtInputQty: {
+        marginTop: 10,
+        backgroundColor: Color.Base.White,
+        borderRadius: 6,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: Color.Gray[200],
+    },
+    viewMaterial: {
+        backgroundColor: Color.Gray[300],
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: Color.Gray[200],
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        marginTop: 10,
+    },
     footer: {
         position: "absolute",
         backgroundColor: Color.Base.White,
@@ -368,9 +515,7 @@ const styles = StyleSheet.create({
     },
     parentViewProduct: {
         width: "100%",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        position: "relative",
+        //   position: "relative",
     },
     txtInput: {
         width: "100%",
@@ -382,7 +527,7 @@ const styles = StyleSheet.create({
         backgroundColor: Color.Gray[200],
     },
     containerStyle: {
-        paddingBottom: 50,
+        paddingBottom: 100,
         paddingTop: 24,
         paddingHorizontal: 16,
         gap: 15,

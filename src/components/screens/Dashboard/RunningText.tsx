@@ -1,12 +1,18 @@
-// components/RunningText.tsx
 import Color from "@/constants/Color";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, StyleSheet, View } from "react-native";
+import {
+    Animated,
+    Easing,
+    LayoutChangeEvent,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 
 interface RunningTextProps {
-    texts: string[]; // array kalimat (contoh: ["Kalimat 1", "Kalimat 2", "Kalimat 3"])
-    duration?: number; // durasi tiap kalimat dalam ms (default 4000)
-    textStyle?: object; // style tambahan untuk teks
+    texts: string[];
+    duration?: number;
+    textStyle?: object;
 }
 
 const RunningText: React.FC<RunningTextProps> = ({
@@ -15,20 +21,23 @@ const RunningText: React.FC<RunningTextProps> = ({
     textStyle,
 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [containerWidth, setContainerWidth] = useState(0);
+    const [textWidth, setTextWidth] = useState(0);
     const translateX = useRef(new Animated.Value(0)).current;
 
     const currentText = texts[currentIndex];
 
     const animateText = () => {
-        translateX.setValue(300); // mulai dari kanan layar
+        if (!containerWidth || !textWidth) return;
+
+        translateX.setValue(containerWidth);
         Animated.timing(translateX, {
-            toValue: -300, // bergerak ke kiri
-            duration: duration,
+            toValue: -textWidth,
+            duration,
             easing: Easing.linear,
             useNativeDriver: true,
         }).start(({ finished }) => {
             if (finished) {
-                // lanjut ke kalimat berikutnya
                 setCurrentIndex((prev) => (prev + 1) % texts.length);
             }
         });
@@ -36,22 +45,28 @@ const RunningText: React.FC<RunningTextProps> = ({
 
     useEffect(() => {
         animateText();
-    }, [currentIndex]);
+    }, [currentIndex, containerWidth, textWidth]);
+
+    const onContainerLayout = (e: LayoutChangeEvent) => {
+        setContainerWidth(e.nativeEvent.layout.width);
+    };
+
+    const onTextLayout = (e: LayoutChangeEvent) => {
+        setTextWidth(e.nativeEvent.layout.width);
+    };
 
     return (
-        <View style={styles.container}>
-            <Animated.Text
+        <View style={styles.container} onLayout={onContainerLayout}>
+            <Animated.View
                 style={[
-                    styles.text,
-                    textStyle,
-                    {
-                        transform: [{ translateX }],
-                    },
+                    styles.animatedTextWrapper,
+                    { transform: [{ translateX }] },
                 ]}
-                numberOfLines={1}
             >
-                {currentText}
-            </Animated.Text>
+                <Text style={[styles.text, textStyle]} onLayout={onTextLayout}>
+                    {currentText}
+                </Text>
+            </Animated.View>
         </View>
     );
 };
@@ -67,10 +82,13 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: "center",
     },
+    animatedTextWrapper: {
+        position: "absolute",
+    },
     text: {
         fontSize: 16,
+        textAlign: "center",
         fontWeight: "600",
         color: "#333",
-        position: "absolute",
     },
 });

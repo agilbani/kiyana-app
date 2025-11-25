@@ -90,7 +90,7 @@ const CashFinanceHistory = () => {
     const getListLoan = async () => {
         setLoading(true);
         const res = await getMyLoans();
-        console.log("res loan", res);
+        //   console.log("res loan", res);
 
         setLoading(false);
         if (res.success) {

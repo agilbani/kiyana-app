@@ -1,4 +1,5 @@
 import { ThemedButton, ThemedGap, ThemedImage, ThemedText } from "@/components";
+import { OfficeStaticMap } from "@/components/screens/Attendance/MapStatis";
 import Color from "@/constants/Color";
 import Radius from "@/constants/Radius";
 import { ROUTES } from "@/constants/Routes";
@@ -15,7 +16,6 @@ import ILLocation from "@assets/images/permissions/ILocation.png";
 import { FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
-import { GoogleMaps } from "expo-maps";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -106,44 +106,14 @@ const AttendanceClockInScreen = () => {
             >
                 <IcArrowLeft width={24} height={24} />
             </TouchableOpacity>
-
-            <GoogleMaps.View
-                userLocation={{
-                    coordinates: {
-                        latitude: coords?.latitude ?? dataOfficeCoordinate?.lat,
-                        longitude:
-                            coords?.longitude ?? dataOfficeCoordinate?.lng,
-                    },
-                    followUserLocation: true,
+            <OfficeStaticMap
+                officeCoordinate={dataOfficeCoordinate}
+                radius={100}
+                userCoordinate={{
+                    latitude: coords?.latitude,
+                    longitude: coords?.longitude,
                 }}
-                style={styles.map}
-                uiSettings={{
-                    compassEnabled: true,
-                    zoomControlsEnabled: false,
-                    scrollGesturesEnabled: false,
-                    tiltGesturesEnabled: false,
-                    rotationGesturesEnabled: false,
-                }}
-                cameraPosition={{
-                    coordinates: {
-                        latitude: dataOfficeCoordinate?.lat,
-                        longitude: dataOfficeCoordinate?.lng,
-                    },
-                    zoom: 17,
-                }}
-                markers={markers}
-                circles={[
-                    {
-                        center: {
-                            latitude: dataOfficeCoordinate?.lat,
-                            longitude: dataOfficeCoordinate?.lng,
-                        },
-                        radius: 100, //100m
-                        color: Color.Purple[600] + "1A",
-                        lineWidth: 2,
-                        lineColor: Color.Button["Background-Primary"],
-                    },
-                ]}
+                userInsideRadius={isWithinRadius}
             />
 
             <View
@@ -230,10 +200,17 @@ const AttendanceClockInScreen = () => {
                         <TouchableOpacity
                             onPress={() => setRefresh(true)}
                             activeOpacity={0.9}
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 8,
+                            }}
                         >
                             <FontAwesome name="refresh" size={18} />
+                            <ThemedText type="Medium">
+                                Perbaharui Lokasi
+                            </ThemedText>
                         </TouchableOpacity>
-                        <ThemedText type="Medium">Perbaharui Lokasi</ThemedText>
                     </View>
                 </View>
                 <ThemedGap height="xs" />

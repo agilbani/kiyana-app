@@ -5,26 +5,31 @@ import {
     ThemedLoader,
     ThemedText,
 } from "@/components";
+import ModalEndFinishing from "@/components/modal/ModalEndFinishing";
 import ModalEntry from "@/components/modal/ModalEntry";
 import ModalReject from "@/components/modal/ModalReject";
 import ModalRejectImage from "@/components/modal/ModalRejectImage";
 import Color from "@/constants/Color";
 import { PATH } from "@/constants/PathAsset";
 import { useApp } from "@/context/AppContext";
+import { updateStatusFixing } from "@/services/masterService";
 import {
     approveProduction,
     getTaskByBatch,
     GetTaskByBatchResult,
     updateProduction,
 } from "@/services/productionService";
+import { getListProduction } from "@/services/taskService";
 import GlobalStyles from "@/styles/common";
 import { usePositionBottom } from "@/utils/bottomPosition";
+import LoadingManager from "@/utils/LoadingManager";
 import { scale } from "@/utils/scaleSize";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { router, useLocalSearchParams } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
+    Alert,
     Image,
     ScrollView,
     StatusBar,
@@ -39,7 +44,7 @@ const statusBarHeight = StatusBar.currentHeight;
 const DetailProductionScreen = () => {
     const { user } = useApp();
     const { bottom } = usePositionBottom();
-    console.log("cek user prod", user);
+    //  console.log("cek user prod", user);
 
     //id = batch code
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -52,16 +57,35 @@ const DetailProductionScreen = () => {
     const [showModalReject, setShowModalReject] = useState<boolean>(false);
     const [showModalImageReject, setShowModalImageReject] =
         useState<boolean>(false);
+    const [enableStartProccess, setEnableStartProccess] =
+        useState<boolean>(false);
+
+    const [modalEnd, setModalEnd] = useState(false);
 
     const handleStartSewing = async () => {
+        if (!enableStartProccess) {
+            Alert.alert(
+                "Tidak bisa memulai proses",
+                "Anda telah memiliki 2 atau lebih tugas yang sedang dikerjakan, selesaikan tugas anda terlebih dahulu.",
+                [
+                    {
+                        text: "Oke",
+                        onPress: () => router.back(),
+                    },
+                ]
+            );
+            return false;
+        }
         setLoadingAction(true);
-        const body = {
-            sewing_by: Number(user?.id),
-            start_sewing_at: moment(new Date()).format("YYYY-MM-DD HH:mm"),
-        };
+        const formData = new FormData();
+        formData.append("sewing_by", user?.id);
+        formData.append(
+            "start_sewing_at",
+            moment(new Date()).format("YYYY-MM-DD HH:mm")
+        );
         const res = await updateProduction(
             detailProduction?.data?.batch!,
-            body
+            formData
         );
         setLoadingAction(false);
         if (res.success) {
@@ -74,25 +98,21 @@ const DetailProductionScreen = () => {
             );
             getDetail();
         } else {
-            ToastAndroid.showWithGravityAndOffset(
-                "Gagal memulai proses jahit",
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM,
-                25,
-                50
-            );
+            Alert.alert("Gagal memulai proses jahit", res.message);
         }
     };
 
     const handleFinishSewing = async () => {
         setLoadingAction(true);
-        const body = {
-            sewing_by: Number(user?.id),
-            end_sewing_at: moment(new Date()).format("YYYY-MM-DD HH:mm"),
-        };
+        const formData = new FormData();
+        formData.append("sewing_by", user?.id);
+        formData.append(
+            "end_sewing_at",
+            moment(new Date()).format("YYYY-MM-DD HH:mm")
+        );
         const res = await updateProduction(
             detailProduction?.data?.batch!,
-            body
+            formData
         );
         setLoadingAction(false);
         if (res?.success) {
@@ -104,23 +124,46 @@ const DetailProductionScreen = () => {
                 50
             );
             router.back();
+        } else {
+            Alert.alert("Gagal memulai proses jahit", res.message);
         }
     };
 
     const handleStartFinishing = async () => {
+        if (!enableStartProccess) {
+            Alert.alert(
+                "Tidak bisa memulai proses",
+                "Anda telah memiliki 2 atau lebih tugas yang sedang dikerjakan, selesaikan tugas anda terlebih dahulu.",
+                [
+                    {
+                        text: "Oke",
+                        onPress: () => router.back(),
+                    },
+                ]
+            );
+            return false;
+        }
         setLoadingAction(true);
         const body = {
             finishing_by: Number(user?.id),
             start_finishing_at: moment(new Date()).format("YYYY-MM-DD HH:mm"),
         };
+        const formData = new FormData();
+        formData.append("finishing_by", user?.id);
+        formData.append(
+            "start_finishing_at",
+            moment(new Date()).format("YYYY-MM-DD HH:mm")
+        );
         const res = await updateProduction(
             detailProduction?.data?.batch!,
-            body
+            formData
         );
+        //   console.log("res finishing", res);
+
         setLoadingAction(false);
         if (res.success) {
             ToastAndroid.showWithGravityAndOffset(
-                "Berhasil memulai proses finishing ✅",
+                "Berhasil memulai proses finishing",
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
@@ -128,38 +171,51 @@ const DetailProductionScreen = () => {
             );
             getDetail();
         } else {
-            ToastAndroid.showWithGravityAndOffset(
-                "Gagal memulai proses finishing",
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM,
-                25,
-                50
-            );
+            Alert.alert("Gagal memulai proses jahit", res.message);
         }
     };
 
-    const handleFinishFinishing = async () => {
-        setLoadingAction(true);
+    const handleFinishFinishing = async (data: any) => {
+        setModalEnd(false);
+        //   setLoadingAction(true);
         const body = {
             finishing_by: Number(user?.id),
             end_finishing_at: moment(new Date()).format("YYYY-MM-DD HH:mm"),
         };
+        const formData = new FormData();
+        formData.append("finishing_by", user?.id);
+        formData.append(
+            "end_finishing_at",
+            moment(new Date()).format("YYYY-MM-DD HH:mm")
+        );
+        data.forEach((approval: any, index: number) => {
+            formData.append(`approvals[${index}][qty]`, approval.qty);
+            formData.append(`approvals[${index}][status]`, approval.status);
+            formData.append(
+                `approvals[${index}][attachments][0]`,
+                approval.attachments
+            );
+        });
+        console.log("formdata finish", formData);
+
         const res = await updateProduction(
             detailProduction?.data?.batch!,
-            body
+            formData
         );
         console.log("res finish", res);
 
         setLoadingAction(false);
         if (res?.success) {
             ToastAndroid.showWithGravityAndOffset(
-                "Berhasil menyelesaikan proses finishing ✅",
+                "Proses finishing selesai",
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
                 50
             );
             router.back();
+        } else {
+            Alert.alert("Gagal memulai proses jahit", res.message);
         }
     };
 
@@ -175,6 +231,42 @@ const DetailProductionScreen = () => {
         setShowModalReject(true);
     };
 
+    const startFixing = async (batch: string, stage: string) => {
+        //   console.log("lalal start");
+
+        const payload = {
+            batch: batch,
+            stage: stage,
+            status: "Being Repaired",
+        };
+        LoadingManager.show();
+        const res = await updateStatusFixing(payload);
+        LoadingManager.hide();
+        if (res.success) {
+            ShowToastMessage(res.message);
+            getDetail();
+        } else {
+            ShowToastMessage(res.message);
+        }
+    };
+
+    const endFixing = async (batch: string, stage: string) => {
+        const payload = {
+            batch: batch,
+            stage: stage,
+            status: "Finished Repaired",
+        };
+        LoadingManager.show();
+        const res = await updateStatusFixing(payload);
+        LoadingManager.hide();
+        if (res.success) {
+            ShowToastMessage(res.message);
+            getDetail();
+        } else {
+            ShowToastMessage(res.message);
+        }
+    };
+
     async function getDetail() {
         setLoading(true);
         const result = await getTaskByBatch(id);
@@ -183,53 +275,138 @@ const DetailProductionScreen = () => {
         setLoading(false);
         if (result.success && result.data) {
             setDetailProduction(result);
-            if (result.data.status === "Approved") {
-                setShowModalEntry(true);
-            }
-            console.log("Task fetched:", result.data);
+            // console.log("Task fetched:", result.data);
         } else {
             console.warn("Failed:", result.statusCode, result.message);
         }
     }
 
+    const checkStatus = async () => {
+        let payload = {
+            stage: user?.role?.name === "Penjahit" ? "sewing" : "finishing",
+        };
+        if (user?.role?.name === "Penjahit") {
+            payload.sewing_by = user?.id;
+            payload.beingSewn = true;
+        } else {
+            payload.finishing_by = user?.id;
+            payload.beingFinishing = true;
+        }
+        const res = await getListProduction(payload);
+        //   console.log("res proses", res);
+        if (res.length >= 3) {
+            setEnableStartProccess(false);
+        } else {
+            setEnableStartProccess(true);
+        }
+    };
+
     function showButtonByRole() {
         const status = detailProduction?.data?.status;
-        const isRejected =
-            detailProduction?.data?.rejected === null ? false : true;
-        const rejectedAt = detailProduction?.data?.rejected?.rejected_at;
         if (user?.role?.name === "Penjahit") {
-            if (status === "Selesai Dipotong" || status === "Sedang Dijahit") {
+            const isRejected =
+                detailProduction?.data?.approvals.sewing === null
+                    ? false
+                    : detailProduction?.data?.approvals.finishing?.status !==
+                      "Approved"
+                    ? //      ||
+                      //  detailProduction?.data?.approvals.sewing?.status ===
+                      //      "Being Repaired"
+                      true
+                    : false;
+            const labelReject =
+                detailProduction?.data?.approvals?.sewing?.status ?? "";
+            if (
+                status === "Selesai Dipotong" ||
+                status === "Sedang Dijahit" ||
+                isRejected
+            ) {
                 return (
                     <ButtonRoleSewing
                         data={data}
-                        onStartSewing={() => handleStartSewing()}
-                        onFinishSewing={() => handleFinishSewing()}
+                        onStartSewing={() => {
+                            if (isRejected) {
+                                startFixing(
+                                    detailProduction?.data?.batch ?? "",
+                                    "sewing"
+                                );
+                            } else {
+                                handleStartSewing();
+                            }
+                        }}
+                        onFinishSewing={() => {
+                            if (isRejected) {
+                                endFixing(
+                                    detailProduction?.data?.batch ?? "",
+                                    "sewing"
+                                );
+                            } else {
+                                handleFinishSewing();
+                            }
+                        }}
                         loading={loadingAction}
+                        isRejected={isRejected}
+                        labelReject={labelReject}
                     />
                 );
             }
         } else if (user?.role?.name === "Finishing") {
-            if (status === "Selesai Dijahit" || status === "Proses Finishing") {
+            const isRejected =
+                detailProduction?.data?.approvals.finishing === null
+                    ? false
+                    : detailProduction?.data?.approvals.finishing?.status ===
+                          "Reject (Bisa Diperbaiki)" ||
+                      detailProduction?.data?.approvals.finishing?.status ===
+                          "Being Repaired"
+                    ? true
+                    : false;
+            const labelReject =
+                detailProduction?.data?.approvals.finishing?.status;
+
+            if (
+                status === "Selesai Dijahit" ||
+                status === "Proses Finishing" ||
+                isRejected
+            ) {
                 return (
                     <ButtonRoleFinishing
                         data={data}
-                        onPressStart={() => handleStartFinishing()}
-                        onPressFinish={() => handleFinishFinishing()}
+                        onPressStart={() => {
+                            //  if (isRejected) {
+                            //      startFixing(
+                            //          detailProduction?.data?.batch ?? "",
+                            //          "finishing"
+                            //      );
+                            //  } else {
+                            //      handleStartFinishing();
+                            //  }
+                            handleStartFinishing();
+                        }}
+                        onPressFinish={() => {
+                            //  if (isRejected) {
+                            //      endFixing(
+                            //          detailProduction?.data?.batch ?? "",
+                            //          "finishing"
+                            //      );
+                            //  } else {
+                            //      //   handleFinishFinishing();
+                            //      setModalEnd(true);
+                            //  }
+                            setModalEnd(true);
+                        }}
                         loading={loadingAction}
+                        // isRejected={isRejected}
+                        // labelReject={labelReject}
                     />
                 );
             }
         } else if (user?.role?.name === "Staff Gudang") {
-            if (status === "Complated") {
+            if (status === "Complated" || status === "Approved") {
                 return (
                     <ButtonRoleWarehouse
                         data={data}
                         onPressApprove={() => {
-                            if (data.status === "Approved") {
-                                setShowModalEntry(true);
-                            } else {
-                                handleApprove();
-                            }
+                            setShowModalEntry(true);
                         }}
                         onPressReject={() => handleReject()}
                     />
@@ -255,6 +432,7 @@ const DetailProductionScreen = () => {
     useEffect(() => {
         if (id) {
             getDetail();
+            checkStatus();
         }
     }, [id]);
 
@@ -276,7 +454,7 @@ const DetailProductionScreen = () => {
         );
     }
     const data = detailProduction.data;
-    console.log("task detail", data);
+    //  console.log("task detail", data);
 
     return (
         <View style={styles.page}>
@@ -303,7 +481,7 @@ const DetailProductionScreen = () => {
                                 Jumlah yang perlu diselesaikan:
                             </ThemedText>
                             <ThemedGap width="xs" />
-                            <ThemedText>{data?.qty}</ThemedText>
+                            <ThemedText>{data?.qty} pcs</ThemedText>
                         </View>
                         <View style={GlobalStyles.rowSpaceBetween}>
                             <ThemedText type="SemiBold">Warna:</ThemedText>
@@ -366,12 +544,66 @@ const DetailProductionScreen = () => {
                                 Target Produksi:
                             </ThemedText>
                             <ThemedGap width="xs" />
-                            <ThemedText>
-                                {data?.production_item?.qty}{" "}
-                                {data?.production_item?.unit}
-                            </ThemedText>
+                            <ThemedText>{data?.qty} pcs</ThemedText>
                         </View>
                     </View>
+                    {detailProduction.data?.approvals.finishing !== null &&
+                        detailProduction.data?.approvals?.finishing?.status ===
+                            "Reject (Bisa Diperbaiki)" &&
+                        user?.role?.name === "Penjahit" && (
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    paddingHorizontal: 10,
+                                }}
+                            >
+                                <View />
+                                <TouchableOpacity
+                                    activeOpacity={0.9}
+                                    style={{
+                                        borderRadius: 6,
+                                        paddingVertical: 4,
+                                        paddingHorizontal: 8,
+                                        backgroundColor: Color.Green[500],
+                                    }}
+                                    onPress={() => {
+                                        if (
+                                            detailProduction.data?.approvals
+                                                ?.finishing?.status ===
+                                            "Reject (Bisa Diperbaiki)"
+                                        ) {
+                                            startFixing(
+                                                detailProduction?.data?.batch ??
+                                                    "",
+                                                "sewing"
+                                            );
+                                        } else {
+                                            if (
+                                                detailProduction.data?.approvals
+                                                    ?.finishing?.status ===
+                                                "Being Repaired"
+                                            ) {
+                                                endFixing(
+                                                    detailProduction?.data
+                                                        ?.batch ?? "",
+                                                    "sewing"
+                                                );
+                                            }
+                                        }
+                                    }}
+                                >
+                                    <ThemedText color={Color.Base.White}>
+                                        {detailProduction.data?.approvals
+                                            ?.finishing?.status ===
+                                        "Reject (Bisa Diperbaiki)"
+                                            ? "Mulai"
+                                            : "Selesai"}{" "}
+                                        Perbaikan
+                                    </ThemedText>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     {detailProduction.data.rejected !== null && (
                         <>
                             <View style={styles.gap} />
@@ -412,6 +644,14 @@ const DetailProductionScreen = () => {
                     )}
                 </ScrollView>
             )}
+            <ModalEndFinishing
+                show={modalEnd}
+                onClose={() => setModalEnd(false)}
+                submit={(data: any) => {
+                    console.log("data end finishing", data);
+                    handleFinishFinishing(data);
+                }}
+            />
             <ModalRejectImage
                 visible={showModalImageReject}
                 onClose={() => setShowModalImageReject(false)}
@@ -447,26 +687,38 @@ const ButtonRoleSewing = ({
     onStartSewing,
     onFinishSewing,
     loading,
+    isRejected,
+    labelReject,
 }: any) => {
     return (
         <View style={styles.viewRowBtn}>
             <View style={{ width: "48%" }}>
                 <ThemedButton
-                    title="Mulai Jahit"
+                    title={`Mulai ${isRejected ? "Perbaikan" : "Jahit"}`}
                     style={{ marginTop: 10 }}
-                    disabled={data.start_sewing_at !== null}
+                    disabled={
+                        isRejected
+                            ? // && labelReject.toLowerCase().includes("bisa diperbaiki")
+                              false
+                            : data.start_sewing_at !== null
+                    }
                     onPress={onStartSewing}
                     loading={loading}
                 />
             </View>
             <View style={{ width: "48%" }}>
                 <ThemedButton
-                    title="Selesai Jahit"
+                    title={`Selesai ${isRejected ? "Perbaikan" : "Jahit"}`}
                     style={{ marginTop: 10 }}
                     disabled={
-                        data.start_sewing_at === null ||
-                        (data.start_sewing_at !== null &&
-                            data.end_sewing_at !== null)
+                        isRejected
+                            ? // && labelReject.toLowerCase().includes("bisa diperbaiki")
+                              true
+                            : labelReject === "Being Repaired"
+                            ? false
+                            : data.start_sewing_at === null ||
+                              (data.start_sewing_at !== null &&
+                                  data.end_sewing_at !== null)
                     }
                     onPress={onFinishSewing}
                     loading={loading}
@@ -481,23 +733,37 @@ const ButtonRoleFinishing = ({
     onPressStart,
     onPressFinish,
     loading,
+    isRejected,
+    labelReject,
 }: any) => {
     return (
         <View style={styles.viewRowBtn}>
             <View style={{ width: "48%" }}>
                 <ThemedButton
-                    title="Mulai Proses Finishing"
+                    title={`Mulai Proses ${
+                        isRejected ? "Perbaikan" : "Finishing"
+                    }`}
                     style={{ marginTop: 10 }}
-                    disabled={data.start_finishing_at !== null}
+                    disabled={
+                        isRejected &&
+                        labelReject.toLowerCase().includes("bisa diperbaiki")
+                            ? false
+                            : data.start_finishing_at !== null
+                    }
                     onPress={onPressStart}
                     loading={loading}
                 />
             </View>
             <View style={{ width: "48%" }}>
                 <ThemedButton
-                    title="Selesai Finishing"
+                    title={`Selesai ${isRejected ? "Perbaikan" : "Finishing"}`}
                     style={{ marginTop: 10 }}
-                    disabled={data.start_finishing_at === null}
+                    disabled={
+                        isRejected &&
+                        labelReject.toLowerCase().includes("bisa diperbaiki")
+                            ? true
+                            : data.start_finishing_at === null
+                    }
                     onPress={onPressFinish}
                     loading={loading}
                 />
@@ -509,17 +775,15 @@ const ButtonRoleFinishing = ({
 const ButtonRoleWarehouse = ({ data, onPressApprove, onPressReject }: any) => {
     return (
         <View style={styles.viewRowBtn}>
-            <View style={{ width: "48%" }}>
+            <View style={{ width: "100%" }}>
                 <ThemedButton
-                    title={
-                        data.status === "Complated" ? "Approve" : "Proses Entry"
-                    }
+                    title={"Proses Entry"}
                     style={{ marginTop: 10, borderRadius: 6 }}
                     // disabled={true}
                     onPress={onPressApprove}
                 />
             </View>
-            <View style={{ width: "48%" }}>
+            {/* <View style={{ width: "48%" }}>
                 <ThemedButton
                     title="Reject"
                     variant="outline"
@@ -536,7 +800,7 @@ const ButtonRoleWarehouse = ({ data, onPressApprove, onPressReject }: any) => {
                     disabled={data.status === "Approved"}
                     onPress={onPressReject}
                 />
-            </View>
+            </View> */}
         </View>
     );
 };

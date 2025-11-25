@@ -15,7 +15,7 @@ import { IcCalendar } from "@assets/icons";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ScrollView,
     StatusBar,
@@ -76,7 +76,6 @@ const Absence = () => {
         setLoading(true);
         const res = await getAbsence(params);
         setLoading(false);
-        console.log("data absen", res);
         if (res.success) {
             setHistoryAbsence(res.data);
         }

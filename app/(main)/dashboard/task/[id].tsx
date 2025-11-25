@@ -33,6 +33,7 @@ import {
     Pressable,
     StatusBar,
     StyleSheet,
+    Text,
     TouchableOpacity,
     View,
 } from "react-native";
@@ -41,10 +42,10 @@ const statusBarHeight = StatusBar.currentHeight;
 
 const DetailTaskScreen = () => {
     const { user } = authContext();
-    console.log("user [id]", user);
+    //  console.log("user [id]", user);
 
     const { id } = useLocalSearchParams<{ id: any }>();
-    console.log("id detail", id);
+    //  console.log("id detail", id);
 
     const [isScanning, setIsScanning] = useState(false);
     const [scanned, setScanned] = useState(false);
@@ -104,10 +105,10 @@ const DetailTaskScreen = () => {
     };
 
     const handleSubmit = async () => {
-        console.log("Submit All Batches: ", batches);
+        //   console.log("Submit All Batches: ", batches);
         setLoadingAction(true);
         const res = await createProduction(batches);
-        console.log("resres", res);
+        //   console.log("resres", res);
 
         setLoadingAction(false);
         if (res.success) {
@@ -118,12 +119,16 @@ const DetailTaskScreen = () => {
         }
     };
 
+    const deleteItem = (index: number) => {
+        setBatches((prev) => prev.filter((_, i) => i !== index));
+    };
+
     const getDetail = async () => {
         setLoadings(true);
         const result = await getTaskById(id);
         setLoadings(false);
         if (result.success && result.data) {
-            console.log("Task fetched:", result.data);
+            // console.log("Task fetched =====:", result.data);
             setDetailData(result);
             const items = result.data.items
                 .filter((v: any) => {
@@ -137,11 +142,19 @@ const DetailTaskScreen = () => {
                 }));
             setListItems(items);
         } else {
-            console.warn("Failed:", result.statusCode, result.message);
+            // console.warn("Failed:", result.statusCode, result.message);
         }
     };
-    console.log("cek listItems", listItems);
-    console.log("cek currentBatch", currentBatch);
+
+    const findItem = (id: any) => {
+        const items = listItems.find((v: any) => {
+            return v.value === id;
+        });
+        return items?.name;
+    };
+
+    //  console.log("cek listItems", listItems);
+    //  console.log("cek batch", batches);
 
     useEffect(() => {
         getDetail();
@@ -258,10 +271,33 @@ const DetailTaskScreen = () => {
                     keyboardShouldPersistTaps="handled"
                     renderItem={({ item, index }) => (
                         <View style={styles.batchItem}>
-                            <ThemedText type="Bold">
-                                Batch #{index + 1}
-                            </ThemedText>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <ThemedText type="Bold">
+                                    Batch #{index + 1}
+                                </ThemedText>
+                                <TouchableOpacity
+                                    style={styles.deleteButton}
+                                    onPress={() => deleteItem(index)}
+                                >
+                                    <Text
+                                        style={{
+                                            color: "white",
+                                            fontWeight: "bold",
+                                        }}
+                                    >
+                                        ×
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                             <ThemedText>Barcode: {item.batch}</ThemedText>
+                            <ThemedText style={{ maxWidth: "60%" }}>
+                                Item: {findItem(item.production_item_id)}
+                            </ThemedText>
                             <ThemedText>Qty: {item.qty}</ThemedText>
                             {/* <ThemedText>Catatan: {item.notes}</ThemedText> */}
                         </View>
@@ -311,6 +347,18 @@ const DetailTaskScreen = () => {
 export default DetailTaskScreen;
 
 const styles = StyleSheet.create({
+    deleteButton: {
+        position: "absolute",
+        top: 8,
+        right: 8,
+        backgroundColor: "#e53935",
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 10,
+    },
     page: {
         paddingTop: statusBarHeight ? statusBarHeight : scale(46),
         backgroundColor: Color.Background.Background,

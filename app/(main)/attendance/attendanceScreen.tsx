@@ -32,8 +32,15 @@ import {
 const statusBarHeight = StatusBar.currentHeight;
 
 const AttendanceScreen = () => {
-    const { user, saveDataSetting, saveAttendance, setSelectAttendance } =
-        useApp();
+    const {
+        user,
+        saveDataSetting,
+        saveAttendance,
+        setSelectAttendance,
+        savedIdLateSchedule,
+    } = useApp();
+    //  console.log("cek savedIdLateSchedule", savedIdLateSchedule);
+
     const isKartap = user?.type === "TETAP";
     const isHost = user?.is_host;
     const { bottom } = usePositionBottom();
@@ -82,13 +89,16 @@ const AttendanceScreen = () => {
         LoadingManager.show();
         const res = await getCurrentAttendance(isHost ? "host" : "shifted");
         LoadingManager.hide();
-        console.log("res att", res);
+        //   console.log("res att", res);
         if (isHost && res.data) {
             setDataHost(res.data);
         } else {
             if (res.success) {
                 setDataShift(res.data);
                 saveAttendance(res.data);
+            } else {
+                saveAttendance(null);
+                setDataShift({});
             }
         }
     };
@@ -97,6 +107,80 @@ const AttendanceScreen = () => {
         const res = await getAllSettings();
         if (res.success && res.data) {
             saveDataSetting(res.data);
+        }
+    };
+
+    const showButtonAttendance = () => {
+        if (isKartap) {
+            if (!isHost) {
+                if (user.shift_id !== null) {
+                    if (Object.keys(dataShift).length === 0) {
+                        return (
+                            <TouchableOpacity
+                                activeOpacity={0.9}
+                                onPress={() =>
+                                    router.push(ROUTES.ATTENDANCE_CLOCKIN)
+                                }
+                                style={[styles.footer, { bottom: 0 }]}
+                            >
+                                <Image
+                                    source={FaceRecognationIcon}
+                                    style={styles.imgFace}
+                                />
+                                <ThemedText
+                                    type="Medium"
+                                    color={Color.Base.White}
+                                >
+                                    {dataShift?.clock_in
+                                        ? "Absen Pulang"
+                                        : "Absen sekarang, Sebelum Telat"}
+                                </ThemedText>
+                            </TouchableOpacity>
+                        );
+                    } else {
+                        if (dataShift?.clock_out === null) {
+                            return (
+                                <TouchableOpacity
+                                    activeOpacity={0.9}
+                                    onPress={() =>
+                                        router.push(ROUTES.ATTENDANCE_CLOCKIN)
+                                    }
+                                    style={[styles.footer, { bottom: 0 }]}
+                                >
+                                    <Image
+                                        source={FaceRecognationIcon}
+                                        style={styles.imgFace}
+                                    />
+                                    <ThemedText
+                                        type="Medium"
+                                        color={Color.Base.White}
+                                    >
+                                        {dataShift?.clock_in
+                                            ? "Absen Pulang"
+                                            : "Absen sekarang, Sebelum Telat"}
+                                    </ThemedText>
+                                </TouchableOpacity>
+                            );
+                        }
+                    }
+                }
+            } else {
+                if (savedIdLateSchedule) {
+                    return (
+                        <TouchableOpacity
+                            activeOpacity={0.9}
+                            onPress={() =>
+                                router.push(ROUTES.ATTENDANCE_CLOCKIN)
+                            }
+                            style={[styles.footer, { bottom: 10 }]}
+                        >
+                            <ThemedText type="Medium" color={Color.Base.White}>
+                                Absen Pulang Host Malam
+                            </ThemedText>
+                        </TouchableOpacity>
+                    );
+                }
+            }
         }
     };
 
@@ -215,29 +299,37 @@ const AttendanceScreen = () => {
                 <AttendanceScedule
                     isHost={isHost ?? false}
                     dataHost={dataHost}
-                    dataShift={user?.shift}
+                    dataShift={dataShift}
                     setSelectAttendance={(data: any) =>
                         setSelectAttendance(data)
                     }
+                    shiftName={
+                        user?.shift_id !== null ? user?.shift?.name : "-"
+                    }
+                    shift_id={user?.shift_id}
                 />
             </ScrollView>
-            {isKartap && !isHost && (
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={() => router.push(ROUTES.ATTENDANCE_CLOCKIN)}
-                    style={[styles.footer, { bottom }]}
-                >
-                    <Image
-                        source={FaceRecognationIcon}
-                        style={styles.imgFace}
-                    />
-                    <ThemedText type="Medium" color={Color.Base.White}>
-                        {dataShift?.clock_in
-                            ? "Absen Pulang"
-                            : "Absen sekarang, Sebelum Telat"}
-                    </ThemedText>
-                </TouchableOpacity>
-            )}
+            {showButtonAttendance()}
+            {/* {isKartap &&
+                !isHost &&
+                user?.shift_id !== null && 
+                dataShift?.clock_out === null && (
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        onPress={() => router.push(ROUTES.ATTENDANCE_CLOCKIN)}
+                        style={[styles.footer, { bottom: 0 }]}
+                    >
+                        <Image
+                            source={FaceRecognationIcon}
+                            style={styles.imgFace}
+                        />
+                        <ThemedText type="Medium" color={Color.Base.White}>
+                            {dataShift?.clock_in
+                                ? "Absen Pulang"
+                                : "Absen sekarang, Sebelum Telat"}
+                        </ThemedText>
+                    </TouchableOpacity>
+                )} */}
         </View>
     );
 };

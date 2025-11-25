@@ -1,6 +1,5 @@
 import {
     CustomDropdown,
-    ThemedBadge,
     ThemedGap,
     ThemedHeader,
     ThemedText,
@@ -42,8 +41,7 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                 <ThemedGap width="xs" />
                 <ThemedText type="Medium" size="md" style={GlobalStyles.flex}>
                     {/* {`${item.orderName} (${item.quantity} pcs)`} */}
-                    {`${item.product_metadata?.name}`} -{" "}
-                    {`${item.product_metadata?.material?.name}`}
+                    {`${item.product_name}`} - {`${item.variant ?? "-"}`}
                 </ThemedText>
             </View>
             <ThemedGap height="sm" />
@@ -59,15 +57,15 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                             {
                                 borderWidth: 1,
                                 borderColor: getColorByDateDifference(
-                                    moment(item.deadline * 1000).format(
-                                        "YYYY-MM-DD"
-                                    ),
+                                    moment(
+                                        moment(item.deadline).unix() * 1000
+                                    ).format("YYYY-MM-DD"),
                                     moment(new Date()).format("YYYY-MM-DD")
                                 ).color,
                                 backgroundColor: getColorByDateDifference(
-                                    moment(item.deadline * 1000).format(
-                                        "YYYY-MM-DD"
-                                    ),
+                                    moment(
+                                        moment(item.deadline).unix() * 1000
+                                    ).format("YYYY-MM-DD"),
                                     moment(new Date()).format("YYYY-MM-DD")
                                 ).color,
                             },
@@ -76,7 +74,14 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                         <IcActiveCalendar
                             width={16}
                             height={16}
-                            stroke={Color.Gray[500]}
+                            stroke={
+                                getColorByDateDifference(
+                                    moment(
+                                        moment(item.deadline).unix() * 1000
+                                    ).format("YYYY-MM-DD"),
+                                    moment(new Date()).format("YYYY-MM-DD")
+                                ).fontColor
+                            }
                         />
                         <ThemedGap width="xxs" />
                         <ThemedText
@@ -84,9 +89,9 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                             size="xs"
                             color={
                                 getColorByDateDifference(
-                                    moment(item.deadline * 1000).format(
-                                        "YYYY-MM-DD"
-                                    ),
+                                    moment(
+                                        moment(item.deadline).unix() * 1000
+                                    ).format("YYYY-MM-DD"),
                                     moment(new Date()).format("YYYY-MM-DD")
                                 ).fontColor
                             }
@@ -99,22 +104,20 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                             size="xs"
                             color={
                                 getColorByDateDifference(
-                                    moment(item.deadline * 1000).format(
-                                        "YYYY-MM-DD"
-                                    ),
+                                    moment(
+                                        moment(item.deadline).unix() * 1000
+                                    ).format("YYYY-MM-DD"),
                                     moment(new Date()).format("YYYY-MM-DD")
                                 ).fontColor
                             }
                         >
-                            {moment(item.deadline * 1000).format(
-                                "YYYY-MM-DD HH:mm"
-                            )}
+                            {moment(item.deadline).format("YYYY-MM-DD HH:mm")}
                         </ThemedText>
                     </View>
                 ) : (
                     <View />
                 )}
-                <ThemedBadge
+                {/* <ThemedBadge
                     text={item.product_metadata?.level}
                     backgroundColor={
                         item.product_metadata?.level === "SULIT"
@@ -122,7 +125,7 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                             : Color.Green[500]
                     }
                     textColor={Color.Base.White}
-                />
+                /> */}
             </View>
         </TouchableOpacity>
     );
@@ -150,6 +153,13 @@ const PriorityTask = () => {
         []
     );
 
+    const transformResponse = (response: any) => {
+        return Object.entries(response).map(([productName, items]) => ({
+            product_name: productName,
+            ...items[0],
+        }));
+    };
+
     const getTask = async () => {
         setLoading(true);
         const dateRange = getDateRange(rangeDate);
@@ -158,14 +168,16 @@ const PriorityTask = () => {
                 dateRange.startDate,
                 dateRange.endDate,
                 status ?? "Planned",
-                "productions/plans"
+                "productions/priorities"
             );
             setLoading(false);
-            console.log("res task", tasks);
-            const filteredDate = tasks.filter((v: any) => {
-                return v.deadline !== null;
-            });
-            setListTask(filteredDate);
+            // console.log("res task", tasks);
+            const flattenResponse = transformResponse(tasks.data);
+            // console.log("res flattenResponse", flattenResponse);
+            // const filteredDate = tasks.filter((v: any) => {
+            //     return v.deadline !== null;
+            // });
+            setListTask(flattenResponse);
             setRefreshing(false);
         } catch (err) {
             setLoading(false);

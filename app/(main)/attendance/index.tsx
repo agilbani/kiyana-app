@@ -14,7 +14,7 @@ import { IcCalendar } from "@assets/icons";
 import { ListRenderItem } from "@shopify/flash-list";
 import { router, useFocusEffect } from "expo-router";
 import moment from "moment";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import AttendancePage from "./attendanceScreen";
 
@@ -103,7 +103,7 @@ const AttendanceScreen = () => {
         } else {
             res = await getCurrentAttendance("shifted");
         }
-        console.log("res attendance", res);
+        //   console.log("res attendance", res);
         if (res) {
             if (res.success && res?.data) {
                 setDataAttendence(res.data);
@@ -117,7 +117,7 @@ const AttendanceScreen = () => {
     const getHistoryAttendance = async () => {
         setLoadingStatistic(true);
         const res = await getMyAttendance(start, end);
-        console.log("cek my attendance", res);
+        //   console.log("cek my attendance", res);
         setLoadingStatistic(false);
         if (res.success) {
             setStatistic(res.data.statistic);

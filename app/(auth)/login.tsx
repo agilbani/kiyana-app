@@ -14,7 +14,7 @@ import GlobalStyles from "@/styles/common";
 import { LoginForm } from "@/types/form";
 import { IcPassword, IcUserID } from "@assets/icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 
@@ -41,6 +41,8 @@ const LoginScreen = () => {
         setLoading(true);
         try {
             const response = await login(data.email, data.password);
+            console.log("res login", response);
+
             if (response.status === 200) {
                 getListSetting();
             } else {

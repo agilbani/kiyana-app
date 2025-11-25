@@ -23,7 +23,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import { CameraView } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
     ActivityIndicator,
@@ -316,12 +316,12 @@ const POSMenuScreen = () => {
     );
 
     const onSubmit = async (data: any) => {
-        console.log("data form", data);
+        //   console.log("data form", data);
         ref.current?.hide();
 
         setLoading(true);
         const res = await addSelling(data, accessories);
-        console.log("res post selling", res);
+        //   console.log("res post selling", res);
 
         setLoading(false);
         if (res.success) {

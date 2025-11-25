@@ -1,7 +1,7 @@
 import {
     CustomDropdown,
     ThemedButton,
-    ThemedContainer,
+    ThemedDatePicker,
     ThemedGap,
     ThemedHeader,
     ThemedText,
@@ -16,12 +16,12 @@ import {
     postRequestChangeAttendance,
 } from "@/services/attendanceService";
 import { router } from "expo-router";
+import moment from "moment";
 import { useEffect, useState } from "react";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, ScrollView, StatusBar, StyleSheet, View } from "react-native";
 
 const RequestChangeShift = () => {
     const { user, updateUser } = useApp();
-    console.log("cek user", user);
 
     const [selectedShift, setSelectedShift] = useState("");
     const [reason, setReason] = useState("");
@@ -32,6 +32,9 @@ const RequestChangeShift = () => {
     const [listSignedHost, setListSignedHost] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [isSubmit, setIsSubmit] = useState<boolean>(false);
+    const [startDate, setStartDate] = useState<any>("");
+    const [endDate, setEndDate] = useState<any>("");
+    const [isPermanent, setIsPermanent] = useState<boolean>(false);
 
     const getAttendanceHost = async () => {
         setLoading(true);
@@ -42,8 +45,6 @@ const RequestChangeShift = () => {
             getCurrHost,
             getAllHost,
         ]);
-        console.log("res currentHost", currentHost);
-        console.log("res allHost", allHost);
         if (currentHost.success) {
             let hostData = [];
             const datas = currentHost.data.filter((v: any) => {
@@ -51,11 +52,10 @@ const RequestChangeShift = () => {
             });
             for (let i = 0; i < datas.length; i++) {
                 hostData.push({
-                    name: `${datas[i].start_time} - ${datas[i].end_time}`,
+                    name: `${datas[i].date} - ${datas[i].start_time} - ${datas[i].end_time}`,
                     value: datas[i].id,
                 });
             }
-            // console.log("cek hostData", hostData);
 
             setListSignedHost(hostData);
         }
@@ -63,7 +63,7 @@ const RequestChangeShift = () => {
             let hostData = [];
             for (let i = 0; i < allHost.data.length; i++) {
                 hostData.push({
-                    name: `${allHost.data[i].start_time} - ${allHost.data[i].end_time}`,
+                    name: `${allHost.data[i].date} - ${allHost.data[i].start_time} - ${allHost.data[i].end_time}`,
                     value: allHost.data[i].id,
                 });
             }
@@ -83,7 +83,7 @@ const RequestChangeShift = () => {
         ]);
         if (allShift.success) {
             let data = [];
-            let filtered = allShift.data.filter((v) => {
+            let filtered = allShift.data.filter((v: any) => {
                 return v.id !== user?.shift_id;
             });
             for (let i = 0; i < filtered.length; i++) {
@@ -112,6 +112,9 @@ const RequestChangeShift = () => {
             if (reason == "") {
                 disabled = true;
             }
+            if (startDate == "") {
+                disabled = true;
+            }
         }
         return disabled;
     };
@@ -127,8 +130,10 @@ const RequestChangeShift = () => {
                   from_shift_id: user?.shift_id,
                   to_shift_id: selectedShift,
                   reason,
+                  start_date: startDate,
+                  end_date: endDate,
+                  is_temporary: endDate ? true : false,
               };
-        console.log("cek payload", payload);
 
         setIsSubmit(true);
         const res = await postRequestChangeAttendance(
@@ -170,10 +175,19 @@ const RequestChangeShift = () => {
     }, []);
 
     return (
-        <ThemedContainer>
+        <View
+            style={{
+                flex: 1,
+                backgroundColor: Color.Base.White,
+                paddingTop: StatusBar.currentHeight,
+            }}
+        >
             <ThemedHeader title="Ajukan Pergantian Shift" />
-            <View style={{ padding: 16 }}>
-                <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{ padding: 16, flex: 1 }}>
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                >
                     <ThemedText>Nama Karyawan</ThemedText>
                     <ThemedGap height="xxs" />
                     <View style={styles.viewDisabled}>
@@ -190,15 +204,39 @@ const RequestChangeShift = () => {
                     <ThemedGap height="xl" />
                     {/** View Shift */}
                     {!user?.is_host ? (
-                        <CustomDropdown
-                            label="Pilih Shift"
-                            items={listShift}
-                            onSelectItem={(selected: any) =>
-                                setSelectedShift(selected.value)
-                            }
-                            value={selectedShift}
-                            maxHeight={200}
-                        />
+                        <View style={{ gap: 14 }}>
+                            <CustomDropdown
+                                label="Pilih Shift"
+                                items={listShift}
+                                onSelectItem={(selected: any) =>
+                                    setSelectedShift(selected.value)
+                                }
+                                value={selectedShift}
+                                maxHeight={200}
+                            />
+                            <ThemedDatePicker
+                                label="Tanggal Mulai"
+                                minimumDate="today"
+                                onChange={(date: any) =>
+                                    setStartDate(
+                                        moment(date, "DD-MM-YYYY").format(
+                                            "YYYY-MM-DD"
+                                        )
+                                    )
+                                }
+                            />
+                            <ThemedDatePicker
+                                label="Tanggal Selesai (kosongkan jika permanen)"
+                                minimumDate="today"
+                                onChange={(date: any) =>
+                                    setEndDate(
+                                        moment(date, "DD-MM-YYYY").format(
+                                            "YYYY-MM-DD"
+                                        )
+                                    )
+                                }
+                            />
+                        </View>
                     ) : (
                         <>
                             <CustomDropdown
@@ -242,7 +280,7 @@ const RequestChangeShift = () => {
                     />
                 </ScrollView>
             </View>
-        </ThemedContainer>
+        </View>
     );
 };
 

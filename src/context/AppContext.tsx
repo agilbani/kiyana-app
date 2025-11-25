@@ -13,6 +13,7 @@ interface AppContextType {
     dataSetting: Setting[];
     dataCoords: any;
     dataSelectedAttendance: any;
+    savedIdLateSchedule: string | null;
     login: (
         email: string,
         password: string
@@ -22,11 +23,12 @@ interface AppContextType {
         message?: string;
     }>;
     logout: () => Promise<void>;
-    saveAttendance: (attendance: Attendance) => Promise<void>;
+    saveAttendance: (attendance: any) => Promise<void>;
     saveDataSetting: (dataSetting: Setting[]) => Promise<void>;
     setCoords: (data: any) => Promise<void>;
     setSelectAttendance: (data: any) => Promise<void>;
     updateUser: (data: any) => Promise<void>;
+    setLateScheduleId: (data: any) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -44,6 +46,8 @@ const AppContext = createContext<AppContextType>({
     dataSelectedAttendance: null,
     setSelectAttendance: async () => {},
     updateUser: async () => {},
+    savedIdLateSchedule: null,
+    setLateScheduleId: async () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -56,6 +60,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const [dataSetting, setDateSetting] = useState<Setting[]>([]);
     const [dataCoords, setDataCoords] = useState({});
     const [dataSelectedAttendance, setDataSelectedAttendance] = useState({});
+    const [savedIdLateSchedule, setSavedIdLateSchedule] = useState<
+        string | null
+    >(null);
 
     // Restore session from secure store
     useEffect(() => {
@@ -68,6 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             const storedDataAttendance = await getItem(
                 "selectedDataAttendance"
             );
+            const storedIdLateSchedule = await getItem("savedIdLateSchedule");
+            console.log("cek storedIdLateSchedule app", storedIdLateSchedule);
 
             if (storedToken && storedUser) {
                 setToken(storedToken);
@@ -85,14 +94,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             if (storedDataAttendance) {
                 setDataSelectedAttendance(JSON.parse(storedDataAttendance));
             }
+            if (storedIdLateSchedule) {
+                setSavedIdLateSchedule(storedIdLateSchedule);
+            }
             setLoading(false);
         })();
     }, []);
 
     const login: AppContextType["login"] = async (email, password) => {
+        console.log("login email", email);
+
         setLoading(true);
         try {
             const res = await loginUser(email, password);
+            console.log("login res1111", res);
             setLoading(false);
             if (res?.token) {
                 setUser(res.user);
@@ -111,6 +126,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 };
             }
         } catch (err: any) {
+            console.log("err login", err);
+
             setLoading(false);
             const status = err.response?.status;
             const message = err.response?.data?.message || "Login failed";
@@ -130,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         await deleteItem("dataAttendance");
         await deleteItem("dataSetting");
         await deleteItem("dataCoords");
-        await deleteItem("selectedDataAttendance");
+        //   await deleteItem("selectedDataAttendance");
     };
 
     const saveUser = async (response: LoginResponse) => {
@@ -150,7 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(newUser);
     };
 
-    const saveAttendance = async (data: Attendance) => {
+    const saveAttendance = async (data: any) => {
         setAttendance(data);
         await saveItem("dataAttendance", JSON.stringify(data));
     };
@@ -170,6 +187,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         await saveItem("selectedDataAttendance", JSON.stringify(data));
     };
 
+    const setLateScheduleId = async (data: any) => {
+        setSavedIdLateSchedule(data);
+        await saveItem("savedIdLateSchedule", data);
+    };
+
     return (
         <AppContext.Provider
             value={{
@@ -187,6 +209,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 setSelectAttendance,
                 dataSelectedAttendance,
                 updateUser,
+                savedIdLateSchedule,
+                setLateScheduleId,
             }}
         >
             {children}

@@ -1,6 +1,5 @@
 import {
     ThemedButton,
-    ThemedContainer,
     ThemedDatePicker,
     ThemedHeader,
     ThemedLoader,
@@ -20,8 +19,14 @@ import { usePositionBottom } from "@/utils/bottomPosition";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { router } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { useEffect, useState } from "react";
+import {
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    TextInput,
+    View,
+} from "react-native";
 
 interface Variant {
     id?: any;
@@ -42,7 +47,7 @@ const CreatePriorityProduct = () => {
     const [loadingGetStatus, setLoadingGetStatus] = useState(false);
     const [totalMaterial, setTotalMaterial] = useState("");
     const [isSubmit, setIsSubmit] = useState(false);
-    console.log("cek detailVariant===", detailVariant);
+    //  console.log("cek detailVariant===", detailVariant);
 
     const getData = async () => {
         const employeeList = getCuttingEmployee();
@@ -51,8 +56,8 @@ const CreatePriorityProduct = () => {
             employeeList,
             variantList,
         ]);
-        console.log("cek employee", employee);
-        console.log("cek variant", variant);
+        //   console.log("cek employee", employee);
+        //   console.log("cek variant", variant);
         if (employee.success) {
             let arr = [];
             for (let i = 0; i < employee.data.length; i++) {
@@ -79,7 +84,7 @@ const CreatePriorityProduct = () => {
     const checkDetailVariant = async (id: string) => {
         setLoadingGetStatus(true);
         const res = await getDetailProductVariant(id);
-        console.log("detail variant", res);
+        //   console.log("detail variant", res);
         setLoadingGetStatus(false);
         if (res.success) {
             if (res.data.production_status === "Sedang ada produksi") {
@@ -100,7 +105,7 @@ const CreatePriorityProduct = () => {
         };
         const res = await getProductionItems(params);
         setLoadingGetStatus(false);
-        console.log("cek prod items", res);
+        //   console.log("cek prod items", res);
         if (res.success && res.data.length > 0) {
             let arr = [];
             for (let i = 0; i < res.data.length; i++) {
@@ -132,7 +137,7 @@ const CreatePriorityProduct = () => {
             payload.material_usages = Number(totalMaterial);
             payload.cutting_by = selectedEmployee;
         }
-        console.log("cek payload create", payload);
+        //   console.log("cek payload create", payload);
         const res = await createProductionPriority(payload);
         setIsSubmit(false);
         if (res.success) {
@@ -183,115 +188,114 @@ const CreatePriorityProduct = () => {
     }, []);
 
     return (
-        <ThemedContainer>
-            <View style={styles.page}>
-                <ThemedHeader title="Buat Produk Prioritas" />
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{
-                        paddingTop: 24,
-                        paddingHorizontal: 16,
-                        paddingBottom: 100,
-                        gap: 15,
+        <View style={styles.page}>
+            <ThemedHeader title="Buat Produk Prioritas" />
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{
+                    paddingTop: 24,
+                    paddingHorizontal: 16,
+                    paddingBottom: 100,
+                    gap: 15,
+                }}
+            >
+                <CustomDropDown
+                    label="Produk Variant"
+                    items={listVariant}
+                    onSelectItem={(item: any) => {
+                        setSelectedVariant(item.value);
+                        checkDetailVariant(item.value);
                     }}
-                >
-                    <CustomDropDown
-                        label="Produk Variant"
-                        items={listVariant}
-                        onSelectItem={(item: any) => {
-                            setSelectedVariant(item.value);
-                            checkDetailVariant(item.value);
-                        }}
-                        value={selectedVariant}
-                        maxHeight={200}
-                    />
-                    <View style={{ gap: 4 }}>
-                        <ThemedText size="md">Dibuat Oleh</ThemedText>
-                        <TextInput
-                            placeholder=""
-                            style={styles.txtInput}
-                            editable={false}
-                            value={`${user?.first_name} ${user?.last_name}`}
-                        />
-                    </View>
-                    <View style={{ gap: 4 }}>
-                        <ThemedText size="md">Jumlah</ThemedText>
-                        <TextInput
-                            placeholder="Masukkan jumlah"
-                            style={[
-                                styles.txtInput,
-                                { backgroundColor: Color.Base.White },
-                            ]}
-                            value={qty}
-                            onChangeText={(text: string) => setQty(text)}
-                            keyboardType="number-pad"
-                        />
-                    </View>
-                    <ThemedDatePicker
-                        label="Deadline"
-                        minimumDate={new Date()}
-                        onChange={(date: any) => setSelectedDate(date)}
-                    />
-                    <View style={{ gap: 4 }}>
-                        <ThemedText size="md">Status Produksi</ThemedText>
-                        {loadingGetStatus ? (
-                            <ThemedLoader />
-                        ) : (
-                            <ThemedText size="md" type="Medium">
-                                {Object.keys(detailVariant).length > 0
-                                    ? "Sedang ada produksi"
-                                    : "Tidak ada produksi yang relevan"}
-                            </ThemedText>
-                        )}
-                    </View>
-                    {Object.keys(detailVariant).length > 0 ? (
-                        <CustomDropDown
-                            label="Data Produksi"
-                            items={listProductItems}
-                            onSelectItem={(item: any) =>
-                                setSelectedProductItems(item.value)
-                            }
-                            value={selectedProductItems}
-                        />
-                    ) : (
-                        <>
-                            <View style={{ gap: 4 }}>
-                                <ThemedText size="md">Jumlah Bahan</ThemedText>
-                                <TextInput
-                                    placeholder="Masukkan jumlah"
-                                    style={[
-                                        styles.txtInput,
-                                        { backgroundColor: Color.Base.White },
-                                    ]}
-                                    value={totalMaterial}
-                                    onChangeText={(text: string) =>
-                                        setTotalMaterial(text)
-                                    }
-                                    keyboardType="number-pad"
-                                />
-                            </View>
-                            <CustomDropDown
-                                label="Nama Karyawan (Tukang Potong)"
-                                items={listEmployee}
-                                onSelectItem={(val: any) =>
-                                    setSelectedEmployee(val.value)
-                                }
-                                value={selectedEmployee}
-                            />
-                        </>
-                    )}
-                </ScrollView>
-                <View style={[styles.footer, { bottom }]}>
-                    <ThemedButton
-                        title="Buat"
-                        textColor={Color.Base.White}
-                        onPress={createPlan}
-                        loading={isSubmit}
-                        disabled={validate()}
+                    value={selectedVariant}
+                    maxHeight={200}
+                />
+                <View style={{ gap: 4 }}>
+                    <ThemedText size="md">Dibuat Oleh</ThemedText>
+                    <TextInput
+                        placeholder=""
+                        style={styles.txtInput}
+                        editable={false}
+                        value={`${user?.first_name} ${user?.last_name}`}
                     />
                 </View>
+                <View style={{ gap: 4 }}>
+                    <ThemedText size="md">Jumlah</ThemedText>
+                    <TextInput
+                        placeholder="Masukkan jumlah"
+                        style={[
+                            styles.txtInput,
+                            { backgroundColor: Color.Base.White },
+                        ]}
+                        value={qty}
+                        onChangeText={(text: string) => setQty(text)}
+                        keyboardType="number-pad"
+                    />
+                </View>
+                <ThemedDatePicker
+                    label="Deadline"
+                    minimumDate={new Date()}
+                    onChange={(date: any) => setSelectedDate(date)}
+                />
+                <View style={{ gap: 4 }}>
+                    <ThemedText size="md">Status Produksi</ThemedText>
+                    {loadingGetStatus ? (
+                        <ThemedLoader />
+                    ) : (
+                        <ThemedText size="md" type="Medium">
+                            {Object.keys(detailVariant).length > 0
+                                ? "Sedang ada produksi"
+                                : "Tidak ada produksi yang relevan"}
+                        </ThemedText>
+                    )}
+                </View>
+                {Object.keys(detailVariant).length > 0 ? (
+                    <CustomDropDown
+                        label="Data Produksi"
+                        items={listProductItems}
+                        onSelectItem={(item: any) =>
+                            setSelectedProductItems(item.value)
+                        }
+                        value={selectedProductItems}
+                    />
+                ) : (
+                    <>
+                        <View style={{ gap: 4 }}>
+                            <ThemedText size="md">Jumlah Bahan</ThemedText>
+                            <TextInput
+                                placeholder="Masukkan jumlah"
+                                style={[
+                                    styles.txtInput,
+                                    { backgroundColor: Color.Base.White },
+                                ]}
+                                value={totalMaterial}
+                                onChangeText={(text: string) =>
+                                    setTotalMaterial(text)
+                                }
+                                keyboardType="number-pad"
+                            />
+                        </View>
+                        <CustomDropDown
+                            label="Nama Karyawan (Tukang Potong)"
+                            items={listEmployee}
+                            onSelectItem={(val: any) =>
+                                setSelectedEmployee(val.value)
+                            }
+                            value={selectedEmployee}
+                            maxHeight={200}
+                        />
+                    </>
+                )}
+            </ScrollView>
+            <View style={[styles.footer, { bottom: 0 }]}>
+                <ThemedButton
+                    title="Buat"
+                    textColor={Color.Base.White}
+                    onPress={createPlan}
+                    loading={isSubmit}
+                    disabled={validate()}
+                />
             </View>
-        </ThemedContainer>
+        </View>
     );
 };
 
@@ -314,6 +318,7 @@ const styles = StyleSheet.create({
     },
     page: {
         flex: 1,
+        paddingTop: StatusBar.currentHeight,
         backgroundColor: Color.Base.White,
     },
 });

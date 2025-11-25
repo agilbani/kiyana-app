@@ -10,7 +10,8 @@ interface LoginResponse {
 export const loginUser = async (email: string, password: string): Promise<LoginResponse> => {
   
   const res = await api.post("/login", { email, password });
-
+   console.log('login res', res);
+   
   return {...res.data, status: res.status};
 };
 

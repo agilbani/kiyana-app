@@ -9,7 +9,7 @@ import {
     IcClipBoardClock,
     IcHome,
     IcProfile,
-    IcProfileActive
+    IcProfileActive,
 } from "@assets/icons";
 import {
     BottomTabBarButtonProps,
@@ -95,7 +95,10 @@ const MainLayout = () => {
             <Tabs.Screen
                 name="log-activity/index"
                 options={{
-                    tabBarIcon: createTabBarIcon(IcClipBoardClock, IcClipBoardClock),
+                    tabBarIcon: createTabBarIcon(
+                        IcClipBoardClock,
+                        IcClipBoardClock
+                    ),
                 }}
             />
             <Tabs.Screen

@@ -1,8 +1,10 @@
 import { ThemedText } from "@/components/ui";
 import Color from "@/constants/Color";
+import { getAllSettings } from "@/services/settingService";
 import { formatRupiahDisplay } from "@/utils/currency";
 import { Entypo } from "@expo/vector-icons";
-import { useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import RunningText from "./RunningText";
 
@@ -13,6 +15,7 @@ const DashboardAmountCard = ({
     onPressHistory,
 }: any) => {
     const [showAmount, setShowAmount] = useState(true);
+    const [announcement, setAnnouncement] = useState<any>([]);
     const menu = [
         {
             icon: require("@assets/icons/LoanIcon.png"),
@@ -30,6 +33,28 @@ const DashboardAmountCard = ({
             onPress: () => onPressWithdraw(),
         },
     ];
+
+    const getData = async () => {
+        const res = await getAllSettings();
+        //   console.log("all setting", res);
+        if (res.success) {
+            const getAnnouncement = res.data?.find((v: any) => {
+                return v.key === "ANNOUNCEMENT";
+            });
+            console.log("getAnnouncement", getAnnouncement);
+            setAnnouncement(JSON.parse(getAnnouncement.value));
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            getData();
+            return () => {
+                // Optional cleanup when screen goes out of focus
+            };
+        }, [])
+    );
+    //  console.log("cek", announcement);
 
     return (
         <View style={styles.content}>
@@ -117,10 +142,7 @@ const DashboardAmountCard = ({
                     Pengumuman
                 </ThemedText>
                 <RunningText
-                    texts={[
-                        "Pantau absensi karyawan dengan mudah!",
-                        "Jangan lupa melakukan absensi!",
-                    ]}
+                    texts={announcement}
                     duration={5000} // opsional
                     textStyle={{ color: "purple", fontSize: 18 }}
                 />

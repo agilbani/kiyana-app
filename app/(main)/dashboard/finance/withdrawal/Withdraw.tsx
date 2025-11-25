@@ -14,7 +14,7 @@ import GlobalStyles from "@/styles/common";
 import { Payout } from "@/types/payout";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { router, useFocusEffect } from "expo-router";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
 
 const statusBarHeight = StatusBar.currentHeight;
@@ -27,7 +27,6 @@ const Withdraw = () => {
         setLoading(true);
         const res = await getPayouts();
         setLoading(false);
-        console.log("res history", res);
         if (res) {
             setListData(res.data);
         }

@@ -1,7 +1,6 @@
 import {
     CustomDropdown,
     ThemedBadge,
-    ThemedContainer,
     ThemedGap,
     ThemedHeader,
     ThemedText,
@@ -60,12 +59,17 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                 <ThemedText type="Medium" size="md" style={GlobalStyles.flex}>
                     {/* {`${item.orderName} (${item.quantity} pcs)`} */}
                     {`${item.product_metadata?.name}`} -{" "}
-                    {`${item.product_metadata?.material?.name}`}
+                    {`${item.product_metadata?.materials[0]?.name}`}
                 </ThemedText>
             </View>
             <ThemedGap height="sm" />
             <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                style={{
+                    flexDirection: "row",
+                    marginBottom: 10,
+                    alignItems: "center",
+                    gap: 6,
+                }}
             >
                 <ThemedText
                     type="Medium"
@@ -112,7 +116,8 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                         <IcActiveCalendar
                             width={16}
                             height={16}
-                            stroke={Color.Gray[500]}
+                            //  stroke={Color.Gray[500]}
+                            stroke={Color.Base.White}
                         />
                         <ThemedGap width="xxs" />
                         <ThemedText
@@ -197,13 +202,13 @@ const TodayTask = () => {
                 "productions/plans"
             );
             setLoading(false);
-            console.log("res task", tasks);
-            setListTask(tasks);
+            // console.log("res task", tasks.data);
+            setListTask(tasks.data);
             setRefreshing(false);
         } catch (err) {
             setLoading(false);
             setRefreshing(false);
-            console.error("Failed to fetch tasks", err);
+            // console.error("Failed to fetch tasks", err);
         }
     };
 
@@ -214,9 +219,16 @@ const TodayTask = () => {
     useEffect(() => {
         getTask();
     }, [status, rangeDate, refreshing]);
+    console.log("listTask", listTask);
 
     return (
-        <ThemedContainer>
+        <View
+            style={{
+                flex: 1,
+                backgroundColor: Color.Base.White,
+                paddingTop: StatusBar.currentHeight,
+            }}
+        >
             <ThemedHeader title="Produksi Hari ini" />
             <View style={{ padding: 15 }}>
                 <View
@@ -278,7 +290,7 @@ const TodayTask = () => {
                     );
                 }}
             />
-        </ThemedContainer>
+        </View>
     );
 };
 

@@ -11,8 +11,8 @@ import { getListProduction } from "@/services/taskService";
 import GlobalStyles from "@/styles/common";
 import { getStatusBatch } from "@/utils/getStatusBatch";
 import { scale } from "@/utils/scaleSize";
-import { router } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import {
     FlatList,
     Platform,
@@ -26,15 +26,23 @@ import {
 const statusBarHeight = StatusBar.currentHeight;
 
 const sewnOption = [
+    //  { name: "Semua", value: "all" },
     { name: "Harus Dijahit", value: "needSewn" },
     { name: "Sedang Dijahit", value: "beingSewn" },
     { name: "Selesai Dijahit", value: "finishSewn" },
+    { name: "Ditolak (Perbaikan)", value: "rejectRepairedSewn" },
+    { name: "Ditolak (Tidak Bisa Diperbaiki)", value: "rejectNotrepairedSewn" },
 ];
 
 const finishOption = [
     { name: "Harus Diselesaikan", value: "needFinishing" },
     { name: "Sedang Diselesaikan", value: "beingFinishing" },
     { name: "Proses Finishing selesai", value: "finishFinishing" },
+    { name: "Ditolak (Perbaikan)", value: "rejectRepairedFinishing" },
+    {
+        name: "Ditolak (Tidak Bisa Diperbaiki)",
+        value: "rejectNotrepairedFinishing",
+    },
 ];
 
 const AllTaskProduction = () => {
@@ -67,9 +75,19 @@ const AllTaskProduction = () => {
                 </View>
                 <View style={styles.rowBetween}>
                     <ThemedText size="md" type="Medium">
+                        Nomor Batch
+                    </ThemedText>
+                    <ThemedText>{item?.batch}</ThemedText>
+                </View>
+                <View style={styles.rowBetween}>
+                    <ThemedText size="md" type="Medium">
                         Jumlah produksi
                     </ThemedText>
-                    <ThemedText>{`${item.qty} ${item.item.unit}`}</ThemedText>
+                    <ThemedText>{`${item.qty} ${
+                        item.item.material_details !== null
+                            ? item.item.material_details[0]?.unit
+                            : ""
+                    }`}</ThemedText>
                 </View>
                 <View style={styles.rowBetween}>
                     <ThemedText size="md" type="Medium">
@@ -88,29 +106,18 @@ const AllTaskProduction = () => {
     }, []);
 
     const getPayload = () => {
-        let payload = {};
-        switch (status) {
-            case "needSewn":
-                payload.needSewn = true;
-                break;
-            case "beingSewn":
-                payload.beingSewn = true;
-                break;
-            case "finishSewn":
-                payload.finishSewn = true;
-                break;
-            case "needFinishing":
-                payload.needFinishing = true;
-                break;
-            case "beingFinishing":
-                payload.beingFinishing = true;
-                break;
-            case "finishFinishing":
-                payload.finishFinishing = true;
-                break;
-            default:
-                break;
+        let payload = {
+            stage: user?.role?.name === "Penjahit" ? "sewing" : "finishing",
+        };
+        if (user?.role?.name === "Penjahit") {
+            payload[status] = true;
+            payload.sewing_by = user?.id;
+        } else {
+            payload[status] = true;
+            payload.finishing_by = user?.id;
         }
+        //   console.log("cek payload", payload);
+
         return payload;
     };
 
@@ -129,6 +136,8 @@ const AllTaskProduction = () => {
     const getStatusProduction = () => {
         let wording = "";
         switch (status) {
+            case "all":
+                wording = "Tidak ada jadwal produksi hari ini";
             case "needSewn":
                 wording = "Tidak ada jadwal produksi hari ini";
                 break;
@@ -148,24 +157,25 @@ const AllTaskProduction = () => {
                 wording = "Tidak ada produksi yang selesai difinishing";
                 break;
             default:
+                wording = "Tidak ada produksi yang ditolak";
                 break;
         }
         return wording;
     };
 
-    useEffect(() => {
-        if (status === "") {
-            if (user?.role?.name === "Penjahit") {
-                setStatus("needSewn");
+    useFocusEffect(
+        useCallback(() => {
+            if (status) {
+                getProductionList();
+            } else {
+                if (user?.role?.name === "Penjahit") {
+                    setStatus("needSewn");
+                } else {
+                    setStatus("needFinishing");
+                }
             }
-            if (user?.role?.name === "Finishing") {
-                setStatus("needFinishing");
-            }
-        }
-        setTimeout(() => {
-            getProductionList();
-        }, 500);
-    }, [status]);
+        }, [status])
+    );
 
     return (
         <View style={styles.page}>
@@ -176,101 +186,57 @@ const AllTaskProduction = () => {
                 size="md"
                 style={{ marginHorizontal: 16, marginTop: 16 }}
             >
-                Jumlah Tugas Hari ini: 8
+                Jumlah Tugas Hari ini: {listData.length}
             </ThemedText>
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    paddingHorizontal: 10,
-                }}
-            >
-                {user?.role?.name === "Penjahit" ? (
-                    <>
-                        {sewnOption.map((item: any, index: any) => (
-                            <Pressable
-                                onPress={() => setStatus(item.value)}
-                                key={`${index}`}
-                                style={{
-                                    marginTop: 15,
-                                    marginHorizontal: 5,
-                                    height: 45,
-                                }}
-                            >
-                                <View
-                                    style={[
-                                        styles.viewFilter,
-                                        {
-                                            backgroundColor:
-                                                status === item.value
-                                                    ? Color.Green[50]
-                                                    : Color.Base.White,
-                                            borderColor:
-                                                status === item.value
-                                                    ? Color.Green[500]
-                                                    : Color.Gray[300],
-                                        },
-                                    ]}
-                                >
-                                    <ThemedText
-                                        size="sm"
-                                        type="Medium"
-                                        color={
+            <View style={{ width: "100%", height: scale(60) }}>
+                <FlatList
+                    data={
+                        user?.role?.name === "Penjahit"
+                            ? sewnOption
+                            : finishOption
+                    }
+                    showsVerticalScrollIndicator={false}
+                    horizontal
+                    keyExtractor={(item, index) => `${index}`}
+                    renderItem={({ item }) => (
+                        <Pressable
+                            onPress={() => setStatus(item.value)}
+                            style={{
+                                marginTop: 15,
+                                marginHorizontal: 5,
+                                height: 45,
+                            }}
+                        >
+                            <View
+                                style={[
+                                    styles.viewFilter,
+                                    {
+                                        backgroundColor:
+                                            status === item.value
+                                                ? Color.Green[50]
+                                                : Color.Base.White,
+                                        borderColor:
                                             status === item.value
                                                 ? Color.Green[500]
-                                                : Color.Base.Black
-                                        }
-                                    >
-                                        {item.name}
-                                    </ThemedText>
-                                </View>
-                            </Pressable>
-                        ))}
-                    </>
-                ) : (
-                    <>
-                        {finishOption.map((item: any, index: any) => (
-                            <Pressable
-                                // activeOpacity={0.9}
-                                key={`${index}`}
-                                style={{
-                                    marginTop: 15,
-                                    marginHorizontal: 5,
-                                    height: 45,
-                                }}
+                                                : Color.Gray[300],
+                                    },
+                                ]}
                             >
-                                <View
-                                    style={[
-                                        styles.viewFilter,
-                                        {
-                                            backgroundColor:
-                                                status === item.value
-                                                    ? Color.Green[50]
-                                                    : Color.Base.White,
-                                            borderColor:
-                                                status === item.value
-                                                    ? Color.Green[500]
-                                                    : Color.Gray[300],
-                                        },
-                                    ]}
+                                <ThemedText
+                                    size="sm"
+                                    type="Medium"
+                                    color={
+                                        status === item.value
+                                            ? Color.Green[500]
+                                            : Color.Base.Black
+                                    }
                                 >
-                                    <ThemedText
-                                        size="sm"
-                                        type="Medium"
-                                        color={
-                                            status === item.value
-                                                ? Color.Green[500]
-                                                : Color.Base.Black
-                                        }
-                                    >
-                                        {item.name}
-                                    </ThemedText>
-                                </View>
-                            </Pressable>
-                        ))}
-                    </>
-                )}
+                                    {item.name}
+                                </ThemedText>
+                            </View>
+                        </Pressable>
+                    )}
+                />
             </View>
             {loading ? (
                 <View style={styles.viewLoading}>

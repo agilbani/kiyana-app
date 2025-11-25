@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 const Middleware = () => {
     const { user, loading } = appContext();
-    console.log("cek user", user);
+    //  console.log("cek user", user);
 
     const router = useRouter();
 

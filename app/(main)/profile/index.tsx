@@ -7,9 +7,9 @@ import GlobalStyles from "@/styles/common";
 import { scale } from "@/utils/scaleSize";
 import { IcArrowLeft } from "@assets/icons";
 import { router } from "expo-router";
-import React from "react";
 import {
     Dimensions,
+    ScrollView,
     StatusBar,
     StyleSheet,
     TouchableOpacity,
@@ -22,50 +22,63 @@ const ProfileScreen = () => {
     const { user } = useApp();
     return (
         <View style={styles.page}>
-            <View style={styles.backgroundHeader}>
-                <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={styles.backButton}
-                    onPress={() => router.back()}
-                >
-                    <IcArrowLeft width={16} height={16} />
-                </TouchableOpacity>
-                <ThemedText
-                    type="SemiBold"
-                    size="lg"
-                    color={Color.Background.Background}
-                    style={GlobalStyles.center}
-                >
-                    My Profile
-                </ThemedText>
-            </View>
-            <View style={styles.content}>
-                <View style={styles.profileWrapper}>
-                    <View style={styles.profileBorder}>
-                        <ThemedImage
-                            source={{ uri: "https://picsum.photos/200" }}
-                            width={120}
-                            height={120}
-                        />
-                    </View>
-                </View>
-                <ThemedGap height="sm" />
-                <View style={GlobalStyles.center}>
-                    <ThemedText type="SemiBold" size="lg">
-                        {user?.first_name} {user?.last_name}
-                    </ThemedText>
-                    <ThemedGap height="xxs" />
-                    <ThemedText
-                        type="Medium"
-                        size="md"
-                        color={Color.Purple[500]}
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: 5 }}
+                nestedScrollEnabled
+            >
+                <View style={styles.backgroundHeader}>
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        style={styles.backButton}
+                        onPress={() => router.back()}
                     >
-                        {user?.role?.name}
+                        <IcArrowLeft width={16} height={16} />
+                    </TouchableOpacity>
+                    <ThemedText
+                        type="SemiBold"
+                        size="lg"
+                        color={Color.Background.Background}
+                        style={GlobalStyles.center}
+                    >
+                        My Profile
                     </ThemedText>
                 </View>
-                <ThemedGap height="md" />
-                <ProfileMenu />
-            </View>
+                <View style={styles.content}>
+                    <View style={styles.profileWrapper}>
+                        <View style={styles.profileBorder}>
+                            <ThemedImage
+                                source={{ uri: "https://picsum.photos/200" }}
+                                width={120}
+                                height={120}
+                            />
+                        </View>
+                    </View>
+                    <ThemedGap height="sm" />
+                    <View style={GlobalStyles.center}>
+                        <ThemedText type="SemiBold" size="lg">
+                            {user?.first_name} {user?.last_name}
+                        </ThemedText>
+                        <ThemedGap height="xxs" />
+                        <ThemedText
+                            type="Medium"
+                            size="md"
+                            color={Color.Purple[500]}
+                        >
+                            {user?.role?.name}
+                        </ThemedText>
+                        <ThemedText
+                            type="Medium"
+                            size="md"
+                            color={Color.Purple[500]}
+                        >
+                            v.1.1
+                        </ThemedText>
+                    </View>
+                    <ThemedGap height="md" />
+                    <ProfileMenu />
+                </View>
+            </ScrollView>
         </View>
     );
 };
@@ -81,6 +94,7 @@ const styles = StyleSheet.create({
         backgroundColor: Color.Background.HeaderTopGradient,
         height: Dimensions.get("window").height * 0.225,
         paddingTop: statusBarHeight ? statusBarHeight + scale(12) : scale(46),
+        zIndex: 5,
     },
     backButton: {
         position: "absolute",
@@ -107,5 +121,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: Radius.md,
         borderTopRightRadius: Radius.md,
         marginTop: scale(-20),
+        zIndex: 10,
     },
 });

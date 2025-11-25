@@ -1,6 +1,5 @@
 import {
     ThemedButton,
-    ThemedContainer,
     ThemedDatePicker,
     ThemedDropdown,
     ThemedErrorMessage,
@@ -11,12 +10,14 @@ import {
     ThemedText,
     ThemedTextarea,
 } from "@/components";
+import ModalCenter from "@/components/modal/ModalCenter";
 import Color from "@/constants/Color";
 import { BANKS } from "@/constants/Dummy/Bank";
 import Radius from "@/constants/Radius";
 import { useApp } from "@/context/AppContext";
 import { createLoan } from "@/services/loanService";
 import GlobalStyles from "@/styles/common";
+import { usePositionBottom } from "@/utils/bottomPosition";
 import { formatRupiahDisplay, formatRupiahInput } from "@/utils/currency";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { ShowToastMessage } from "@/utils/toastMessage";
@@ -24,7 +25,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import * as yup from "yup";
 
 type FormValues = {
@@ -78,11 +79,13 @@ const schema = yup.object().shape({
 });
 
 const CashAdvanceScreen = () => {
+    const { bottom } = usePositionBottom();
     const { user } = useApp();
     const confirmModalRef = useRef<ThemedModal | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [confirmedRecipientName, setConfirmedRecipientName] = useState("");
     const [optionsTransfer, setOptionsTransfer] = useState<any>([]);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     const optionTenor = [
         {
@@ -114,7 +117,7 @@ const CashAdvanceScreen = () => {
     const amount = useWatch({ control, name: "amount" });
 
     const onSubmit = (data: FormValues) => {
-        confirmModalRef.current?.show();
+        setShowConfirmation(true);
         // const numericAmount = Number(data.amount.replace(/\./g, ""));
 
         // if (numericAmount > SALDO) {
@@ -124,7 +127,7 @@ const CashAdvanceScreen = () => {
     };
 
     const confirmTransfer = async () => {
-        confirmModalRef.current?.hide();
+        setShowConfirmation(false);
         const data = getValues();
         const numericAmount = Number(data.amount.replace(/\./g, ""));
         setIsLoading(true);
@@ -160,7 +163,13 @@ const CashAdvanceScreen = () => {
     }, []);
 
     return (
-        <ThemedContainer>
+        <View
+            style={{
+                flex: 1,
+                paddingTop: StatusBar.currentHeight,
+                backgroundColor: Color.Base.White,
+            }}
+        >
             <ThemedHeader title="Ajukan Kasbon" />
             <View style={styles.container}>
                 <ScrollView
@@ -303,7 +312,7 @@ const CashAdvanceScreen = () => {
                 </ScrollView>
             </View>
 
-            <View style={styles.footer}>
+            <View style={[styles.footer, { bottom }]}>
                 <ThemedButton
                     title="Ajukan"
                     onPress={handleSubmit(onSubmit)}
@@ -313,8 +322,8 @@ const CashAdvanceScreen = () => {
             </View>
 
             {/* Modal Konfirmasi */}
-            <ThemedModal
-                ref={confirmModalRef}
+            <ModalCenter
+                visible={showConfirmation}
                 onClose={() => confirmModalRef.current?.hide()}
             >
                 <ThemedText size="lg" type="Medium">
@@ -327,24 +336,24 @@ const CashAdvanceScreen = () => {
                     <Row label="Jumlah" value={formatRupiahDisplay(amount)} />
                 </View>
                 <ThemedGap height="xxl" />
-                <View style={GlobalStyles.rowCenter}>
+                <View style={[GlobalStyles.rowCenter, { zIndex: 10 }]}>
                     <View style={GlobalStyles.flex}>
                         <ThemedButton
                             variant="outline"
                             title="Batal"
-                            onPress={() => confirmModalRef.current?.hide()}
+                            onPress={() => setShowConfirmation(false)}
                         />
                     </View>
                     <ThemedGap width="md" />
                     <View style={GlobalStyles.flex}>
                         <ThemedButton
                             title="Konfirmasi"
-                            onPress={confirmTransfer}
+                            onPress={() => confirmTransfer()}
                         />
                     </View>
                 </View>
-            </ThemedModal>
-        </ThemedContainer>
+            </ModalCenter>
+        </View>
     );
 };
 
@@ -356,10 +365,12 @@ const styles = StyleSheet.create({
         ...GlobalStyles.flex,
     },
     amountWrapper: {
-        backgroundColor: Color.Background.Background,
+        backgroundColor: "white",
         paddingVertical: verticalScale(12),
         paddingHorizontal: scale(16),
         borderRadius: Radius.sm,
+        width: "95%",
+        alignSelf: "center",
         ...GlobalStyles.shadow,
     },
     footer: {

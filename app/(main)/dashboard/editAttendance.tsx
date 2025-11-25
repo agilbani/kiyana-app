@@ -16,7 +16,7 @@ import { getAllEmployee } from "@/services/masterService";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { router } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -91,7 +91,7 @@ const EditAttendance = () => {
 
         try {
             const res = await getInfoAttendance(payload);
-            console.log("res presensi", res);
+            // console.log("res presensi", res);
 
             if (res.success && res.data) {
                 setEmployees((prev) =>
@@ -128,7 +128,7 @@ const EditAttendance = () => {
         setLoadingGetEmployee(true);
         const res = await getAllEmployee();
         setLoadingGetEmployee(false);
-        console.log("res employee", res);
+        //   console.log("res employee", res);
         if (res.success) {
             let arr = [];
             for (let i = 0; i < res.data.length; i++) {
@@ -180,14 +180,14 @@ const EditAttendance = () => {
             clock_out: emp.clock_out,
         }));
 
-        console.log("Submitting employees:", payload);
+        //   console.log("Submitting employees:", payload);
         const obj = {
             attendances: payload,
         };
         // panggil API submit disini
         setLoadingSubmit(true);
         const res = await editAttendance(obj);
-        console.log("res edit presensi", res);
+        //   console.log("res edit presensi", res);
 
         setLoadingSubmit(false);
         if (res.success) {

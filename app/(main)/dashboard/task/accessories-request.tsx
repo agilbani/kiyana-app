@@ -5,15 +5,15 @@ import {
     ThemedInput,
 } from "@/components";
 import Color from "@/constants/Color";
-import { getMaterial, materialRequest } from "@/services/masterService";
-import { getMaterialVariant } from "@/services/warehouseService";
+import { accessoriesRequest, getAccessories } from "@/services/masterService";
+import { getAccesoriceVariant } from "@/services/warehouseService";
 import LoadingManager from "@/utils/LoadingManager";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { StatusBar, View } from "react-native";
 
-const MaterialRequest = () => {
+const AccessoriesRequest = () => {
     const [listMats, setListMats] = useState<any>([]);
     const [listVariant, setListVariant] = useState<any>([]);
     const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
@@ -22,12 +22,10 @@ const MaterialRequest = () => {
     const [qty, setQty] = useState("");
 
     const getData = async () => {
-        LoadingManager.show();
         const [material, materialVariant] = await Promise.all([
-            getMaterial(),
-            getMaterialVariant(),
+            getAccessories(),
+            getAccesoriceVariant(),
         ]);
-        LoadingManager.hide();
         setListMats(material.data || []);
         setListVariant(materialVariant || []);
         //   console.log("cek material", material);
@@ -38,9 +36,11 @@ const MaterialRequest = () => {
         if (!selectedMaterial) return [];
 
         return listVariant
-            .filter((variant: any) => variant.material_id === selectedMaterial)
+            .filter(
+                (variant: any) => variant.accessories_id === selectedMaterial
+            )
             .map((variant: any) => ({
-                name: `${variant.material.name ?? ""} - ${
+                name: `${variant.accessory.name ?? ""} - ${
                     variant.color.name ?? ""
                 }`,
                 value: variant.id,
@@ -49,13 +49,13 @@ const MaterialRequest = () => {
 
     const submitRequest = async () => {
         const payload = {
-            material_id: selectedMaterial,
-            material_variant_id: selectedMaterialVariant,
+            accessory_id: selectedMaterial,
+            accessory_variant_id: selectedMaterialVariant,
             qty: Number(qty),
         };
         //   console.log("payload request", payload);
         LoadingManager.show();
-        const res = await materialRequest(payload);
+        const res = await accessoriesRequest(payload);
         LoadingManager.hide();
         if (res.success) {
             ShowToastMessage(res.message);
@@ -77,7 +77,7 @@ const MaterialRequest = () => {
                 paddingTop: StatusBar.currentHeight,
             }}
         >
-            <ThemedHeader title="Permintaan Bahan" />
+            <ThemedHeader title="Permintaan Aksesoris" />
             <View style={{ flex: 1, padding: 16, gap: 8 }}>
                 <SelectInput
                     label="Pilih Bahan"
@@ -118,4 +118,4 @@ const MaterialRequest = () => {
     );
 };
 
-export default MaterialRequest;
+export default AccessoriesRequest;

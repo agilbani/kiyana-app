@@ -220,7 +220,7 @@ const DashboardTodayTask: React.FC<DashboardTodayTaskProps> = ({
                 status ?? "Planned"
             );
             setLoading(false);
-            console.log("res task", tasks);
+            // console.log("res task", tasks);
             setListTask(tasks);
         } catch (err) {
             setLoading(false);
@@ -239,7 +239,7 @@ const DashboardTodayTask: React.FC<DashboardTodayTaskProps> = ({
             }
             const tasks = await getListProduction(payload);
             setLoading(false);
-            console.log("res production", tasks);
+            // console.log("res production", tasks);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
@@ -249,7 +249,7 @@ const DashboardTodayTask: React.FC<DashboardTodayTaskProps> = ({
                 const cuttingDate = new Date(item.cutting_at);
                 return cuttingDate >= yesterday;
             });
-            console.log("data filtered", filter);
+            // console.log("data filtered", filter);
             setListProduction(filter);
         } catch (err) {
             setLoading(false);

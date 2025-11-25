@@ -38,7 +38,7 @@ const AttendanceSummary = () => {
         setLoading(true);
         const res = await getMyAttendance(start, end);
         setLoading(false);
-        console.log("my attendance", res);
+        //   console.log("my attendance", res);
         if (res.success) {
             // const grouped = groupAttendanceByDate(res.data.histories);
             // console.log("cek grouped", grouped);
@@ -51,7 +51,7 @@ const AttendanceSummary = () => {
     useEffect(() => {
         getData();
     }, []);
-    console.log("cek datasummary", dataSummary);
+    //  console.log("cek datasummary", dataSummary);
 
     if (loading) {
         return <ThemedLoader />;

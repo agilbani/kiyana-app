@@ -17,7 +17,6 @@ export const useCheckRadius = () => {
   const dataOfficeCoordinate = officeCoordinate
       ? JSON.parse(officeCoordinate)
       : null;
-  console.log('cek dataOfficeCoordinate', dataOfficeCoordinate);
   
   const checkLocation = useCallback(async () => {
     setLoading(true);
@@ -28,7 +27,7 @@ export const useCheckRadius = () => {
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.BestForNavigation,
       });
-      console.log('location 1', location);
+      // console.log('location 1', location);
       
       const { latitude, longitude } = location.coords;
       setCoords(location.coords);

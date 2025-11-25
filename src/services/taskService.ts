@@ -1,5 +1,6 @@
 import api from "@/api/api";
-import { ListTask, Task } from '@/types/task';
+import { MasterResponse } from "@/types/master";
+import { Task } from '@/types/task';
 import { queryParams } from "@/utils/getQueryParams";
 
 export interface StartProcessResponse {
@@ -26,11 +27,30 @@ export async function getTasksByDate(
   end_date: string,
   status: string,
   url: string
-): Promise<Task[]> {
-  const response = await api.get<ListTask[]>(
-    `/${url}?start_date=${start_date}&end_date=${end_date}&status=${status}`
-  );
-  return response.data;
+): Promise<MasterResponse> {
+   console.log('priority', start_date);
+   console.log('priority 1', end_date);
+   console.log('priority 2', status);
+   
+//   const response = await api.get<ListTask[]>(
+//     `/${url}?start_date=${start_date}&end_date=${end_date}&status=${status}`
+//   );
+//   return response.data;
+   try {
+      const res = await api.get<MasterResponse>(`/${url}?start_date=${start_date}&end_date=${end_date}&status=${status}`);
+      return {
+         success: true,
+         message: "Success add stock produk",
+         data: res.data,
+      };
+   } catch (error: any) {
+      return {
+         success: false,
+         message:
+         error?.response?.data?.message ??
+         "Terjadi kesalahan saat add stock produk.",
+      };
+   }
 }
 
 export async function getListProduction(params?: any): Promise<Task[]> {
@@ -46,11 +66,12 @@ export async function getListProduction(params?: any): Promise<Task[]> {
 
 export async function startProcess(
   codePlan: string | any,
-  productionItemId: number | any
+  productionItemId: number | any,
+  params: any
 ): Promise<StartProcessResponse> {
   try {
     const response = await api.post(
-      `/productions/plans/${codePlan}/start/${productionItemId}`
+      `/productions/plans/${codePlan}/start/${productionItemId}`, params
     );
 
     // success case
