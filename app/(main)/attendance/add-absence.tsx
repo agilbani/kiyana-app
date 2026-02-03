@@ -64,7 +64,7 @@ const schema = yup.object().shape({
                 height: yup.number().optional(),
                 type: yup.string().optional(),
                 fileName: yup.string().optional(),
-            })
+            }),
         )
         .required("Harus menyertakan minimal 1 gambar")
         .min(1, "Harus menyertakan minimal 1 gambar")
@@ -75,6 +75,7 @@ const options = [
     { key: "Izin", value: "Izin" },
     { key: "Setengah Hari", value: "Setengah Hari" },
     { key: "Sakit", value: "Sakit" },
+    { key: "⁠Sakit Ada Surat Dokter", value: "Sakit Ada Surat Dokter" },
     { key: "Cuti", value: "Cuti" },
 ];
 
@@ -113,7 +114,7 @@ const AddAbsence = () => {
         if (!permissionResult.granted) {
             Alert.alert(
                 "Permission required",
-                "Media library access is needed."
+                "Media library access is needed.",
             );
             return;
         }

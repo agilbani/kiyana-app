@@ -3,7 +3,7 @@ import { IcBell } from "@assets/index";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "../ui";
 
-const DashboardCardSection = ({ onPressLoan, onPressWithdraw, user }: any) => {
+const DashboardCardSection = ({ onPressNotif, user }: any) => {
     return (
         <View style={styles.content}>
             <View
@@ -21,7 +21,11 @@ const DashboardCardSection = ({ onPressLoan, onPressWithdraw, user }: any) => {
                         Semangat Bekerja
                     </ThemedText>
                 </View>
-                <TouchableOpacity activeOpacity={0.9} style={styles.viewBell}>
+                <TouchableOpacity
+                    onPress={onPressNotif}
+                    activeOpacity={0.9}
+                    style={styles.viewBell}
+                >
                     <IcBell width={27} height={27} color={Color.Yellow[500]} />
                 </TouchableOpacity>
             </View>

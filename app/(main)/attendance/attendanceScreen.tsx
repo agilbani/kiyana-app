@@ -17,8 +17,8 @@ import {
     LoanIcon,
     PaperIcon,
 } from "@assets/index";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import {
     FlatList,
     Image,
@@ -39,7 +39,8 @@ const AttendanceScreen = () => {
         setSelectAttendance,
         savedIdLateSchedule,
     } = useApp();
-    //  console.log("cek savedIdLateSchedule", savedIdLateSchedule);
+    //   console.log("cek savedIdLateSchedule", savedIdLateSchedule);
+    console.log("cek attendance user", user);
 
     const isKartap = user?.type === "TETAP";
     const isHost = user?.is_host;
@@ -169,9 +170,9 @@ const AttendanceScreen = () => {
                     return (
                         <TouchableOpacity
                             activeOpacity={0.9}
-                            onPress={() =>
-                                router.push(ROUTES.ATTENDANCE_CLOCKIN)
-                            }
+                            onPress={() => {
+                                router.push(ROUTES.ATTENDANCE_CLOCKIN);
+                            }}
                             style={[styles.footer, { bottom: 10 }]}
                         >
                             <ThemedText type="Medium" color={Color.Base.White}>
@@ -184,10 +185,15 @@ const AttendanceScreen = () => {
         }
     };
 
-    useEffect(() => {
-        getData();
-        getListSetting();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            getData();
+            getListSetting();
+            return () => {
+                // Optional cleanup when screen goes out of focus
+            };
+        }, []),
+    );
 
     return (
         <View style={styles.page}>

@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     header: {
         backgroundColor: Color.Background.Background,
         paddingHorizontal: scale(24),
-        paddingVertical: verticalScale(16),
+        paddingVertical: verticalScale(20),
         borderBottomWidth: 1,
         borderColor: Color.Gray[200],
         ...GlobalStyles.center,

@@ -304,16 +304,23 @@ const DetailProductionScreen = () => {
     function showButtonByRole() {
         const status = detailProduction?.data?.status;
         if (user?.role?.name === "Penjahit") {
-            const isRejected =
-                detailProduction?.data?.approvals.sewing === null
-                    ? false
-                    : detailProduction?.data?.approvals.finishing?.status !==
-                      "Approved"
-                    ? //      ||
-                      //  detailProduction?.data?.approvals.sewing?.status ===
-                      //      "Being Repaired"
-                      true
-                    : false;
+            let isRejected = false;
+            if (detailProduction?.data.finishingBy !== null) {
+                if (detailProduction?.data?.approvals.sewing === null) {
+                    isRejected = false;
+                } else if (
+                    detailProduction?.data?.approvals.finishing?.status !==
+                        "Approved" &&
+                    detailProduction?.data?.approvals.sewing?.status !==
+                        "Finished Repaired"
+                ) {
+                    isRejected = true;
+                } else {
+                    isRejected = false;
+                }
+            } else {
+                isRejected = false;
+            }
             const labelReject =
                 detailProduction?.data?.approvals?.sewing?.status ?? "";
             if (
@@ -697,9 +704,8 @@ const ButtonRoleSewing = ({
                     title={`Mulai ${isRejected ? "Perbaikan" : "Jahit"}`}
                     style={{ marginTop: 10 }}
                     disabled={
-                        isRejected
-                            ? // && labelReject.toLowerCase().includes("bisa diperbaiki")
-                              false
+                        isRejected && labelReject !== "Being Repaired"
+                            ? false
                             : data.start_sewing_at !== null
                     }
                     onPress={onStartSewing}
@@ -711,7 +717,7 @@ const ButtonRoleSewing = ({
                     title={`Selesai ${isRejected ? "Perbaikan" : "Jahit"}`}
                     style={{ marginTop: 10 }}
                     disabled={
-                        isRejected
+                        isRejected && labelReject !== "Being Repaired"
                             ? // && labelReject.toLowerCase().includes("bisa diperbaiki")
                               true
                             : labelReject === "Being Repaired"

@@ -21,6 +21,7 @@
                 "foregroundImage": "./assets/images/adaptive-icon.png",
                 "backgroundColor": "#FFFFFF"
             },
+            "googleServicesFile": "./google-services.json",
             "softwareKeyboardLayoutMode": "pan",
             "edgeToEdgeEnabled": true,
             "permissions": [

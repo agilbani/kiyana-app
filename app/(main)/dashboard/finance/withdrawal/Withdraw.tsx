@@ -43,7 +43,7 @@ const Withdraw = () => {
 
     return (
         <View style={styles.card}>
-            <StatusBar translucent barStyle="dark-content" />
+            <StatusBar translucent barStyle="light-content" />
             <ThemedHeader title="History Penarikan" />
             <View
                 style={[

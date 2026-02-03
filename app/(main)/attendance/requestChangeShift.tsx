@@ -15,6 +15,7 @@ import {
     getListShift,
     postRequestChangeAttendance,
 } from "@/services/attendanceService";
+import { getMonthDateRange } from "@/utils/helpher";
 import { router } from "expo-router";
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -37,14 +38,29 @@ const RequestChangeShift = () => {
     const [isPermanent, setIsPermanent] = useState<boolean>(false);
 
     const getAttendanceHost = async () => {
+        const tomorrow = moment().add(1, "day");
+        const rangeDate = getMonthDateRange();
+        const paramsAll = {
+            start_date: rangeDate?.startDate,
+            end_date: rangeDate?.endDate,
+            current: true,
+        };
+        const paramsTomorrow = {
+            start_date: tomorrow.format("YYYY-MM-DD"),
+            end_date: rangeDate?.endDate,
+            current: false,
+        };
         setLoading(true);
-        const getCurrHost = getCurrentAttendance("host");
-        const getAllHost = getListAttendance();
+        const getCurrHost = getListAttendance(paramsAll);
+        const getAllHost = getListAttendance(paramsTomorrow);
         setLoading(false);
         const [currentHost, allHost] = await Promise.all([
             getCurrHost,
             getAllHost,
         ]);
+        console.log("cek currentHost", currentHost);
+        console.log("cek allHost", allHost);
+
         if (currentHost.success) {
             let hostData = [];
             const datas = currentHost.data.filter((v: any) => {
@@ -63,7 +79,7 @@ const RequestChangeShift = () => {
             let hostData = [];
             for (let i = 0; i < allHost.data.length; i++) {
                 hostData.push({
-                    name: `${allHost.data[i].date} - ${allHost.data[i].start_time} - ${allHost.data[i].end_time}`,
+                    name: `${allHost.data[i].date} - ${allHost.data[i].start_time} - ${allHost.data[i].end_time} - ${allHost.data[i].employee?.name}`,
                     value: allHost.data[i].id,
                 });
             }

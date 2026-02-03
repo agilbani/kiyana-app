@@ -115,7 +115,7 @@ const WithdrawalScreen = () => {
 
     const typePayment = useWatch({ control, name: "type" });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = (data: any) => {
         clearErrors();
         let hasError = false;
 
@@ -157,7 +157,7 @@ const WithdrawalScreen = () => {
                 message: "Jumlah harus lebih dari 0",
             });
             hasError = true;
-        } else if (numericAmount > SALDO) {
+        } else if (numericAmount > user?.balance) {
             setError("amount", {
                 message: "Saldo tidak cukup",
             });

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "432089545902",
+    "project_id": "kiyana-app-4b11f",
+    "storage_bucket": "kiyana-app-4b11f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432089545902:android:d082672739de65c9f0413f",
+        "android_client_info": {
+          "package_name": "com.ryan77.kiyana"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBx1n67TNwpBrUp_tYpVhIe6yrKJl6r4A8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

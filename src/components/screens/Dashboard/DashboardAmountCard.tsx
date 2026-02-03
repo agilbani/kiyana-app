@@ -13,6 +13,7 @@ const DashboardAmountCard = ({
     onPressLoan,
     onPressWithdraw,
     onPressHistory,
+    onPressSend,
 }: any) => {
     const [showAmount, setShowAmount] = useState(true);
     const [announcement, setAnnouncement] = useState<any>([]);
@@ -31,6 +32,11 @@ const DashboardAmountCard = ({
             icon: require("@assets/icons/PayoutIcon.png"),
             label: "Tarik Saldo",
             onPress: () => onPressWithdraw(),
+        },
+        {
+            icon: require("@assets/icons/transfer_money.png"),
+            label: "Kirim Saldo",
+            onPress: () => onPressSend(),
         },
     ];
 

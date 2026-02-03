@@ -210,3 +210,10 @@ export const canShowMasukButton = (jamMasukStr: string, jamBatasStr?: string) =>
   if (now.isBetween(jamMasuk, batasAkhir, undefined, '[]')) return true; // di antara jam masuk & batas akhir
   return false; // sudah lewat
 };
+
+export function getMonthDateRange(date = moment()) {
+  return {
+    startDate: date.clone().startOf('month').format('YYYY-MM-DD'),
+    endDate: date.clone().endOf('month').format('YYYY-MM-DD'),
+  };
+}

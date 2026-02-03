@@ -24,6 +24,8 @@ const statusBarHeight = StatusBar.currentHeight;
 
 const Dashboard = () => {
     const { user, updateUser } = useApp();
+    console.log("cek user", user);
+
     const [refreshing, setRefreshing] = useState(false);
     const [modalRequest, setModalRequest] = useState(false);
     const MenuOptions = [
@@ -204,7 +206,10 @@ const Dashboard = () => {
     return (
         <View style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
             <StatusBar barStyle={"light-content"} />
-            <DashboardCardSection user={user} />
+            <DashboardCardSection
+                onPressNotif={() => router.push(ROUTES.NOTIFICATION)}
+                user={user}
+            />
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scroll}
@@ -223,8 +228,9 @@ const Dashboard = () => {
                         router.push(ROUTES.DASHBOARD_HISTORY_WITHDRAWAL)
                     }
                     onPressHistory={() =>
-                        router.push(ROUTES.DASHBOARD_HISTORY_TRANSACTION)
+                        router.push(ROUTES.DASHBOARD_TRANSFER_HISTORY)
                     }
+                    onPressSend={() => router.push(ROUTES.DASHBOARD_TRANSFER)}
                     user={user}
                 />
                 <DashboardScanCard user={user} />

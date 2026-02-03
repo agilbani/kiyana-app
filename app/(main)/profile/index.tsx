@@ -72,7 +72,7 @@ const ProfileScreen = () => {
                             size="md"
                             color={Color.Purple[500]}
                         >
-                            v.1.1
+                            v.2.3
                         </ThemedText>
                     </View>
                     <ThemedGap height="md" />

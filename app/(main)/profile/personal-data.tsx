@@ -1,28 +1,74 @@
 import {
     ThemedBottomSheet,
     ThemedButton,
-    ThemedContainer,
-    ThemedDatePicker,
+    ThemedDropdown,
     ThemedGap,
     ThemedHeader,
     ThemedImage,
     ThemedInput,
     ThemedText,
+    ThemedTextarea,
 } from "@/components";
 import Color from "@/constants/Color";
+import { BANKS_ONLY } from "@/constants/Dummy/Bank";
 import Radius from "@/constants/Radius";
+import { useApp } from "@/context/AppContext";
+import { getProfile } from "@/services/authService";
+import { changeProfile } from "@/services/masterService";
 import GlobalStyles from "@/styles/common";
 import { usePositionBottom } from "@/utils/bottomPosition";
+import LoadingManager from "@/utils/LoadingManager";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcKeyboard, IcRefresh, IcUserOutline } from "@assets/icons";
 import * as ImagePicker from "expo-image-picker";
-import React, { useRef, useState } from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { router } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import {
+    Alert,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+} from "react-native";
+
+type ProfilePayload = {
+    first_name: string;
+    last_name: string;
+    phone: string;
+    bank: string;
+    bank_account: string;
+    bank_number: string;
+    identity_address: string;
+    address: string;
+};
 
 const PersonalDataScreen = () => {
+    const { user, updateUser } = useApp();
+    console.log("cek user e", user);
+
     const ref = useRef<ThemedBottomSheet | null>(null);
-    const [imageUri, setImageUri] = useState<string | null>(null);
     const { bottom } = usePositionBottom();
+
+    const isReady = Boolean(user);
+
+    const [imageUri, setImageUri] = useState<string | null>(null);
+    const [optionsTransfer, setOptionsTransfer] = useState<any>([]);
+
+    const [form, setForm] = useState<ProfilePayload>({
+        first_name: "",
+        last_name: "",
+        phone: "",
+        bank: "",
+        bank_account: "",
+        bank_number: "",
+        identity_address: "",
+        address: "",
+    });
+
+    const onChange = (key: keyof ProfilePayload, value: string) => {
+        setForm((prev) => ({ ...prev, [key]: value }));
+    };
 
     const pickImage = async () => {
         try {
@@ -42,30 +88,115 @@ const PersonalDataScreen = () => {
             });
 
             if (!result.canceled) {
-                const uri = result.assets[0].uri;
-                setImageUri(uri);
+                setImageUri(result.assets[0].uri);
             }
         } catch (err) {
             console.warn("Image Picker Error:", err);
         }
     };
 
+    const getUser = async () => {
+        LoadingManager.show();
+        const res = await getProfile();
+        LoadingManager.hide();
+        if (res.success) {
+            updateUser(res.data);
+            Alert.alert(
+                "Update profile berhasil",
+                "Profile anda berhasil diperbaharui",
+                [
+                    {
+                        text: "Kembali",
+                        onPress: () => router.back(),
+                    },
+                ],
+            );
+        }
+    };
+
+    const validateForm = () => {
+        if (!form.first_name.trim()) return "Nama depan wajib diisi";
+        if (!form.last_name.trim()) return "Nama belakang wajib diisi";
+        if (!form.phone.trim()) return "Nomor telepon wajib diisi";
+        if (!form.identity_address.trim())
+            return "Alamat sesuai identitas wajib diisi";
+        if (!form.address.trim()) return "Alamat domisili wajib diisi";
+        return null;
+    };
+
+    const onSubmit = async () => {
+        const errorMessage = validateForm();
+        if (errorMessage) {
+            ref.current?.hide();
+            Alert.alert("Validasi Gagal", errorMessage);
+            return;
+        }
+
+        const payload: ProfilePayload = {
+            ...form,
+        };
+        console.log("PAYLOAD UPDATE PROFILE:", payload);
+
+        LoadingManager.show();
+        const res = await changeProfile(payload);
+        LoadingManager.hide();
+
+        if (res.success) {
+            getUser();
+        }
+
+        ref.current?.hide();
+    };
+
+    const getOptionTransfer = () => {
+        let opt = [];
+        for (let i = 0; i < BANKS_ONLY.length; i++) {
+            opt.push({
+                label: BANKS_ONLY[i].key,
+                value: BANKS_ONLY[i].value,
+            });
+        }
+        setOptionsTransfer(opt);
+    };
+
+    useEffect(() => {
+        if (!user) return;
+
+        setForm({
+            first_name: user.first_name ?? "",
+            last_name: user.last_name ?? "",
+            phone: user.phone ?? "",
+            bank: user.bank ?? "",
+            bank_account: user.bank_account ?? "",
+            bank_number: user.bank_number ?? "",
+            identity_address: user.detail?.identity_address ?? "",
+            address: user.detail?.address ?? "",
+        });
+    }, [user]);
+
+    useEffect(() => {
+        getOptionTransfer();
+    }, []);
+
     return (
-        <ThemedContainer>
+        <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+                paddingBottom: 120,
+                paddingTop: StatusBar.currentHeight,
+            }}
+        >
             <ThemedHeader title="Data Pribadi" />
+
             <View style={styles.container}>
                 <View style={styles.content}>
                     <ThemedText type="SemiBold" size="md">
                         Data Saya
                     </ThemedText>
-                    <ThemedText
-                        type="Regular"
-                        size="sm"
-                        color={Color.Gray[500]}
-                    >
-                        Informasi terkait data pribadi Anda
-                    </ThemedText>
+
                     <ThemedGap height="lg" />
+
+                    {/* Upload Photo */}
                     <View style={GlobalStyles.center}>
                         <View style={styles.profileWrapper}>
                             <TouchableOpacity
@@ -75,6 +206,7 @@ const PersonalDataScreen = () => {
                             >
                                 <IcRefresh />
                             </TouchableOpacity>
+
                             <ThemedImage
                                 source={
                                     imageUri
@@ -85,57 +217,118 @@ const PersonalDataScreen = () => {
                                 height={100}
                             />
                         </View>
-                        <ThemedGap height="sm" />
-                        <ThemedText
-                            type="SemiBold"
-                            size="sm"
-                            color={Color.Gray[600]}
-                        >
-                            Unggah Foto
-                        </ThemedText>
-                        <ThemedGap height="xxs" />
-                        <ThemedText
-                            type="Regular"
-                            size="xs"
-                            color={Color.Gray[600]}
-                            style={[
-                                GlobalStyles.center,
-                                { paddingHorizontal: scale(68) },
-                            ]}
-                        >
-                            Format harus .jpeg atau .png dengan ukuran minimal
-                            800x800px dan maksimal 5MB
-                        </ThemedText>
                     </View>
-                    <ThemedGap height="md" />
+
+                    <ThemedGap height="lg" />
+
+                    {/* Required Fields */}
                     <ThemedInput
                         icon={<IcUserOutline />}
                         label="Nama Depan"
                         placeholder="Masukkan nama depan"
+                        value={form.first_name}
+                        onChangeText={(v) => onChange("first_name", v)}
+                        style={{ height: 45 }}
                     />
+
                     <ThemedGap height="md" />
+
                     <ThemedInput
                         icon={<IcUserOutline />}
                         label="Nama Belakang"
                         placeholder="Masukkan nama belakang"
+                        value={form.last_name}
+                        onChangeText={(v) => onChange("last_name", v)}
+                        style={{ height: 45 }}
                     />
+
                     <ThemedGap height="md" />
-                    <ThemedDatePicker label="Tanggal Lahir" />
-                    <ThemedGap height="md" />
+
                     <ThemedInput
                         icon={<IcKeyboard />}
-                        label="Posisi"
-                        placeholder="Masukkan jabatan atau posisi"
+                        label="Nomor Telepon"
+                        placeholder="Masukkan nomor telepon"
+                        keyboardType="phone-pad"
+                        value={form.phone}
+                        onChangeText={(v) => onChange("phone", v)}
+                        style={{ height: 45 }}
+                    />
+
+                    <ThemedGap height="md" />
+
+                    <ThemedTextarea
+                        label="Alamat Sesuai Identitas"
+                        placeholder="Masukkan alamat sesuai KTP"
+                        value={form.identity_address}
+                        onChangeText={(v) => onChange("identity_address", v)}
+                    />
+
+                    <ThemedGap height="md" />
+
+                    <ThemedTextarea
+                        label="Alamat Domisili"
+                        placeholder="Masukkan alamat domisili"
+                        value={form.address}
+                        onChangeText={(v) => onChange("address", v)}
+                    />
+
+                    <ThemedGap height="lg" />
+
+                    {/* Optional Bank Info */}
+                    <ThemedText type="SemiBold" size="sm">
+                        Informasi Bank (Opsional)
+                    </ThemedText>
+
+                    <ThemedGap height="md" />
+
+                    {/* <ThemedInput
+                        label="Nama Bank"
+                        placeholder="Contoh: BCA"
+                        value={form.bank}
+                        onChangeText={(v) => onChange("bank", v)}
+                    /> */}
+
+                    <ThemedDropdown
+                        items={optionsTransfer}
+                        value={form.bank}
+                        label="Nama Bank"
+                        placeholder="Nama Bank"
+                        onValueChange={(selected) => onChange("bank", selected)}
+                    />
+
+                    <ThemedGap height="md" />
+
+                    <ThemedInput
+                        label="Nama Pemilik Rekening"
+                        placeholder="Masukkan nama pemilik rekening"
+                        value={form.bank_account}
+                        onChangeText={(v) => onChange("bank_account", v)}
+                        style={{ height: 45 }}
+                    />
+
+                    <ThemedGap height="md" />
+
+                    <ThemedInput
+                        label="Nomor Rekening"
+                        placeholder="Masukkan nomor rekening"
+                        keyboardType="numeric"
+                        value={form.bank_number}
+                        onChangeText={(v) => onChange("bank_number", v)}
+                        style={{ height: 45 }}
                     />
                 </View>
             </View>
-            <View style={[styles.footer, { bottom: bottom }]}>
+
+            {/* Footer */}
+            <View style={[styles.footer, { bottom }]}>
                 <ThemedButton
                     title="Perbarui"
                     onPress={() => ref.current?.show()}
+                    disabled={!isReady}
                 />
             </View>
 
+            {/* Confirmation Bottom Sheet */}
             <ThemedBottomSheet ref={ref} onClose={() => ref.current?.hide()}>
                 <ThemedText
                     type="SemiBold"
@@ -144,26 +337,20 @@ const PersonalDataScreen = () => {
                 >
                     Perbarui Profil
                 </ThemedText>
+
+                <ThemedGap height="lg" />
+
+                <ThemedButton title="Ya, Perbarui Profil" onPress={onSubmit} />
+
                 <ThemedGap height="md" />
-                <ThemedText
-                    type="Medium"
-                    size="md"
-                    color={Color.Text.Secondary}
-                >
-                    Apakah Anda yakin ingin memperbarui profil? Ini akan
-                    membantu kami meningkatkan pengalaman Anda dan menyediakan
-                    fitur yang dipersonalisasi.
-                </ThemedText>
-                <ThemedGap height="xl" />
-                <ThemedButton title="Ya, Perbarui Profil" />
-                <ThemedGap height="md" />
+
                 <ThemedButton
                     variant="outline"
                     title="Tidak, Cek Ulang Dulu"
                     onPress={() => ref.current?.hide()}
                 />
             </ThemedBottomSheet>
-        </ThemedContainer>
+        </ScrollView>
     );
 };
 

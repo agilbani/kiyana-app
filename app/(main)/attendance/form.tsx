@@ -19,7 +19,7 @@ import { ShowToastMessage } from "@/utils/toastMessage";
 import { router, useLocalSearchParams } from "expo-router";
 import moment from "moment";
 import { useRef, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Alert, Dimensions, StyleSheet, View } from "react-native";
 
 const AttendanceFormScreen = () => {
     const {
@@ -32,7 +32,7 @@ const AttendanceFormScreen = () => {
     } = useApp();
     //  console.log("cek attendance form", attendance);
     //  console.log("cek dataSelectedAttendance form", dataSelectedAttendance);
-    //  console.log("cek coord", dataCoords);
+    console.log("cek user form", user);
 
     const [loading, setLoading] = useState(false);
     const { data } = useLocalSearchParams<{ data: string }>();
@@ -57,16 +57,37 @@ const AttendanceFormScreen = () => {
         setLoading(true);
         let res = null;
         if (savedIdLateSchedule) {
-            res = await clockOut(savedIdLateSchedule, dataClockin, "host");
-            setLateScheduleId(null);
-            await deleteItem("savedIdLateSchedule");
+            console.log("res clock out1111");
+            const resp = await clockOut(
+                savedIdLateSchedule,
+                dataClockin,
+                "host",
+            );
+            console.log("res clock out", resp);
+            setLoading(false);
+            if (resp.success) {
+                setLateScheduleId(null);
+                Alert.alert("Absen pulang berhasil", "Selamat istirahat", [
+                    {
+                        text: "Kembali",
+                        onPress: () => router.replace(ROUTES.ATTENDANCE),
+                    },
+                ]);
+            } else {
+                Alert.alert("Absen pulang gagal", resp.message, [
+                    {
+                        text: "Kembali",
+                        onPress: () => router.replace(ROUTES.ATTENDANCE),
+                    },
+                ]);
+            }
         } else {
             if (
                 user?.is_host
                     ? dataSelectedAttendance.lat_in === null
-                    : attendance === null
+                    : attendance?.lat_in === null
             ) {
-                //  console.log("clock in");
+                console.log("clock in", user);
                 if (
                     user?.is_host &&
                     dataSelectedAttendance.start_time === "21:00"
@@ -76,19 +97,21 @@ const AttendanceFormScreen = () => {
                 res = await clockIn(
                     user?.is_host ? dataSelectedAttendance.id : user?.shift?.id,
                     dataClockin,
-                    user?.is_host ? "host" : "shifted"
+                    user?.is_host ? "host" : "shifted",
                 );
             } else {
                 //  console.log("clock out");
                 res = await clockOut(
                     user?.is_host ? dataSelectedAttendance.id : attendance?.id,
                     dataClockin,
-                    user?.is_host ? "host" : "shifted"
+                    user?.is_host ? "host" : "shifted",
                 );
                 setLateScheduleId(null);
                 await deleteItem("savedIdLateSchedule");
             }
             setLoading(false);
+            console.log("res absen", res);
+
             if (res.success) {
                 ref.current?.show();
             } else {
@@ -106,9 +129,9 @@ const AttendanceFormScreen = () => {
                         ? dataSelectedAttendance.lat_in === null
                             ? "Clock In"
                             : "Clock Out"
-                        : attendance === null
-                        ? "Clock In"
-                        : "Clock Out"
+                        : attendance?.lat_in === null
+                          ? "Clock In"
+                          : "Clock Out"
                 }
             />
             <View style={styles.container}>
@@ -166,9 +189,9 @@ const AttendanceFormScreen = () => {
                             ? dataSelectedAttendance.lat_in === null
                                 ? "Clock In"
                                 : "Clock Out"
-                            : attendance === null
-                            ? "Clock In"
-                            : "Clock Out"
+                            : attendance?.lat_in === null
+                              ? "Clock In"
+                              : "Clock Out"
                     }
                     onPress={onSubmit}
                     loading={loading}
@@ -178,7 +201,14 @@ const AttendanceFormScreen = () => {
             <ThemedBottomSheet ref={ref} onClose={onClose}>
                 <View style={GlobalStyles.center}>
                     <ThemedText type="SemiBold" size="lg">
-                        {attendance?.lat_in === null ? "Clock-In" : "Clock-Out"}{" "}
+                        {/* {attendance?.lat_in === null ? "Clock-In" : "Clock-Out"}{" "} */}
+                        {user?.is_host
+                            ? dataSelectedAttendance.lat_in === null
+                                ? "Clock In"
+                                : "Clock Out"
+                            : attendance?.lat_in === null
+                              ? "Clock In"
+                              : "Clock Out"}{" "}
                         Absensi Berhasil!
                     </ThemedText>
                     <ThemedGap height="md" />
@@ -191,9 +221,9 @@ const AttendanceFormScreen = () => {
                             ? dataSelectedAttendance.lat_in === null
                                 ? "Jadwal absensi mu telah disimpan, selamat bekerja"
                                 : "Jadwal absensi mu telah disimpan, selamat istirahat"
-                            : attendance === null
-                            ? "Jadwal absensi mu telah disimpan, selamat bekerja"
-                            : "Jadwal absensi mu telah disimpan, selamat istirahat"}
+                            : attendance?.lat_in === null
+                              ? "Jadwal absensi mu telah disimpan, selamat bekerja"
+                              : "Jadwal absensi mu telah disimpan, selamat istirahat"}
                     </ThemedText>
                 </View>
                 <ThemedGap height="lg" />

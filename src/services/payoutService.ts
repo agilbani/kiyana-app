@@ -45,3 +45,30 @@ export const postPayout = async (payload: {
     };
   }
 };
+
+export const postTransfer = async (payload: {
+  receiver_id: string;
+  notes: string|null;
+  amount: number;
+}): Promise<ApiResponse<Payout>> => {
+  console.log('payload tf', payload);
+  
+  try {
+    const response = await api.post(`/balance/transfer`, payload);
+    console.log('res tf', response);
+    
+    return {
+      success: true,
+      statusCode: response.status,
+      data: response.data,
+    };
+  } catch (error: any) {
+    console.log('error payout', error.response);
+    return {
+      success: false,
+      statusCode: error.response?.status || 500,
+      message: error.response?.data.message,
+      data: {} as Payout,
+    };
+  }
+};

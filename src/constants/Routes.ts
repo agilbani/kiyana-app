@@ -15,6 +15,7 @@ export const ROUTES = {
   DASHBOARD_HISTORYCASHADVANCE: "/(main)/dashboard/finance/cash-advance/CashAdvanceHistory",
   DASHBOARD_DETAIL_CASHADVANCE: "/(main)/dashboard/finance/cash-advance/Detail",
   DASHBOARD_TRANSFER: "/(main)/dashboard/finance/transfer",
+  DASHBOARD_TRANSFER_HISTORY: "/(main)/dashboard/finance/transfer/history",
   DASHBOARD_WITHDRAWAL: "/(main)/dashboard/finance/withdrawal",
   DASHBOARD_HISTORY_WITHDRAWAL: "/(main)/dashboard/finance/withdrawal/Withdraw",
   DASHBOARD_HISTORY_TRANSACTION: "/(main)/dashboard/finance/history",
@@ -35,6 +36,7 @@ export const ROUTES = {
   DASHBOARD_REQUEST_MATERIAL: "/(main)/dashboard/task/material-request",
   DASHBOARD_REQUEST_ACCESSORIES: "/(main)/dashboard/task/accessories-request",
   EDIT_ATTENDANCE: `/(main)/dashboard/editAttendance`,
+  NOTIFICATION: `/(main)/dashboard/Notification`,
 
   // Attendance
   ATTENDANCE: "/(main)/attendance",

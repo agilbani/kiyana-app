@@ -3,16 +3,19 @@ import { ThemedText } from "@/components";
 import Color from "@/constants/Color";
 import { scale } from "@/utils/scaleSize";
 import { Feather } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     Image,
     ImageSourcePropType,
     ScrollView,
     StyleSheet,
+    TextInput,
     TouchableOpacity,
     View,
     ViewStyle,
 } from "react-native";
+
+/* ================= TYPES ================= */
 
 type DropDownItem = {
     id?: string | number;
@@ -21,7 +24,6 @@ type DropDownItem = {
 };
 
 type DropDownProps = {
-    // Action
     items?: DropDownItem[];
     onSelectItem: (item: DropDownItem, index?: number) => void;
     disabled?: boolean;
@@ -33,11 +35,12 @@ type DropDownProps = {
     minHeight?: number;
     maxHeight?: number;
     dropUp?: boolean;
+    widthdropdown?: string;
 
     // Value Text
     label?: string;
     valueColor?: string;
-    value?: string;
+    value?: any;
 
     // Placeholder
     placeholderTextColor?: string;
@@ -49,12 +52,13 @@ type DropDownProps = {
     // Left Icon
     leftIcon?: ImageSourcePropType;
 
-    // Searchable
+    // Search
     searchable?: boolean;
+    debounceDelay?: number;
+
+    // Input
     autoFocus?: boolean;
     editable?: boolean;
-    secureTextEntry?: boolean;
-    blurOnSubmit?: boolean;
     keyboardType?:
         | "default"
         | "number-pad"
@@ -63,22 +67,25 @@ type DropDownProps = {
         | "email-address"
         | "phone-pad";
     autoCapitalize?: "none" | "sentences" | "words" | "characters";
-    multiline?: boolean;
-    numberOfLines?: number;
+
+    // Text
+    labelSize?: "md" | "sm" | "lg";
+    typeValueText?: "Regular" | "Medium";
+
+    // Callback
+    isOpen?: (isOpen: boolean, item?: DropDownItem) => void;
+
     testID?: string;
     listTestID?: string;
-    labelSize?: "md" | "sm" | "lg";
-    widthdropdown?: string;
-    typeValueText?: "Regular" | "Medium";
-    isOpen?: (isOpen: boolean, item?: DropDownItem) => void;
 };
+
+/* ================= COMPONENT ================= */
 
 const CustomDropDown = ({
     items = [],
     onSelectItem,
     disabled,
     onPressDropDown = () => null,
-    labelSize = "md",
 
     // Style
     style,
@@ -88,57 +95,66 @@ const CustomDropDown = ({
     dropUp = false,
     widthdropdown = "100%",
 
-    // Value Text
+    // Value
     label,
-    valueColor = Color.Red[500], // fallback to your color system
+    valueColor = Color.Gray[800],
     value,
-
-    // Placeholder
+    placeholderText = "Select option",
     placeholderTextColor = Color.Gray[300],
-    placeholderText = "Select Drop Down",
 
     // Icon
-    iconSize = 25,
-
-    // Left Icon
+    iconSize = 24,
     leftIcon,
 
-    // Searchable
-    searchable,
-    autoFocus,
-    editable,
-    secureTextEntry,
-    blurOnSubmit,
+    // Search
+    searchable = false,
+    debounceDelay = 300,
+
+    // Input
+    autoFocus = false,
+    editable = true,
     keyboardType = "default",
     autoCapitalize = "none",
-    multiline = false,
-    numberOfLines,
+
+    // Text
+    labelSize = "md",
+    typeValueText = "Regular",
+
+    // Callback
+    isOpen = () => null,
+
     testID,
     listTestID,
-    typeValueText = "Regular",
-    isOpen = () => null,
 }: DropDownProps) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [keyword, setKeyword] = useState("");
-    const [focus, setFocus] = useState(false);
+    const [debouncedKeyword, setDebouncedKeyword] = useState("");
 
-    let data = items;
-    if (keyword) {
-        data = data.filter(
-            (x) => x?.name?.toLowerCase().search(keyword.toLowerCase()) !== -1
+    /* ================= DEBOUNCE ================= */
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedKeyword(keyword);
+        }, debounceDelay);
+
+        return () => clearTimeout(timer);
+    }, [keyword, debounceDelay]);
+
+    /* ================= FILTER ================= */
+    const filteredItems = useMemo(() => {
+        if (!debouncedKeyword) return items;
+
+        return items.filter((item) =>
+            item.name.toLowerCase().includes(debouncedKeyword.toLowerCase())
         );
-    }
+    }, [items, debouncedKeyword]);
 
+    /* ================= VALUE ================= */
     const getValue = () => {
-        if (value) {
-            const string = items.filter((v) => {
-                return v.value === value;
-            });
-
-            return string[0]?.name;
-        } else {
-            return placeholderText;
+        if (value !== undefined && value !== null) {
+            const selected = items.find((item) => item.value === value);
+            return selected?.name ?? placeholderText;
         }
+        return placeholderText;
     };
 
     return (
@@ -148,201 +164,128 @@ const CustomDropDown = ({
                     type="Regular"
                     size={labelSize}
                     color={Color.Gray[600]}
-                    style={styles.spacing}
+                    style={{ marginBottom: scale(4) }}
                 >
                     {label}
                 </ThemedText>
             )}
+
+            {/* HEADER */}
             <TouchableOpacity
                 disabled={disabled}
+                testID={testID}
                 onPress={() => {
                     onPressDropDown();
-                    setShowDropdown(!showDropdown);
-                    isOpen(!showDropdown, undefined);
+                    setShowDropdown((prev) => {
+                        isOpen(!prev);
+                        return !prev;
+                    });
                 }}
                 style={[
                     styles.container,
                     containerStyle,
                     {
                         backgroundColor: disabled ? Color.Gray[200] : "#fff",
-                        borderColor: Color.Gray[400],
                     },
                     showDropdown && {
                         borderBottomLeftRadius: 0,
                         borderBottomRightRadius: 0,
                     },
                 ]}
-                testID={testID}
             >
-                <View style={{ flexDirection: "row" }}>
-                    {leftIcon ? (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    {leftIcon && (
                         <Image
                             source={leftIcon}
                             style={{
                                 width: iconSize,
                                 height: iconSize,
+                                marginRight: 8,
                             }}
                         />
-                    ) : null}
+                    )}
                     <ThemedText
                         type={typeValueText}
                         size="md"
-                        color={value ? Color.Base.Black : Color.Gray[300]}
-                        style={styles.spacing}
+                        color={value ? Color.Gray[900] : placeholderTextColor}
                         numberOfLines={1}
                     >
                         {getValue()}
                     </ThemedText>
                 </View>
-                <Feather name={dropUp ? "chevron-up" : "chevron-down"} />
+                <Feather
+                    size={20}
+                    name={dropUp ? "chevron-up" : "chevron-down"}
+                />
             </TouchableOpacity>
 
-            {/* {searchable && showDropdown ? (
-                <View
-                    style={[
-                        styles.dropDownContainer,
-                        { height: minHeight, maxHeight: maxHeight },
-                    ]}
-                >
-                    <TextInput
-                        editable={editable}
-                        autoFocus={autoFocus}
-                        secureTextEntry={secureTextEntry}
-                        onFocus={() => setFocus(true)}
-                        placeholder={placeholderText}
-                        placeholderTextColor={placeholderTextColor}
-                        keyboardType={keyboardType}
-                        autoCapitalize={autoCapitalize}
-                        value={keyword}
-                        onSubmitEditing={() => {
-                            if (data[0]) {
-                                onSelectItem(data[0]);
-                                setKeyword(data[0].name);
-                            }
-                            setFocus(false);
-                        }}
-                        multiline={multiline}
-                        numberOfLines={numberOfLines}
-                        blurOnSubmit={blurOnSubmit}
-                        onChangeText={setKeyword}
-                        style={[
-                            styles.contentSearch,
-                            {
-                                color: valueColor || "#000000",
-                            },
-                        ]}
-                    />
-                    <ScrollView nestedScrollEnabled>
-                        {data.map((item, index) => (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    onSelectItem(item, index);
-                                    setShowDropdown(false);
-                                    setKeyword("");
-                                    isOpen(false, item);
-                                }}
-                                style={[
-                                    index === 0 && { marginTop: 10 },
-                                    value === item.name
-                                        ? {
-                                              backgroundColor:
-                                                  "rgba(2, 159, 253, 0.1)",
-                                          }
-                                        : {},
-                                    styles.dropDownItem,
-                                ]}
-                                key={index}
-                                testID={listTestID}
-                            >
-                                <ThemedText
-                                    type="Regular"
-                                    size="md"
-                                    color="#000"
-                                    style={styles.spacing}
-                                >
-                                    {item.name}
-                                </ThemedText>
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                </View>
-            ) : showDropdown ? (
-                <View
-                    style={[
-                        styles.dropDownContainer,
-                        { minHeight: minHeight, maxHeight: maxHeight },
-                        dropUp && styles.dropUpAbsolute,
-                    ]}
-                >
-                    <ScrollView
-                        contentContainerStyle={{ zIndex: 3, paddingBottom: 8 }}
-                        nestedScrollEnabled
-                    >
-                        {data.map((item, index) => (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    onSelectItem(item, index);
-                                    setShowDropdown(false);
-                                    setKeyword("");
-                                    isOpen(false, item);
-                                }}
-                                style={[styles.dropDownItem]}
-                                key={index}
-                            >
-                                <ThemedText
-                                    type={
-                                        value === item.name ? "Bold" : "Regular"
-                                    }
-                                    size="md"
-                                    color="#994D52"
-                                    style={styles.spacing}
-                                >
-                                    {item.name}
-                                </ThemedText>
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                </View>
-            ) : null} */}
+            {/* DROPDOWN */}
             {showDropdown && (
                 <View
                     style={[
                         styles.dropDownContainer,
                         {
-                            minHeight: minHeight,
-                            maxHeight: maxHeight,
+                            minHeight,
+                            maxHeight,
                             width: widthdropdown,
                         },
                         dropUp && styles.dropUpAbsolute,
                     ]}
                 >
-                    <ScrollView
-                        contentContainerStyle={{ zIndex: 3, paddingBottom: 8 }}
-                        nestedScrollEnabled
-                    >
-                        {data.map((item, index) => (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    onSelectItem(item, index);
-                                    setShowDropdown(false);
-                                    setKeyword("");
-                                    isOpen(false, item);
-                                }}
-                                style={[styles.dropDownItem]}
-                                key={index}
-                            >
-                                <ThemedText
-                                    type={
-                                        value === item.name ? "Bold" : "Regular"
-                                    }
-                                    size="md"
-                                    color="#000"
-                                    style={styles.spacing}
+                    {searchable && (
+                        <TextInput
+                            value={keyword}
+                            onChangeText={setKeyword}
+                            placeholder="Search..."
+                            placeholderTextColor={placeholderTextColor}
+                            autoFocus={autoFocus}
+                            editable={editable}
+                            keyboardType={keyboardType}
+                            autoCapitalize={autoCapitalize}
+                            style={[
+                                styles.contentSearch,
+                                { color: valueColor },
+                            ]}
+                        />
+                    )}
+
+                    <ScrollView nestedScrollEnabled>
+                        {filteredItems.length > 0 ? (
+                            filteredItems.map((item, index) => (
+                                <TouchableOpacity
+                                    key={item.id ?? index}
+                                    testID={listTestID}
+                                    onPress={() => {
+                                        onSelectItem(item, index);
+                                        setShowDropdown(false);
+                                        setKeyword("");
+                                        setDebouncedKeyword("");
+                                        isOpen(false, item);
+                                    }}
+                                    style={styles.dropDownItem}
                                 >
-                                    {item.name}
-                                </ThemedText>
-                            </TouchableOpacity>
-                        ))}
+                                    <ThemedText
+                                        type={
+                                            value === item.value
+                                                ? "Bold"
+                                                : "Regular"
+                                        }
+                                        size="md"
+                                        color="#000"
+                                    >
+                                        {item.name}
+                                    </ThemedText>
+                                </TouchableOpacity>
+                            ))
+                        ) : (
+                            <ThemedText
+                                size="sm"
+                                color={Color.Gray[400]}
+                                style={{ padding: 12 }}
+                            >
+                                No data found
+                            </ThemedText>
+                        )}
                     </ScrollView>
                 </View>
             )}
@@ -350,49 +293,49 @@ const CustomDropDown = ({
     );
 };
 
+/* ================= STYLES ================= */
+
 const styles = StyleSheet.create({
-    spacing: {
-        marginLeft: scale(4),
+    container: {
+        marginTop: 8,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: Color.Gray[400],
+        paddingHorizontal: 15,
+        paddingVertical: 13,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
     },
     dropDownContainer: {
         backgroundColor: "#fff",
-        width: "100%",
         borderBottomLeftRadius: 12,
         borderBottomRightRadius: 12,
-        marginTop: -2,
+        marginTop: -1,
         zIndex: 999,
         borderWidth: 1,
         borderColor: Color.Gray[400],
         borderTopWidth: 0,
     },
     dropDownItem: {
-        paddingLeft: 15,
-        paddingVertical: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
     },
     dropUpAbsolute: {
         position: "absolute",
-        bottom: 50,
+        bottom: 52,
         elevation: 10,
         zIndex: 2,
     },
     contentSearch: {
         backgroundColor: "#FFF",
-        margin: 16,
-        marginBottom: 2,
-        padding: 12,
+        margin: 12,
+        marginBottom: 4,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "#EEEE",
-    },
-    container: {
-        marginTop: 8,
-        borderRadius: 12,
-        borderWidth: 1,
-        paddingHorizontal: 15,
-        paddingVertical: 13,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
+        borderColor: Color.Gray[300],
     },
 });
 

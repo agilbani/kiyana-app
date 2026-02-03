@@ -34,12 +34,12 @@ const AttendanceClockInScreen = () => {
 
     const [refresh, setRefresh] = useState(false);
 
-    //  console.log("attendance clockin", attendance);
-    // console.log("clockin user", user);
-    // console.log("dataSelectedAttendance", dataSelectedAttendance);
+    console.log("attendance clockin", attendance);
+    console.log("clockin user", user);
+    console.log("dataSelectedAttendance", dataSelectedAttendance);
 
     const officeCoordinate = dataSetting.find(
-        (s) => s.key === "OFFICE_COORDINATE"
+        (s) => s.key === "OFFICE_COORDINATE",
     )?.value;
     const dataOfficeCoordinate = officeCoordinate
         ? JSON.parse(officeCoordinate)
@@ -61,13 +61,13 @@ const AttendanceClockInScreen = () => {
             if (!granted) {
                 Alert.alert(
                     "Error Lokasi",
-                    "Izin lokasi diperlukan untuk fitur ini."
+                    "Izin lokasi diperlukan untuk fitur ini.",
                 );
                 return;
             }
 
             checkLocation().catch(() =>
-                Alert.alert("Error Lokasi", "Gagal mendapatkan lokasi.")
+                Alert.alert("Error Lokasi", "Gagal mendapatkan lokasi."),
             );
             setRefresh(false);
         };
@@ -276,8 +276,8 @@ const AttendanceClockInScreen = () => {
                             {user?.is_host
                                 ? dataSelectedAttendance.start_time
                                 : attendance
-                                ? attendance?.start_time
-                                : user?.shift?.start_time}
+                                  ? attendance?.start_time
+                                  : user?.shift?.start_time}
                         </ThemedText>
                     </View>
                     <ThemedGap width="xs" />
@@ -293,8 +293,8 @@ const AttendanceClockInScreen = () => {
                             {user?.is_host
                                 ? dataSelectedAttendance.end_time
                                 : attendance
-                                ? attendance?.end_time
-                                : user?.shift?.end_time}
+                                  ? attendance?.end_time
+                                  : user?.shift?.end_time}
                         </ThemedText>
                     </View>
                 </View>
