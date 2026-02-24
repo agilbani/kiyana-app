@@ -121,43 +121,56 @@ const Absence = () => {
                                         //     router.push(ROUTES.ATTENDANCE_DETAIL(1) as any)
                                         // }
                                     >
-                                        <View style={GlobalStyles.rowCenter}>
-                                            <IcCalendar
-                                                width={16}
-                                                height={16}
-                                                stroke={Color.Purple[500]}
-                                            />
-                                            <ThemedGap width="xxs" />
+                                        <View
+                                            style={GlobalStyles.rowSpaceBetween}
+                                        >
                                             <ThemedText
                                                 type="SemiBold"
                                                 size="md"
                                             >
-                                                {moment(v.date).format(
-                                                    "DD MMMM YYYY"
-                                                )}
+                                                Tanggal Pengajuan
                                             </ThemedText>
+                                            <View
+                                                style={GlobalStyles.rowCenter}
+                                            >
+                                                <IcCalendar
+                                                    width={16}
+                                                    height={16}
+                                                    stroke={Color.Purple[500]}
+                                                />
+                                                <ThemedGap width="xxs" />
+                                                <ThemedText
+                                                    type="SemiBold"
+                                                    size="md"
+                                                >
+                                                    {moment(v.date).format(
+                                                        "DD MMMM YYYY",
+                                                    )}
+                                                </ThemedText>
+                                            </View>
                                         </View>
                                         <ThemedGap height="xs" />
                                         <View
                                             style={GlobalStyles.rowSpaceBetween}
                                         >
-                                            <View>
-                                                <ThemedText
-                                                    type="SemiBold"
-                                                    size="md"
-                                                >
-                                                    {v.reason}
-                                                </ThemedText>
-                                                {v.rejected_reason && (
-                                                    <ThemedText
-                                                        type="SemiBold"
-                                                        size="xs"
-                                                        color={Color.Red[500]}
-                                                    >
-                                                        Telat pengajuan
-                                                    </ThemedText>
-                                                )}
-                                            </View>
+                                            <ThemedText
+                                                type="SemiBold"
+                                                size="md"
+                                            >
+                                                Alasan Pengajuan
+                                            </ThemedText>
+                                            <ThemedText>{v.reason}</ThemedText>
+                                        </View>
+                                        <ThemedGap height="xs" />
+                                        <View
+                                            style={GlobalStyles.rowSpaceBetween}
+                                        >
+                                            <ThemedText
+                                                type="SemiBold"
+                                                size="md"
+                                            >
+                                                Status Pengajuan
+                                            </ThemedText>
                                             <ThemedText
                                                 type="SemiBold"
                                                 size="md"
@@ -166,8 +179,25 @@ const Absence = () => {
                                                 {v.status}
                                             </ThemedText>
                                         </View>
+                                        {v.rejected_reason && (
+                                            <View
+                                                style={
+                                                    GlobalStyles.rowSpaceBetween
+                                                }
+                                            >
+                                                <ThemedText
+                                                    type="SemiBold"
+                                                    size="md"
+                                                >
+                                                    Alasan Penolakan
+                                                </ThemedText>
+                                                <ThemedText>
+                                                    {v.rejected_reason}
+                                                </ThemedText>
+                                            </View>
+                                        )}
                                     </TouchableOpacity>
-                                )
+                                ),
                             )
                         ) : (
                             <View style={styles.viewEmpty}>
@@ -207,7 +237,7 @@ const styles = StyleSheet.create({
     page: {
         ...GlobalStyles.flex,
         backgroundColor: Color.Base.White,
-        paddingTop: statusBarHeight ? statusBarHeight + scale(12) : scale(46),
+        paddingTop: statusBarHeight ? statusBarHeight : scale(46),
     },
     historyCard: {
         backgroundColor: Color.Background.Background,

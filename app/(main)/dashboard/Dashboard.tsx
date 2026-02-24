@@ -80,7 +80,7 @@ const Dashboard = () => {
                     label: "Tambah Data",
                     action: () =>
                         router.push(
-                            ROUTES.DASHBOARD_CREATE_MASSIVE_PRODUCT_PRIORITAS
+                            ROUTES.DASHBOARD_CREATE_MASSIVE_PRODUCT_PRIORITAS,
                         ),
                 },
             ],
@@ -166,7 +166,7 @@ const Dashboard = () => {
                 {
                     icon: require("@assets/icons/ProductionListIcon.png"),
                     label: "Persetujuan",
-                    action: () => console.log("task cutting"),
+                    action: () => router.push(ROUTES.DASHBOARD_APPROVAL),
                 },
                 {
                     icon: require("@assets/icons/EditAttendanceIcon.png"),
@@ -199,7 +199,7 @@ const Dashboard = () => {
             return () => {
                 // Optional cleanup when screen goes out of focus
             };
-        }, [])
+        }, []),
     );
     //  console.log("cek user", user);
 

@@ -1,4 +1,5 @@
 import api from "@/api/api";
+import { getItem } from "@/store/asyncStore";
 import {
    AbsencePayload,
    ClockInPayload,
@@ -200,39 +201,57 @@ export const clockOut = async (
 
 export const requestAbsence = async (payload: AbsencePayload) => {
     try {
+        const token = await getItem("auth_token");
+
         const formData = new FormData();
         formData.append("date", payload.date);
         formData.append("type_request", payload.type_request);
         formData.append("reason", payload.reason);
 
-        payload.attachments.forEach((image: any, index: any) => {
-            formData.append(`attachments[${index}]`, {
+        payload.attachments.forEach((image: any, index: number) => {
+            formData.append("attachments[]", {
                 uri: image.uri,
-                name: image.name || "photo.jpg",
-                type: image.type,
+                name: image.name || `photo-${index}.jpg`,
+                type: image.type || "image/jpeg",
             } as any);
         });
 
-        const response = await api.post("/absences/request", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
+        const response = await fetch(
+            "https://factorykiyana.id/api/absences/request",
+            {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: formData,
             },
-        });
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw {
+                status: response.status,
+                message: data?.message || "Request absence failed",
+                data,
+            };
+        }
 
         return {
             success: true,
-            message: response.data?.message || "Requst absence in success",
+            message: data?.message || "Request absence success",
             status: response.status,
+            data,
         };
     } catch (error: any) {
-        console.log(
-            "Requst absence error:",
-            error?.response?.data || error.message,
-        );
+        console.log("Request absence error:", error);
+
         return {
             success: false,
-            message: error?.response?.data?.message || "Requst absence failed",
-            status: error?.response?.status,
+            message: error?.message || "Request absence failed",
+            status: error?.status,
+            data: error?.data,
         };
     }
 };

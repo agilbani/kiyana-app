@@ -41,6 +41,7 @@ type ProfilePayload = {
     bank_number: string;
     identity_address: string;
     address: string;
+    image?: any;
 };
 
 const PersonalDataScreen = () => {
@@ -64,6 +65,7 @@ const PersonalDataScreen = () => {
         bank_number: "",
         identity_address: "",
         address: "",
+        image: {},
     });
 
     const onChange = (key: keyof ProfilePayload, value: string) => {
@@ -88,7 +90,9 @@ const PersonalDataScreen = () => {
             });
 
             if (!result.canceled) {
+                const selectedAsset = result.assets[0];
                 setImageUri(result.assets[0].uri);
+                onChange("image", selectedAsset);
             }
         } catch (err) {
             console.warn("Image Picker Error:", err);
@@ -125,6 +129,7 @@ const PersonalDataScreen = () => {
     };
 
     const onSubmit = async () => {
+        ref.current?.hide();
         const errorMessage = validateForm();
         if (errorMessage) {
             ref.current?.hide();
@@ -136,16 +141,30 @@ const PersonalDataScreen = () => {
             ...form,
         };
         console.log("PAYLOAD UPDATE PROFILE:", payload);
+        const formData = new FormData();
+        formData.append("address", payload.address);
+        formData.append("bank", payload.bank);
+        formData.append("bank_account", payload.bank_account);
+        formData.append("bank_number", payload.bank_number);
+        formData.append("first_name", payload.first_name);
+        formData.append("identity_address", payload.identity_address);
+        formData.append("last_name", payload.last_name);
+        formData.append("phone", payload.phone);
 
+        if (form.image && Object.keys(form.image).length > 0) {
+            formData.append("image", {
+                uri: payload.image.uri,
+                name: payload.image.fileName,
+                type: payload.image.mimeType,
+            } as any);
+        }
         LoadingManager.show();
-        const res = await changeProfile(payload);
+        const res = await changeProfile(formData);
         LoadingManager.hide();
-
+        console.log("res update", res);
         if (res.success) {
             getUser();
         }
-
-        ref.current?.hide();
     };
 
     const getOptionTransfer = () => {
@@ -172,6 +191,7 @@ const PersonalDataScreen = () => {
             identity_address: user.detail?.identity_address ?? "",
             address: user.detail?.address ?? "",
         });
+        setImageUri(user?.image_url);
     }, [user]);
 
     useEffect(() => {

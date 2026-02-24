@@ -10,6 +10,7 @@ import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
 import { useApp as appContext } from "@/context/AppContext";
 import { getAllSettings } from "@/services/settingService";
+import { getItem } from "@/store/asyncStore";
 import GlobalStyles from "@/styles/common";
 import { LoginForm } from "@/types/form";
 import { IcPassword, IcUserID } from "@assets/icons";
@@ -39,8 +40,9 @@ const LoginScreen = () => {
     const onSubmit = async (data: LoginForm) => {
         setApiError(null);
         setLoading(true);
+        const fcmToken = (await getItem("fcm_token")) ?? "";
         try {
-            const response = await login(data.email, data.password);
+            const response = await login(data.email, data.password, fcmToken);
             console.log("res login", response);
 
             if (response.status === 200) {
@@ -53,7 +55,7 @@ const LoginScreen = () => {
         } catch (error) {
             setLoading(false);
             setApiError(
-                "Terjadi kesalahan. Periksa koneksi Anda dan coba lagi."
+                "Terjadi kesalahan. Periksa koneksi Anda dan coba lagi.",
             );
         }
     };

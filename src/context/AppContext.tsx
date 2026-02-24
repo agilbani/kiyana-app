@@ -16,7 +16,8 @@ interface AppContextType {
     savedIdLateSchedule: string | null;
     login: (
         email: string,
-        password: string
+        password: string,
+        fcm_token: string,
     ) => Promise<{
         success: boolean;
         status?: number;
@@ -73,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             const storedSetting = await getItem("dataSetting");
             const storedCoords = await getItem("dataCoords");
             const storedDataAttendance = await getItem(
-                "selectedDataAttendance"
+                "selectedDataAttendance",
             );
             const storedIdLateSchedule = await getItem("savedIdLateSchedule");
             console.log("cek storedIdLateSchedule app", storedIdLateSchedule);
@@ -101,12 +102,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         })();
     }, []);
 
-    const login: AppContextType["login"] = async (email, password) => {
+    const login: AppContextType["login"] = async (
+        email,
+        password,
+        fcm_token,
+    ) => {
         console.log("login email", email);
 
         setLoading(true);
         try {
-            const res = await loginUser(email, password);
+            const res = await loginUser(email, password, fcm_token);
             console.log("login res1111", res);
             setLoading(false);
             if (res?.token) {

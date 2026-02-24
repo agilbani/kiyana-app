@@ -20,6 +20,8 @@ const statusBarHeight = StatusBar.currentHeight;
 
 const ProfileScreen = () => {
     const { user } = useApp();
+    console.log("user profile", user);
+
     return (
         <View style={styles.page}>
             <ScrollView
@@ -48,7 +50,11 @@ const ProfileScreen = () => {
                     <View style={styles.profileWrapper}>
                         <View style={styles.profileBorder}>
                             <ThemedImage
-                                source={{ uri: "https://picsum.photos/200" }}
+                                source={{
+                                    uri: user?.image_url
+                                        ? user.image_url
+                                        : "https://picsum.photos/200",
+                                }}
                                 width={120}
                                 height={120}
                             />
@@ -72,7 +78,7 @@ const ProfileScreen = () => {
                             size="md"
                             color={Color.Purple[500]}
                         >
-                            v.2.3
+                            v.2.5
                         </ThemedText>
                     </View>
                     <ThemedGap height="md" />
