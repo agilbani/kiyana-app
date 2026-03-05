@@ -7,14 +7,19 @@ import {
 import ModalDetailMonitoring from "@/components/modal/ModalDetailMonitoring";
 import ModalFilter from "@/components/modal/ModalFilter";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
 import { getListProduct } from "@/services/masterService";
 import { getMonitoringProduct } from "@/services/productionService";
 import { getProductVariant } from "@/services/productVariantService";
 import GlobalStyles from "@/styles/common";
+import { hasMenuAccess } from "@/utils/helpher";
 import { FontAwesome } from "@expo/vector-icons";
+import { router } from "expo-router";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
+    Alert,
     FlatList,
     StatusBar,
     StyleSheet,
@@ -23,6 +28,7 @@ import {
 } from "react-native";
 
 const ProductionMonitoring = () => {
+    const { user } = useApp();
     const [params, setParams] = useState({
         status: "",
         month: moment().format("MM"),
@@ -101,6 +107,21 @@ const ProductionMonitoring = () => {
         getList();
     }, [params]);
 
+    useEffect(() => {
+        if (
+            !hasMenuAccess(
+                user?.role?.name,
+                MENU_PERMISSION.PRODUCTION_MONITORING,
+            )
+        ) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
+
     return (
         <ThemedContainer>
             <StatusBar
@@ -119,6 +140,7 @@ const ProductionMonitoring = () => {
                 }}
                 listVariant={listVariant}
                 listProduct={listProduct}
+                onConfirm={() => console.log("")}
             />
             <ModalDetailMonitoring
                 visible={modalDetail}
@@ -177,7 +199,7 @@ const ProductionMonitoring = () => {
                                     </ThemedText>
                                     <ThemedText type="SemiBold">
                                         {moment(item.cutting_at).format(
-                                            "DD-MM-YYYY"
+                                            "DD-MM-YYYY",
                                         )}
                                     </ThemedText>
                                 </View>
@@ -201,10 +223,10 @@ const ProductionMonitoring = () => {
                                                 styles.badge,
                                                 {
                                                     borderColor: getBadge(
-                                                        item.status
+                                                        item.status,
                                                     ).fontColor,
                                                     backgroundColor: getBadge(
-                                                        item.status
+                                                        item.status,
                                                     ).bgColor,
                                                 },
                                             ]}

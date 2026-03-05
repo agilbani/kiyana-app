@@ -5,15 +5,18 @@ import {
     ThemedText,
 } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
 import { ROUTES } from "@/constants/Routes";
 import { useApp } from "@/context/AppContext";
 import { getListProduction } from "@/services/taskService";
 import GlobalStyles from "@/styles/common";
 import { getStatusBatch } from "@/utils/getStatusBatch";
+import { hasMenuAccess } from "@/utils/helpher";
 import { scale } from "@/utils/scaleSize";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+    Alert,
     FlatList,
     Platform,
     Pressable,
@@ -163,6 +166,16 @@ const AllTaskProduction = () => {
         return wording;
     };
 
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.PRODUCTION_TASK)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
+
     useFocusEffect(
         useCallback(() => {
             if (status) {
@@ -174,7 +187,7 @@ const AllTaskProduction = () => {
                     setStatus("needFinishing");
                 }
             }
-        }, [status])
+        }, [status]),
     );
 
     return (

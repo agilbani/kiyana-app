@@ -243,6 +243,7 @@ const AttendanceScreen = () => {
                     <TouchableOpacity
                         activeOpacity={0.9}
                         style={styles.viewBell}
+                        onPress={() => router.push(ROUTES.NOTIFICATION)}
                     >
                         <IcBell
                             width={27}

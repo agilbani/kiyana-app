@@ -33,6 +33,7 @@ const AbsenceApproval = ({isActive}) => {
    const rangeDate = getMonthDateRange();
    const [listData, setListData] = useState([])
    const [showFilter, setShowFilter] = useState(false)
+   const [refreshing, setRefreshing] = useState(false);
    const [filter, setFilter] = useState({
       page: 1,
       perPage: 10,
@@ -59,7 +60,15 @@ const AbsenceApproval = ({isActive}) => {
       } else {
          setListData([])
       }
+      setRefreshing(false)
    }
+
+   const onRefresh = () => {
+      if (!isActive) return;
+
+      setRefreshing(true);
+      getData(true);
+   };
 
    useFocusEffect(
       useCallback(() => {
@@ -103,6 +112,8 @@ const AbsenceApproval = ({isActive}) => {
             style={{width: '94%', paddingTop: 20}}
             contentContainerStyle={{gap: 20, paddingBottom: 100}}
             showsVerticalScrollIndicator={false}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
             renderItem={({item, idnex}) => (
                <TouchableOpacity 
                   activeOpacity={0.9}

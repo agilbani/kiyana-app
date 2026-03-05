@@ -6,13 +6,18 @@ import {
 } from "@/components";
 import ModalUpdateStock from "@/components/modal/ModalUpdateStock";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
 import { getProductVariant } from "@/services/productVariantService";
 import GlobalStyles from "@/styles/common";
 import { formatRupiahDisplay } from "@/utils/currency";
+import { hasMenuAccess } from "@/utils/helpher";
 import { scale } from "@/utils/scaleSize";
 import { FontAwesome6 } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
+    Alert,
     FlatList,
     StatusBar,
     StyleSheet,
@@ -22,6 +27,7 @@ import {
 } from "react-native";
 
 const ProductVariant = () => {
+    const { user } = useApp();
     const [listVariant, setListVariant] = useState<any>([]);
     const [selectedVarian, setSelectedVarian] = useState({});
     const [showModal, setShowModal] = useState(false);
@@ -43,7 +49,7 @@ const ProductVariant = () => {
         let data = [];
         if (keyword) {
             data = listVariant.filter((item: any) =>
-                item.sku?.toLowerCase().includes(keyword.toLowerCase())
+                item.sku?.toLowerCase().includes(keyword.toLowerCase()),
             );
         } else {
             data = listVariant;
@@ -54,6 +60,16 @@ const ProductVariant = () => {
 
     useEffect(() => {
         getList();
+    }, []);
+
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.LIST_STOCK)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
     }, []);
 
     return (

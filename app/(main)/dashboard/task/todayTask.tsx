@@ -7,18 +7,21 @@ import {
 } from "@/components";
 import Color from "@/constants/Color";
 import { optionsDate, optionsStatus } from "@/constants/Dummy/Options";
+import { MENU_PERMISSION } from "@/constants/Permission";
 import Radius from "@/constants/Radius";
 import { ROUTES } from "@/constants/Routes";
+import { useApp } from "@/context/AppContext";
 import { getTasksByDate } from "@/services/taskService";
 import GlobalStyles from "@/styles/common";
 import { getColorByDateDifference } from "@/utils/getColorStatus";
-import { getDateRange } from "@/utils/helpher";
+import { getDateRange, hasMenuAccess } from "@/utils/helpher";
 import { scale, verticalScale } from "@/utils/scaleSize";
 import { IcActiveCalendar, IcFaster } from "@assets/index";
 import { router } from "expo-router";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
 import {
+    Alert,
     FlatList,
     Platform,
     RefreshControl,
@@ -83,8 +86,8 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                         item.status === "Planned"
                             ? "Terjadwal"
                             : item.status === "Processed"
-                            ? "Diproses"
-                            : "Selesai"
+                              ? "Diproses"
+                              : "Selesai"
                     }
                     textColor={Color.Base.White}
                     backgroundColor={getColor(item.status)}
@@ -100,15 +103,15 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                                 borderWidth: 1,
                                 borderColor: getColorByDateDifference(
                                     moment(item.deadline * 1000).format(
-                                        "YYYY-MM-DD"
+                                        "YYYY-MM-DD",
                                     ),
-                                    moment(new Date()).format("YYYY-MM-DD")
+                                    moment(new Date()).format("YYYY-MM-DD"),
                                 ).color,
                                 backgroundColor: getColorByDateDifference(
                                     moment(item.deadline * 1000).format(
-                                        "YYYY-MM-DD"
+                                        "YYYY-MM-DD",
                                     ),
-                                    moment(new Date()).format("YYYY-MM-DD")
+                                    moment(new Date()).format("YYYY-MM-DD"),
                                 ).color,
                             },
                         ]}
@@ -126,9 +129,9 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                             color={
                                 getColorByDateDifference(
                                     moment(item.deadline * 1000).format(
-                                        "YYYY-MM-DD"
+                                        "YYYY-MM-DD",
                                     ),
-                                    moment(new Date()).format("YYYY-MM-DD")
+                                    moment(new Date()).format("YYYY-MM-DD"),
                                 ).fontColor
                             }
                         >
@@ -141,14 +144,14 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
                             color={
                                 getColorByDateDifference(
                                     moment(item.deadline * 1000).format(
-                                        "YYYY-MM-DD"
+                                        "YYYY-MM-DD",
                                     ),
-                                    moment(new Date()).format("YYYY-MM-DD")
+                                    moment(new Date()).format("YYYY-MM-DD"),
                                 ).fontColor
                             }
                         >
                             {moment(item.deadline * 1000).format(
-                                "YYYY-MM-DD HH:mm"
+                                "YYYY-MM-DD HH:mm",
                             )}
                         </ThemedText>
                     </View>
@@ -170,6 +173,7 @@ const TaskItem = React.memo(({ item, onPress }: any) => {
 });
 
 const TodayTask = () => {
+    const { user } = useApp();
     const [status, setStatus] = useState("semua");
     const [loading, setLoading] = useState<boolean>(false);
     const [listTask, setListTask] = useState<any>([]);
@@ -188,7 +192,7 @@ const TodayTask = () => {
                 }}
             />
         ),
-        []
+        [],
     );
 
     const getTask = async () => {
@@ -199,7 +203,7 @@ const TodayTask = () => {
                 dateRange.startDate,
                 dateRange.endDate,
                 status === "semua" ? "" : status,
-                "productions/plans"
+                "productions/plans",
             );
             setLoading(false);
             // console.log("res task", tasks.data);
@@ -219,7 +223,18 @@ const TodayTask = () => {
     useEffect(() => {
         getTask();
     }, [status, rangeDate, refreshing]);
-    console.log("listTask", listTask);
+
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.TODAY_TASK)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
+
+    //  console.log("listTask", listTask);
 
     return (
         <View

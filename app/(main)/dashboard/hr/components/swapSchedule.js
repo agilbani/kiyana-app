@@ -50,6 +50,7 @@ const SwapScheduleApproval = ({isActive}) => {
 
    const [modalFilter, setModalFilter] = useState(false)
    const [listData, setListData] = useState([])
+   const [refreshing, setRefreshing] = useState(false);
    const [filter, setFilter] = useState({
       status: '',
       swap_type: 'Shift'
@@ -69,7 +70,15 @@ const SwapScheduleApproval = ({isActive}) => {
       if (res.success) {
          setListData(res.data)
       }
+      setRefreshing(false)
    }
+
+   const onRefresh = () => {
+      if (!isActive) return;
+
+      setRefreshing(true);
+      getData(true);
+   };
 
    useFocusEffect(
       useCallback(() => {
@@ -112,6 +121,8 @@ const SwapScheduleApproval = ({isActive}) => {
             style={{width: '94%', paddingTop: 20}}
             contentContainerStyle={{gap: 20, paddingBottom: 100}}
             showsVerticalScrollIndicator={false}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
             renderItem={({item, index}) => (
                <TouchableOpacity 
                   activeOpacity={0.9}

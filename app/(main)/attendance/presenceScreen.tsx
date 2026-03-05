@@ -49,7 +49,11 @@ const PresenceScreen = () => {
     const getData = async () => {
         setLoading(true);
         const { startDate, endDate } = getDateRange(filter);
+        console.log("cek startDate", startDate);
+        console.log("cek endDate", endDate);
         const res = await getMyAttendance(startDate, endDate);
+        console.log("res absen", res);
+
         setLoading(false);
         if (res.success) {
             setDataSummary(res.data);
@@ -106,7 +110,7 @@ const PresenceScreen = () => {
                     <ScrollView showsVerticalScrollIndicator={false}>
                         {dataSummary?.histories.map((v: any, index: any) => (
                             <TouchableOpacity
-                                key={`${index}`}
+                                key={`${v.id}`}
                                 activeOpacity={1}
                                 style={[styles.cardItem, { marginTop: 12 }]}
                             >
@@ -127,7 +131,7 @@ const PresenceScreen = () => {
                                             color={Color.Text.Secondary}
                                         >
                                             {moment(v.date).format(
-                                                "MMM DD, YYYY"
+                                                "MMM DD, YYYY",
                                             )}
                                         </ThemedText>
                                     </View>

@@ -4,12 +4,14 @@ import ModalRequest from "@/components/modal/ModalRequest";
 import DashboardAmountCard from "@/components/screens/Dashboard/DashboardAmountCard";
 import DashboardScanCard from "@/components/screens/Dashboard/DashboardScanCard";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
 import { ROUTES } from "@/constants/Routes";
 import { useApp } from "@/context/AppContext";
 import { getProfile } from "@/services/authService";
+import { hasMenuAccess } from "@/utils/helpher";
 import { scale } from "@/utils/scaleSize";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     Image,
     RefreshControl,
@@ -28,6 +30,7 @@ const Dashboard = () => {
 
     const [refreshing, setRefreshing] = useState(false);
     const [modalRequest, setModalRequest] = useState(false);
+    const [showCardScan, setShowCardScan] = useState(true);
     const MenuOptions = [
         {
             label: "Produksi",
@@ -193,6 +196,14 @@ const Dashboard = () => {
         getUser();
     }, []);
 
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.SHOW_SCAN_BATCH)) {
+            setShowCardScan(false);
+        } else {
+            setShowCardScan(true);
+        }
+    }, []);
+
     useFocusEffect(
         useCallback(() => {
             getUser();
@@ -233,7 +244,7 @@ const Dashboard = () => {
                     onPressSend={() => router.push(ROUTES.DASHBOARD_TRANSFER)}
                     user={user}
                 />
-                <DashboardScanCard user={user} />
+                {showCardScan && <DashboardScanCard user={user} />}
                 {MenuOptions.map((v: any, index: any) => (
                     <View key={`${index}`} style={styles.card}>
                         <ThemedText

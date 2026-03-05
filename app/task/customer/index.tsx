@@ -2,6 +2,8 @@ import { ThemedContainer, ThemedHeader, ThemedText } from "@/components";
 import { ConfirmationModal } from "@/components/modal/ModalConfirmation";
 import { ModalDetailCustomer } from "@/components/modal/ModalDetailCustomer";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
 import {
     createCustomer,
     deleteCustomer,
@@ -9,10 +11,13 @@ import {
     getCustomer,
 } from "@/services/customerService";
 import { Customer } from "@/types/customer";
+import { hasMenuAccess } from "@/utils/helpher";
+import { router } from "expo-router";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
+    Alert,
     ScrollView,
     StyleSheet,
     TouchableOpacity,
@@ -27,6 +32,7 @@ const initialData = {
 };
 
 const ListCustomer = () => {
+    const { user } = useApp();
     const [listCustomer, setListCustomer] = useState<Customer[]>([]);
     const [selectedCustomer, setSelectedCustomer] = useState({
         ...initialData,
@@ -79,6 +85,16 @@ const ListCustomer = () => {
 
     useEffect(() => {
         getData();
+    }, []);
+
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.BUYER_DATA)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
     }, []);
 
     return (
@@ -200,7 +216,7 @@ const ListCustomer = () => {
                                     </ThemedText>
                                     <ThemedText size="xs">
                                         {moment(v.created_at).format(
-                                            "DD MMMM YYYY"
+                                            "DD MMMM YYYY",
                                         )}
                                     </ThemedText>
                                 </View>

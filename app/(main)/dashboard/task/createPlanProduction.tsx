@@ -6,6 +6,8 @@ import {
     ThemedText,
 } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
 import {
     getCuttingEmployee,
     getListProduct,
@@ -13,6 +15,7 @@ import {
 } from "@/services/masterService";
 import { createProductionPlan } from "@/services/productionService";
 import { getProductVariant } from "@/services/productVariantService";
+import { hasMenuAccess } from "@/utils/helpher";
 import LoadingManager from "@/utils/LoadingManager";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { Feather } from "@expo/vector-icons";
@@ -20,6 +23,7 @@ import { router } from "expo-router";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import {
+    Alert,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -30,6 +34,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const CreatePlanProduction = () => {
+    const { user } = useApp();
     const insets = useSafeAreaInsets();
     const [productItem, setProductItem] = useState<any>([
         {
@@ -71,7 +76,7 @@ const CreatePlanProduction = () => {
     const onDelete = (id: any) => {
         if (productItem.length > 1) {
             setProductItem((prev: any) =>
-                prev.filter((row: any) => row.id !== id)
+                prev.filter((row: any) => row.id !== id),
             );
         }
     };
@@ -79,8 +84,8 @@ const CreatePlanProduction = () => {
     const updateRow = (id: any, field: any, value: any) => {
         setProductItem((prev: any) =>
             prev.map((row: any) =>
-                row.id === id ? { ...row, [field]: value } : row
-            )
+                row.id === id ? { ...row, [field]: value } : row,
+            ),
         );
     };
 
@@ -92,10 +97,10 @@ const CreatePlanProduction = () => {
                     ...item,
                     material_details: item.material_details.map(
                         (mat: any, i: number) =>
-                            i === index ? { ...mat, qty: value } : mat
+                            i === index ? { ...mat, qty: value } : mat,
                     ),
                 };
-            })
+            }),
         );
     };
 
@@ -229,6 +234,16 @@ const CreatePlanProduction = () => {
     useEffect(() => {
         getList();
     }, []);
+
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.PRODUCTION_PLAN)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
     //  console.log("create plan productItem", productItem);
 
     return (
@@ -313,7 +328,7 @@ const CreatePlanProduction = () => {
                                             updateRow(
                                                 v.id,
                                                 "product_variant_id",
-                                                item.value
+                                                item.value,
                                             );
                                         }}
                                         placeholderText="Pilih salah satu opsi"
@@ -360,12 +375,12 @@ const CreatePlanProduction = () => {
                                                         }
                                                         placeholder="Masukkan Jumlah Kuantitas"
                                                         onChangeText={(
-                                                            text: string
+                                                            text: string,
                                                         ) =>
                                                             updateMaterialQty(
                                                                 v.id,
                                                                 index,
-                                                                text
+                                                                text,
                                                             )
                                                         }
                                                     />
@@ -386,7 +401,7 @@ const CreatePlanProduction = () => {
                                                 </View>
                                             </View>
                                         </View>
-                                    )
+                                    ),
                                 )}
                             </View>
                         </View>

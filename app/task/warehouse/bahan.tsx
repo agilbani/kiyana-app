@@ -1,7 +1,10 @@
 import { ThemedHeader, ThemedText } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
 import { ROUTES } from "@/constants/Routes";
+import { useApp } from "@/context/AppContext";
 import { deleteMaterial, getMaterial } from "@/services/warehouseService";
+import { hasMenuAccess } from "@/utils/helpher";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -32,6 +35,7 @@ const getInitials = (name: string) => {
 
 // --- Screen ---
 const BahanScreen: React.FC = () => {
+    const { user } = useApp();
     const [materials, setMaterials] = useState<Material[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -54,6 +58,16 @@ const BahanScreen: React.FC = () => {
         fetchMaterials();
     }, []);
 
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.ADD_MATERIAL)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
+
     // 🔹 Delete Material
     const handleDelete = useCallback(
         async (slug: string) => {
@@ -70,14 +84,14 @@ const BahanScreen: React.FC = () => {
                         } else {
                             Alert.alert(
                                 "Gagal",
-                                res.message || "Gagal menghapus material"
+                                res.message || "Gagal menghapus material",
                             );
                         }
                     },
                 },
             ]);
         },
-        [fetchMaterials]
+        [fetchMaterials],
     );
 
     // --- Render item ---
@@ -137,7 +151,7 @@ const BahanScreen: React.FC = () => {
                 </View>
             );
         },
-        [handleDelete]
+        [handleDelete],
     );
 
     // --- Render screen ---

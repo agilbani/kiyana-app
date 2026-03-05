@@ -1,15 +1,19 @@
 import { ThemedContainer, ThemedHeader, ThemedText } from "@/components";
 import ModalFilter from "@/components/modal/ModalFilter";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
 import { ROUTES } from "@/constants/Routes";
+import { useApp } from "@/context/AppContext";
 import { getListProduct } from "@/services/productionService";
 import { getProductVariant } from "@/services/productVariantService";
 import { getSelling } from "@/services/sellingService";
+import { hasMenuAccess } from "@/utils/helpher";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
+    Alert,
     ScrollView,
     StyleSheet,
     TouchableOpacity,
@@ -19,6 +23,7 @@ import CardTransaction from "./component/CardTransaction";
 import Widget from "./component/widget";
 
 const ListTransaction = () => {
+    const { user } = useApp();
     const [listSelling, setListSelling] = useState([]);
     const [loading, setLoading] = useState(false);
     const [dataWidget, setDataWidget] = useState({
@@ -85,6 +90,16 @@ const ListTransaction = () => {
     useEffect(() => {
         getList();
     }, [params]);
+
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.SELLING_REPORT)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
 
     return (
         <ThemedContainer>

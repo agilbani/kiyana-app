@@ -1,13 +1,17 @@
 import { ThemedHeader } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
 import { addStock, getProductBySKU } from "@/services/masterService";
 import { usePositionBottom } from "@/utils/bottomPosition";
+import { hasMenuAccess } from "@/utils/helpher";
 import LoadingManager from "@/utils/LoadingManager";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+    Alert,
     Modal,
     ScrollView,
     StatusBar,
@@ -27,6 +31,7 @@ type ItemData = {
 };
 
 export default function AddStockScreen() {
+    const { user } = useApp();
     const { bottom } = usePositionBottom();
     const router = useRouter();
     const [data, setData] = useState<ItemData[]>([{ id: Date.now() }]);
@@ -104,6 +109,16 @@ export default function AddStockScreen() {
             console.error(err);
         }
     };
+
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.ADD_STOCK)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
 
     if (!permission?.granted) {
         return (

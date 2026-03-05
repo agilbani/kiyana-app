@@ -8,11 +8,14 @@ import {
     TimePickerField,
 } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
 import {
     editAttendance,
     getInfoAttendance,
 } from "@/services/attendanceService";
 import { getAllEmployee } from "@/services/masterService";
+import { hasMenuAccess } from "@/utils/helpher";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { router } from "expo-router";
 import moment from "moment";
@@ -25,11 +28,6 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-
-const user = [
-    { name: "fulan", value: "fulan" },
-    { name: "fulana", value: "fulana" },
-];
 
 interface Employee {
     id: number;
@@ -48,6 +46,7 @@ const defaultEmployee = (): Employee => ({
 });
 
 const EditAttendance = () => {
+    const { user } = useApp();
     const [employees, setEmployees] = useState<Employee[]>([defaultEmployee()]);
     const [listEmployee, setListEmployee] = useState<any>([]);
     const [loadingIds, setLoadingIds] = useState<number[]>([]); // track loading per employee
@@ -67,16 +66,16 @@ const EditAttendance = () => {
     const handleChange = (id: number, field: keyof Employee, value: any) => {
         setEmployees((prev) =>
             prev.map((emp) =>
-                emp.id === id ? { ...emp, [field]: value } : emp
-            )
+                emp.id === id ? { ...emp, [field]: value } : emp,
+            ),
         );
     };
 
     const resetEmployee = (id: number) => {
         setEmployees((prev) =>
             prev.map((emp) =>
-                emp.id === id ? { ...defaultEmployee(), id } : emp
-            )
+                emp.id === id ? { ...defaultEmployee(), id } : emp,
+            ),
         );
     };
 
@@ -106,13 +105,13 @@ const EditAttendance = () => {
                                       ? res.data.clock_out
                                       : "",
                               }
-                            : e
-                    )
+                            : e,
+                    ),
                 );
             } else {
                 Alert.alert(
                     "Data Tidak Ditemukan",
-                    "Tidak ditemukan data presensi user pada tanggal yang dipilih"
+                    "Tidak ditemukan data presensi user pada tanggal yang dipilih",
                 );
                 resetEmployee(emp.id);
             }
@@ -162,13 +161,13 @@ const EditAttendance = () => {
 
     const handleSubmit = async () => {
         const allFilled = employees.every(
-            (emp) => emp.user_id && emp.selectedDate
+            (emp) => emp.user_id && emp.selectedDate,
         );
 
         if (!allFilled) {
             Alert.alert(
                 "Peringatan",
-                "Lengkapi semua data karyawan sebelum submit"
+                "Lengkapi semua data karyawan sebelum submit",
             );
             return;
         }
@@ -197,6 +196,18 @@ const EditAttendance = () => {
             ShowToastMessage(res.message);
         }
     };
+
+    useEffect(() => {
+        if (
+            !hasMenuAccess(user?.role?.name, MENU_PERMISSION.ABSENCE_CORRECTION)
+        ) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
 
     return (
         <ThemedContainer>
@@ -230,7 +241,7 @@ const EditAttendance = () => {
                                         handleChange(
                                             item.id,
                                             "user_id",
-                                            selected.value
+                                            selected.value,
                                         )
                                     }
                                     value={item.user_id}
@@ -243,7 +254,7 @@ const EditAttendance = () => {
                                         handleChange(
                                             item.id,
                                             "selectedDate",
-                                            date
+                                            date,
                                         )
                                     }
                                 />
@@ -268,7 +279,7 @@ const EditAttendance = () => {
                                                     handleChange(
                                                         item.id,
                                                         "clock_in",
-                                                        date
+                                                        date,
                                                     )
                                                 }
                                                 disable={
@@ -285,7 +296,7 @@ const EditAttendance = () => {
                                                     handleChange(
                                                         item.id,
                                                         "clock_out",
-                                                        date
+                                                        date,
                                                     )
                                                 }
                                                 disable={

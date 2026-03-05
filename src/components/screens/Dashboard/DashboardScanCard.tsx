@@ -1,14 +1,23 @@
 import { ThemedInput, ThemedText } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
 import { ROUTES } from "@/constants/Routes";
+import { hasMenuAccess } from "@/utils/helpher";
 import { IcScan } from "@assets/index";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const DashboardScanCard = ({ user }: any) => {
     const [batchNumber, setBatchNumber] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [canSetSewn, setCanSetSewn] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (hasMenuAccess(user?.role?.name, MENU_PERMISSION.TODAY_TASK)) {
+            setCanSetSewn(true);
+        }
+    }, []);
 
     async function checkBatchNumber() {
         router.push({
@@ -64,21 +73,18 @@ const DashboardScanCard = ({ user }: any) => {
                 <IcScan />
                 <ThemedText size="md">Scan untuk memulai tugas anda</ThemedText>
             </TouchableOpacity>
-            {user?.role?.name === "Spv Gudang" ||
-                (user?.role?.name === "Staff Gudang" && (
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        style={styles.btnScan}
-                        onPress={() =>
-                            router.push(ROUTES.DASHBOARD_ASSIGN_SEWN)
-                        }
-                    >
-                        <IcScan />
-                        <ThemedText size="md">
-                            Tambahkan tugas untuk penjahit
-                        </ThemedText>
-                    </TouchableOpacity>
-                ))}
+            {canSetSewn && (
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    style={styles.btnScan}
+                    onPress={() => router.push(ROUTES.DASHBOARD_ASSIGN_SEWN)}
+                >
+                    <IcScan />
+                    <ThemedText size="md">
+                        Tambahkan tugas untuk penjahit
+                    </ThemedText>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

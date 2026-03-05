@@ -1,7 +1,11 @@
 import { ThemedHeader, ThemedText } from "@/components";
 import Color from "@/constants/Color";
-import { useState } from "react";
-import { Dimensions, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
+import { hasMenuAccess } from "@/utils/helpher";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { Alert, Dimensions, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 import { TabView } from "react-native-tab-view";
 import AbsenceApproval from "./components/absence";
 import LoanApproval from "./components/loan";
@@ -10,6 +14,7 @@ import SwapScheduleApproval from "./components/swapSchedule";
 const initialLayout = { width: Dimensions.get("window").width };
 
 const Approval = () => {
+   const { user } = useApp();
     const [index, setIndex] = useState(0);
     const [routes] = useState([
         { key: "absence", title: "Absensi" },
@@ -76,11 +81,21 @@ const Approval = () => {
         );
     };
 
+    useEffect(() => {
+         if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.APPROVAL)) {
+               Alert.alert(
+                  "Akses ditolak",
+                  "Anda tidak memiliki akses ke menu ini",
+               );
+               router.back();
+         }
+      }, []);
+
     return (
         <View
             style={{
                 flex: 1,
-               //  paddingTop: StatusBar.currentHeight,
+                paddingTop: StatusBar.currentHeight,
             }}
         >
          <StatusBar barStyle={'dark-content'} backgroundColor={Color.Base.White} />

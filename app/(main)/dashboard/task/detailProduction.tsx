@@ -72,7 +72,7 @@ const DetailProductionScreen = () => {
                         text: "Oke",
                         onPress: () => router.back(),
                     },
-                ]
+                ],
             );
             return false;
         }
@@ -81,11 +81,11 @@ const DetailProductionScreen = () => {
         formData.append("sewing_by", user?.id);
         formData.append(
             "start_sewing_at",
-            moment(new Date()).format("YYYY-MM-DD HH:mm")
+            moment(new Date()).format("YYYY-MM-DD HH:mm"),
         );
         const res = await updateProduction(
             detailProduction?.data?.batch!,
-            formData
+            formData,
         );
         setLoadingAction(false);
         if (res.success) {
@@ -94,7 +94,7 @@ const DetailProductionScreen = () => {
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
-                50
+                50,
             );
             getDetail();
         } else {
@@ -108,11 +108,11 @@ const DetailProductionScreen = () => {
         formData.append("sewing_by", user?.id);
         formData.append(
             "end_sewing_at",
-            moment(new Date()).format("YYYY-MM-DD HH:mm")
+            moment(new Date()).format("YYYY-MM-DD HH:mm"),
         );
         const res = await updateProduction(
             detailProduction?.data?.batch!,
-            formData
+            formData,
         );
         setLoadingAction(false);
         if (res?.success) {
@@ -121,7 +121,7 @@ const DetailProductionScreen = () => {
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
-                50
+                50,
             );
             router.back();
         } else {
@@ -139,7 +139,7 @@ const DetailProductionScreen = () => {
                         text: "Oke",
                         onPress: () => router.back(),
                     },
-                ]
+                ],
             );
             return false;
         }
@@ -152,11 +152,11 @@ const DetailProductionScreen = () => {
         formData.append("finishing_by", user?.id);
         formData.append(
             "start_finishing_at",
-            moment(new Date()).format("YYYY-MM-DD HH:mm")
+            moment(new Date()).format("YYYY-MM-DD HH:mm"),
         );
         const res = await updateProduction(
             detailProduction?.data?.batch!,
-            formData
+            formData,
         );
         //   console.log("res finishing", res);
 
@@ -167,7 +167,7 @@ const DetailProductionScreen = () => {
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
-                50
+                50,
             );
             getDetail();
         } else {
@@ -186,21 +186,21 @@ const DetailProductionScreen = () => {
         formData.append("finishing_by", user?.id);
         formData.append(
             "end_finishing_at",
-            moment(new Date()).format("YYYY-MM-DD HH:mm")
+            moment(new Date()).format("YYYY-MM-DD HH:mm"),
         );
         data.forEach((approval: any, index: number) => {
             formData.append(`approvals[${index}][qty]`, approval.qty);
             formData.append(`approvals[${index}][status]`, approval.status);
             formData.append(
                 `approvals[${index}][attachments][0]`,
-                approval.attachments
+                approval.attachments,
             );
         });
         console.log("formdata finish", formData);
 
         const res = await updateProduction(
             detailProduction?.data?.batch!,
-            formData
+            formData,
         );
         console.log("res finish", res);
 
@@ -211,7 +211,7 @@ const DetailProductionScreen = () => {
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
-                50
+                50,
             );
             router.back();
         } else {
@@ -335,7 +335,7 @@ const DetailProductionScreen = () => {
                             if (isRejected) {
                                 startFixing(
                                     detailProduction?.data?.batch ?? "",
-                                    "sewing"
+                                    "sewing",
                                 );
                             } else {
                                 handleStartSewing();
@@ -345,7 +345,7 @@ const DetailProductionScreen = () => {
                             if (isRejected) {
                                 endFixing(
                                     detailProduction?.data?.batch ?? "",
-                                    "sewing"
+                                    "sewing",
                                 );
                             } else {
                                 handleFinishSewing();
@@ -362,11 +362,11 @@ const DetailProductionScreen = () => {
                 detailProduction?.data?.approvals.finishing === null
                     ? false
                     : detailProduction?.data?.approvals.finishing?.status ===
-                          "Reject (Bisa Diperbaiki)" ||
-                      detailProduction?.data?.approvals.finishing?.status ===
-                          "Being Repaired"
-                    ? true
-                    : false;
+                            "Reject (Bisa Diperbaiki)" ||
+                        detailProduction?.data?.approvals.finishing?.status ===
+                            "Being Repaired"
+                      ? true
+                      : false;
             const labelReject =
                 detailProduction?.data?.approvals.finishing?.status;
 
@@ -583,7 +583,7 @@ const DetailProductionScreen = () => {
                                             startFixing(
                                                 detailProduction?.data?.batch ??
                                                     "",
-                                                "sewing"
+                                                "sewing",
                                             );
                                         } else {
                                             if (
@@ -594,7 +594,7 @@ const DetailProductionScreen = () => {
                                                 endFixing(
                                                     detailProduction?.data
                                                         ?.batch ?? "",
-                                                    "sewing"
+                                                    "sewing",
                                                 );
                                             }
                                         }
@@ -721,10 +721,10 @@ const ButtonRoleSewing = ({
                             ? // && labelReject.toLowerCase().includes("bisa diperbaiki")
                               true
                             : labelReject === "Being Repaired"
-                            ? false
-                            : data.start_sewing_at === null ||
-                              (data.start_sewing_at !== null &&
-                                  data.end_sewing_at !== null)
+                              ? false
+                              : data.start_sewing_at === null ||
+                                (data.start_sewing_at !== null &&
+                                    data.end_sewing_at !== null)
                     }
                     onPress={onFinishSewing}
                     loading={loading}

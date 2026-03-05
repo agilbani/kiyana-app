@@ -11,11 +11,14 @@ import { Appearance, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ViewLoading from "../src/components/ui/ViewLoading";
 
+import { ROUTES } from "@/constants/Routes";
+import { useApp } from "@/context/AppContext";
 import { setupNotificationChannel } from "@/services/notificationChannel";
 import "@/services/notificationHandler";
 import { registerForPushNotifications } from "@/services/pushNotificationService";
 
 const RootLayout = () => {
+    const { user } = useApp();
     const [fontsLoaded] = useFonts({
         "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
         "Roboto-Medium": require("../assets/fonts/Roboto-Medium.ttf"),
@@ -47,6 +50,25 @@ const RootLayout = () => {
                 (response) => {
                     const data = response.notification;
                     console.log("data notif", data);
+                    if (
+                        data?.request?.content?.data?.type ===
+                        "production_plan_created" //"production_set_sewn"
+                    ) {
+                        if (user?.role?.name === "Tukang Potong") {
+                            router.push(ROUTES.DASHBOARD_ALL_TASK_TODAY);
+                        } else {
+                            router.push(ROUTES.DASHBOARD_ALL_TASK_PRODUCTION);
+                        }
+                    } else if (
+                        data?.request?.content?.data?.type ===
+                        "production_created"
+                    ) {
+                        if (user?.role?.name === "Tukang Potong") {
+                            router.push(ROUTES.DASHBOARD_ALL_TASK_TODAY);
+                        } else {
+                            router.push(ROUTES.DASHBOARD_ALL_TASK_PRODUCTION);
+                        }
+                    }
                 },
             );
 

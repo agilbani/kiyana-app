@@ -5,15 +5,19 @@ import {
     ThemedInput,
 } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
 import { getMaterial, materialRequest } from "@/services/masterService";
 import { getMaterialVariant } from "@/services/warehouseService";
+import { hasMenuAccess } from "@/utils/helpher";
 import LoadingManager from "@/utils/LoadingManager";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { StatusBar, View } from "react-native";
+import { Alert, StatusBar, View } from "react-native";
 
 const MaterialRequest = () => {
+    const { user } = useApp();
     const [listMats, setListMats] = useState<any>([]);
     const [listVariant, setListVariant] = useState<any>([]);
     const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
@@ -67,6 +71,18 @@ const MaterialRequest = () => {
 
     useEffect(() => {
         getData();
+    }, []);
+
+    useEffect(() => {
+        if (
+            !hasMenuAccess(user?.role?.name, MENU_PERMISSION.MATERIAL_REQUEST)
+        ) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
     }, []);
 
     return (

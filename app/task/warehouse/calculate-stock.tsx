@@ -1,13 +1,17 @@
 import { ThemedHeader } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
 import { calculateStock, getProductBySKU } from "@/services/masterService";
 import { usePositionBottom } from "@/utils/bottomPosition";
+import { hasMenuAccess } from "@/utils/helpher";
 import LoadingManager from "@/utils/LoadingManager";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+    Alert,
     Modal,
     ScrollView,
     StyleSheet,
@@ -28,6 +32,7 @@ interface StockItem {
 }
 
 export default function PerhitunganStockScreen() {
+    const { user } = useApp();
     const { bottom } = usePositionBottom();
     const [items, setItems] = useState<StockItem[]>([
         {
@@ -144,6 +149,16 @@ export default function PerhitunganStockScreen() {
         }
     };
 
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.CALCULATE_STOCK)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
+
     return (
         <View style={styles.container}>
             <ThemedHeader title="Perhitungan Stock" />
@@ -194,7 +209,7 @@ export default function PerhitunganStockScreen() {
                                 setItems((prev) => {
                                     const updated = [...prev];
                                     const idx = updated.findIndex(
-                                        (i) => i.id === item.id
+                                        (i) => i.id === item.id,
                                     );
                                     if (idx !== -1) updated[idx].sku = text;
                                     return updated;
@@ -225,8 +240,8 @@ export default function PerhitunganStockScreen() {
                                         item.difference == null
                                             ? { backgroundColor: "#f3f4f6" }
                                             : item.difference < 0
-                                            ? { backgroundColor: "#fee2e2" }
-                                            : { backgroundColor: "#dcfce7" },
+                                              ? { backgroundColor: "#fee2e2" }
+                                              : { backgroundColor: "#dcfce7" },
                                     ]}
                                 >
                                     <Text
@@ -235,8 +250,8 @@ export default function PerhitunganStockScreen() {
                                                 item.difference == null
                                                     ? "#6b7280"
                                                     : item.difference < 0
-                                                    ? "#dc2626"
-                                                    : "#16a34a",
+                                                      ? "#dc2626"
+                                                      : "#16a34a",
                                             fontWeight: "700",
                                             fontSize: 16,
                                         }}
@@ -244,8 +259,8 @@ export default function PerhitunganStockScreen() {
                                         {item.difference == null
                                             ? "-"
                                             : item.difference > 0
-                                            ? `+${item.difference}`
-                                            : `${item.difference}`}
+                                              ? `+${item.difference}`
+                                              : `${item.difference}`}
                                     </Text>
                                 </View>
                             </View>

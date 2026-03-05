@@ -1,7 +1,10 @@
 import { ThemedContainer, ThemedHeader, ThemedText } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
 import { ROUTES } from "@/constants/Routes";
+import { useApp } from "@/context/AppContext";
 import { deleteAccesorice, getAccesorice } from "@/services/warehouseService";
+import { hasMenuAccess } from "@/utils/helpher";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -37,6 +40,7 @@ const getInitials = (name: string) => {
 // Component
 // -----------------------------
 const Aksesoris: React.FC = () => {
+    const { user } = useApp();
     const [data, setData] = useState<Accessory[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -74,14 +78,14 @@ const Aksesoris: React.FC = () => {
                         } else {
                             Alert.alert(
                                 "Gagal",
-                                res.message || "Gagal menghapus aksesoris"
+                                res.message || "Gagal menghapus aksesoris",
                             );
                         }
                     },
                 },
             ]);
         },
-        [fetchAccessories]
+        [fetchAccessories],
     );
 
     // 🔹 Render item list
@@ -138,8 +142,18 @@ const Aksesoris: React.FC = () => {
                 </View>
             );
         },
-        [handleDelete]
+        [handleDelete],
     );
+
+    useEffect(() => {
+        if (!hasMenuAccess(user?.role?.name, MENU_PERMISSION.ACCESSORIES)) {
+            Alert.alert(
+                "Akses ditolak",
+                "Anda tidak memiliki akses ke menu ini",
+            );
+            router.back();
+        }
+    }, []);
 
     // -----------------------------
     // UI
