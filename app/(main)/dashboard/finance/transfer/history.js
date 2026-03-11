@@ -32,17 +32,17 @@ const History = () => {
   const [filter, setFilter] = useState("today");
 
   const getData = async () => {
-   console.log('asd');
+   // console.log('asd');
    setLoading(true);
    const { startDate, endDate } = getDateRange(filter);
    const params = {
       start_date: startDate,
       end_date: endDate
    }
-   console.log('asd params', params);
+   // console.log('asd params', params);
    const res = await getHistoryTransfer(params);
    setLoading(false);
-   console.log('res history', res);
+   // console.log('res history', res);
    if (res.success) {
       setListData(res?.data?.data || []);
    }

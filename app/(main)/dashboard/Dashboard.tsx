@@ -26,7 +26,7 @@ const statusBarHeight = StatusBar.currentHeight;
 
 const Dashboard = () => {
     const { user, updateUser } = useApp();
-    console.log("cek user", user);
+    //  console.log("cek user", user);
 
     const [refreshing, setRefreshing] = useState(false);
     const [modalRequest, setModalRequest] = useState(false);

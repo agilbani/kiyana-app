@@ -46,7 +46,7 @@ type ProfilePayload = {
 
 const PersonalDataScreen = () => {
     const { user, updateUser } = useApp();
-    console.log("cek user e", user);
+    //  console.log("cek user e", user);
 
     const ref = useRef<ThemedBottomSheet | null>(null);
     const { bottom } = usePositionBottom();
@@ -140,7 +140,7 @@ const PersonalDataScreen = () => {
         const payload: ProfilePayload = {
             ...form,
         };
-        console.log("PAYLOAD UPDATE PROFILE:", payload);
+        //   console.log("PAYLOAD UPDATE PROFILE:", payload);
         const formData = new FormData();
         formData.append("address", payload.address);
         formData.append("bank", payload.bank);
@@ -161,7 +161,7 @@ const PersonalDataScreen = () => {
         LoadingManager.show();
         const res = await changeProfile(formData);
         LoadingManager.hide();
-        console.log("res update", res);
+        //   console.log("res update", res);
         if (res.success) {
             getUser();
         }

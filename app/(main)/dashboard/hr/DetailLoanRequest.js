@@ -28,7 +28,7 @@ const DetailLoanRequest = () => {
    const [modalApprove, setModalApprove] = useState(false)
    const [showModalImage, setShowModalImage] = useState(false)
    const [pathImage, setPathImage] = useState('')
-   console.log('detail', detail);
+   // console.log('detail', detail);
    
    const [attachment, setAttachment] = useState(null)
 
@@ -55,7 +55,7 @@ const DetailLoanRequest = () => {
          LoadingManager.show();
          const res = await getDetailLoanRequest(id);
          LoadingManager.hide();
-         console.log('detail absen', res);
+         // console.log('detail absen', res);
          if (res.success) {
             let info = [
                {label: 'Status', value: res.data.status},
@@ -88,7 +88,7 @@ const DetailLoanRequest = () => {
    
       const approve = async () => {
          setModalApprove(false)
-         console.log('cek attachment', attachment);
+         // console.log('cek attachment', attachment);
          
          const formatFile = {
             uri: attachment.uri,
@@ -100,7 +100,7 @@ const DetailLoanRequest = () => {
          LoadingManager.show();
          const res = await actionApproveLoanRequest(id, formdata)
          LoadingManager.hide();
-         console.log('res approve', res);
+         // console.log('res approve', res);
          
          if (res.success) {
             Alert.alert('Permohonan Disetujui', 'Permohonan ini telah disetujui');

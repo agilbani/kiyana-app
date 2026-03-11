@@ -34,9 +34,9 @@ const AttendanceClockInScreen = () => {
 
     const [refresh, setRefresh] = useState(false);
 
-    console.log("attendance clockin", attendance);
-    console.log("clockin user", user);
-    console.log("dataSelectedAttendance", dataSelectedAttendance);
+    //  console.log("attendance clockin", attendance);
+    //  console.log("clockin user", user);
+    //  console.log("dataSelectedAttendance", dataSelectedAttendance);
 
     const officeCoordinate = dataSetting.find(
         (s) => s.key === "OFFICE_COORDINATE",

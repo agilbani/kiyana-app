@@ -1,10 +1,13 @@
 import { CustomDropdown, ThemedText, ThemedTextarea } from "@/components";
 import Color from "@/constants/Color";
+import { MENU_PERMISSION } from "@/constants/Permission";
+import { useApp } from "@/context/AppContext";
 import {
     getDataLog,
     postAddStatus,
     postMuteUser,
 } from "@/services/masterService";
+import { hasMenuAccess } from "@/utils/helpher";
 import LoadingManager from "@/utils/LoadingManager";
 import { ShowToastMessage } from "@/utils/toastMessage";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
@@ -64,6 +67,7 @@ const option = [
 ];
 
 const LogActivity = () => {
+    const { user } = useApp();
     const insets = useSafeAreaInsets(); // <= kunci iOS
     const [logs, setLogs] = useState<LogItem[]>([]);
     const [status, setStatus] = useState("");
@@ -87,25 +91,8 @@ const LogActivity = () => {
     };
 
     const handleMuteUser = (user: any) => {
-        // employee.id
-        //   console.log("selected user", user);
         setSelectedData(user);
         setModalMute(true);
-        //   Alert.alert(
-        //       "Mute Pengguna",
-        //       `Ingin mute ${user?.employee?.name}?`,
-        //       [
-        //           { text: "1 Hari", onPress: () => console.log("Muted 1 day") },
-        //           { text: "3 Hari", onPress: () => console.log("Muted 2 days") },
-        //           {
-        //               text: "7 Hari",
-        //               onPress: () => console.log("Muted 30 days"),
-        //           },
-        //           //  { text: "Banned", onPress: () => console.log("User banned") },
-        //           //  { text: "Batal", style: "cancel" },
-        //       ],
-        //       { cancelable: true },
-        //   );
     };
 
     const renderItem = ({ item }: { item: LogItem }) => {
@@ -118,7 +105,16 @@ const LogActivity = () => {
                 ]}
                 activeOpacity={0.8}
                 onLongPress={() => {
-                    if (isSystem) handleMuteUser(item);
+                    if (isSystem) {
+                        if (
+                            hasMenuAccess(
+                                user?.role?.name,
+                                MENU_PERMISSION.CAN_MUTE,
+                            )
+                        ) {
+                            handleMuteUser(item);
+                        }
+                    }
                 }}
             >
                 <View style={styles.row}>

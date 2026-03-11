@@ -32,7 +32,7 @@ const AttendanceFormScreen = () => {
     } = useApp();
     //  console.log("cek attendance form", attendance);
     //  console.log("cek dataSelectedAttendance form", dataSelectedAttendance);
-    console.log("cek user form", user);
+    //  console.log("cek user form", user);
 
     const [loading, setLoading] = useState(false);
     const { data } = useLocalSearchParams<{ data: string }>();
@@ -57,13 +57,13 @@ const AttendanceFormScreen = () => {
         setLoading(true);
         let res = null;
         if (savedIdLateSchedule) {
-            console.log("res clock out1111");
+            // console.log("res clock out1111");
             const resp = await clockOut(
                 savedIdLateSchedule,
                 dataClockin,
                 "host",
             );
-            console.log("res clock out", resp);
+            // console.log("res clock out", resp);
             setLoading(false);
             if (resp.success) {
                 setLateScheduleId(null);
@@ -87,7 +87,7 @@ const AttendanceFormScreen = () => {
                     ? dataSelectedAttendance.lat_in === null
                     : attendance?.lat_in === null
             ) {
-                console.log("clock in", user);
+                //  console.log("clock in", user);
                 if (
                     user?.is_host &&
                     dataSelectedAttendance.start_time === "21:00"
@@ -110,7 +110,7 @@ const AttendanceFormScreen = () => {
                 await deleteItem("savedIdLateSchedule");
             }
             setLoading(false);
-            console.log("res absen", res);
+            // console.log("res absen", res);
 
             if (res.success) {
                 ref.current?.show();

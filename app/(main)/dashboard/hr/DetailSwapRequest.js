@@ -55,7 +55,7 @@ const DetailSwapRequest = () => {
       LoadingManager.show();
       const res = await getDetailSwapAbsenceRequest(id)
       LoadingManager.hide();
-      console.log('detail swap request', res);
+      // console.log('detail swap request', res);
       if (res.success) {
          setDetail(res.data)
       }

@@ -196,13 +196,13 @@ const DetailProductionScreen = () => {
                 approval.attachments,
             );
         });
-        console.log("formdata finish", formData);
+        //   console.log("formdata finish", formData);
 
         const res = await updateProduction(
             detailProduction?.data?.batch!,
             formData,
         );
-        console.log("res finish", res);
+        //   console.log("res finish", res);
 
         setLoadingAction(false);
         if (res?.success) {
@@ -270,7 +270,7 @@ const DetailProductionScreen = () => {
     async function getDetail() {
         setLoading(true);
         const result = await getTaskByBatch(id);
-        console.log("res task", result);
+        //   console.log("res task", result);
 
         setLoading(false);
         if (result.success && result.data) {
@@ -655,7 +655,7 @@ const DetailProductionScreen = () => {
                 show={modalEnd}
                 onClose={() => setModalEnd(false)}
                 submit={(data: any) => {
-                    console.log("data end finishing", data);
+                    //   console.log("data end finishing", data);
                     handleFinishFinishing(data);
                 }}
             />

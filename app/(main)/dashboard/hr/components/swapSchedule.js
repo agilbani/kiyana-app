@@ -66,7 +66,7 @@ const SwapScheduleApproval = ({isActive}) => {
       }
       const res = await getSwapAbsenceRequest(payload)
       LoadingManager.hide();
-      console.log('res', res);
+      // console.log('res', res);
       if (res.success) {
          setListData(res.data)
       }

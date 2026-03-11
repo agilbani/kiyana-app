@@ -88,7 +88,7 @@ const ChangePasswordScreen = () => {
          * Payload SIAP dikirim ke API
          * await changePassword(payload)
          */
-        console.log("PAYLOAD CHANGE PASSWORD:", payload);
+        //   console.log("PAYLOAD CHANGE PASSWORD:", payload);
         LoadingManager.show();
         const res = await changePassword(payload);
         LoadingManager.hide();

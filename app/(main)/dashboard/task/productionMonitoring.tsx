@@ -76,7 +76,7 @@ const ProductionMonitoring = () => {
             getListVariant,
             getMonitoring,
         ]);
-        console.log("cek monitoring", monitoring);
+        //   console.log("cek monitoring", monitoring);
         setLoading(false);
         if (listProductVariant.success) {
             let arr = [];

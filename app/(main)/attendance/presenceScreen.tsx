@@ -49,10 +49,10 @@ const PresenceScreen = () => {
     const getData = async () => {
         setLoading(true);
         const { startDate, endDate } = getDateRange(filter);
-        console.log("cek startDate", startDate);
-        console.log("cek endDate", endDate);
+        //   console.log("cek startDate", startDate);
+        //   console.log("cek endDate", endDate);
         const res = await getMyAttendance(startDate, endDate);
-        console.log("res absen", res);
+        //   console.log("res absen", res);
 
         setLoading(false);
         if (res.success) {

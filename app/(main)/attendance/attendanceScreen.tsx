@@ -40,7 +40,7 @@ const AttendanceScreen = () => {
         savedIdLateSchedule,
     } = useApp();
     //   console.log("cek savedIdLateSchedule", savedIdLateSchedule);
-    console.log("cek attendance user", user);
+    //  console.log("cek attendance user", user);
 
     const isKartap = user?.type === "TETAP";
     const isHost = user?.is_host;

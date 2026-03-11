@@ -47,14 +47,14 @@ const AbsenceApproval = ({isActive}) => {
 
    const getData = async () => {
       const payload = {...filter}
-      console.log('cek filter', payload);
+      // console.log('cek filter', payload);
       if (payload.status === '') {
          delete payload.status
       }
       LoadingManager.show();
       const res = await getAbsenceRequest(payload)
       LoadingManager.hide();
-      console.log('res data', res);
+      // console.log('res data', res);
       if (res.success) {
          setListData(res.data)
       } else {
@@ -198,7 +198,7 @@ const AbsenceApproval = ({isActive}) => {
                   items={optionStatus}
                   value={filter.status}
                   onSelectItem={(item) => {
-                     console.log('item selected', item);
+                     // console.log('item selected', item);
                      setFilter((prev) => ({...prev, status: item.value}))
                      setShowFilter(false)
                   }}

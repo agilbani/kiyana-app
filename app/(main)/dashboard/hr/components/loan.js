@@ -197,7 +197,7 @@ const LoanApproval = ({isActive}) => {
                   items={optionStatus}
                   value={filter.status}
                   onSelectItem={(item) => {
-                     console.log('item selected', item);
+                     // console.log('item selected', item);
                      setFilter((prev) => ({...prev, status: item.value}))
                      setShowFilter(false)
                   }}

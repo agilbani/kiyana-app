@@ -48,10 +48,10 @@ const ProdukScreen: React.FC = () => {
         try {
             setLoading(true);
             const res: any = await getProduct();
-            console.log("API Response (produk):", res);
+            // console.log("API Response (produk):", res);
             setProducts(res || []);
         } catch (err: any) {
-            console.log("Fetch product error:", err);
+            // console.log("Fetch product error:", err);
             Alert.alert("Error", "Gagal memuat data produk");
         } finally {
             setLoading(false);

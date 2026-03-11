@@ -2,7 +2,11 @@ import { ThemedContainer, ThemedHeader, ThemedText } from "@/components";
 import Color from "@/constants/Color";
 import { ROUTES } from "@/constants/Routes";
 import { deleteCustomer } from "@/services/customerService";
-import { addCustomer, getCustomer, updateCustomer } from "@/services/warehouseService"; // ✅ import api
+import {
+    addCustomer,
+    getCustomer,
+    updateCustomer,
+} from "@/services/warehouseService"; // ✅ import api
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -14,7 +18,7 @@ import {
     StyleSheet,
     TextInput,
     TouchableOpacity,
-    View
+    View,
 } from "react-native";
 
 type IncomingState =
@@ -72,7 +76,7 @@ const POSPreviewScreen: React.FC = () => {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [customers, setCustomers] = useState<any[]>([]);
     const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(
-        null
+        null,
     );
 
     const items: CartItem[] = useMemo(() => {
@@ -102,7 +106,7 @@ const POSPreviewScreen: React.FC = () => {
             const res = await getCustomer();
             setCustomers(res || []);
         } catch (err) {
-            console.log("❌ Gagal load customers:", err);
+            // console.log("❌ Gagal load customers:", err);
             Alert.alert("Error", "Gagal memuat daftar pelanggan");
         }
     }, []);
@@ -113,25 +117,25 @@ const POSPreviewScreen: React.FC = () => {
 
     const selectedCustomer = useMemo(
         () => customers.find((c) => c.id === selectedCustomerId) || null,
-        [customers, selectedCustomerId]
+        [customers, selectedCustomerId],
     );
 
     // -----------------------------
     // Discounts & Totals
     // -----------------------------
     const [discountType, setDiscountType] = useState<"percent" | "nominal">(
-        "nominal"
+        "nominal",
     );
     const [discountValue, setDiscountValue] = useState<string>("0");
 
     const subtotal = useMemo(
         () => cartItems.reduce((s, it) => s + it.qty * it.price, 0),
-        [cartItems]
+        [cartItems],
     );
 
     const numericDiscount = useMemo(
         () => parseInt((discountValue || "0").replace(/[^0-9]/g, ""), 10) || 0,
-        [discountValue]
+        [discountValue],
     );
 
     const discountAmount = useMemo(
@@ -139,10 +143,10 @@ const POSPreviewScreen: React.FC = () => {
             discountType === "percent"
                 ? Math.round(
                       (Math.max(0, Math.min(100, numericDiscount)) / 100) *
-                          subtotal
+                          subtotal,
                   )
                 : Math.min(numericDiscount, subtotal),
-        [discountType, numericDiscount, subtotal]
+        [discountType, numericDiscount, subtotal],
     );
 
     const total = Math.max(0, subtotal - discountAmount);
@@ -152,7 +156,8 @@ const POSPreviewScreen: React.FC = () => {
             setCartItems((prev) => {
                 const idx = prev.findIndex(
                     (it) =>
-                        it.productId === productId && it.variantId === variantId
+                        it.productId === productId &&
+                        it.variantId === variantId,
                 );
                 if (idx === -1) return prev;
                 const next = [...prev];
@@ -163,7 +168,7 @@ const POSPreviewScreen: React.FC = () => {
                 return next;
             });
         },
-        []
+        [],
     );
 
     // -----------------------------
@@ -171,7 +176,10 @@ const POSPreviewScreen: React.FC = () => {
     // -----------------------------
     const handleConfirm = useCallback(() => {
         if (!selectedCustomerId) {
-            Alert.alert("Pilih Pelanggan", "Silakan pilih pelanggan terlebih dahulu sebelum lanjut.");
+            Alert.alert(
+                "Pilih Pelanggan",
+                "Silakan pilih pelanggan terlebih dahulu sebelum lanjut.",
+            );
             return;
         }
 
@@ -218,7 +226,10 @@ const POSPreviewScreen: React.FC = () => {
                     onAdd={async (c) => {
                         const res = await addCustomer(c);
                         if (res.success) {
-                            Alert.alert("Sukses", "Pelanggan berhasil ditambahkan");
+                            Alert.alert(
+                                "Sukses",
+                                "Pelanggan berhasil ditambahkan",
+                            );
                             fetchCustomers();
                         } else {
                             Alert.alert("Gagal", res.message);
@@ -230,11 +241,18 @@ const POSPreviewScreen: React.FC = () => {
 
             {/* Items */}
             <View style={checkoutStyles.section}>
-                <ThemedText type="SemiBold" size="md" style={{ marginBottom: 6 }}>
+                <ThemedText
+                    type="SemiBold"
+                    size="md"
+                    style={{ marginBottom: 6 }}
+                >
                     Daftar Item
                 </ThemedText>
                 {items.length === 0 ? (
-                    <ThemedText size="sm" color={Color.Text?.Secondary || "#6b7280"}>
+                    <ThemedText
+                        size="sm"
+                        color={Color.Text?.Secondary || "#6b7280"}
+                    >
                         Belum ada item.
                     </ThemedText>
                 ) : (
@@ -249,9 +267,12 @@ const POSPreviewScreen: React.FC = () => {
                                     </ThemedText>
                                     <ThemedText
                                         size="sm"
-                                        color={Color.Text?.Secondary || "#6b7280"}
+                                        color={
+                                            Color.Text?.Secondary || "#6b7280"
+                                        }
                                     >
-                                        {formatCurrency(item.price)} × {item.qty}
+                                        {formatCurrency(item.price)} ×{" "}
+                                        {item.qty}
                                     </ThemedText>
                                 </View>
 
@@ -259,7 +280,11 @@ const POSPreviewScreen: React.FC = () => {
                                 <View style={checkoutStyles.stepper}>
                                     <TouchableOpacity
                                         onPress={() =>
-                                            updateQty(item.productId, item.variantId, -1)
+                                            updateQty(
+                                                item.productId,
+                                                item.variantId,
+                                                -1,
+                                            )
                                         }
                                         style={[
                                             checkoutStyles.stepperBtn,
@@ -279,7 +304,11 @@ const POSPreviewScreen: React.FC = () => {
 
                                     <TouchableOpacity
                                         onPress={() =>
-                                            updateQty(item.productId, item.variantId, +1)
+                                            updateQty(
+                                                item.productId,
+                                                item.variantId,
+                                                +1,
+                                            )
                                         }
                                         style={[
                                             checkoutStyles.stepperBtn,
@@ -295,7 +324,10 @@ const POSPreviewScreen: React.FC = () => {
                                 <ThemedText
                                     type="SemiBold"
                                     size="md"
-                                    style={{ minWidth: 100, textAlign: "right" }}
+                                    style={{
+                                        minWidth: 100,
+                                        textAlign: "right",
+                                    }}
                                 >
                                     {formatCurrency(item.price * item.qty)}
                                 </ThemedText>
@@ -318,10 +350,15 @@ const POSPreviewScreen: React.FC = () => {
                 <View style={checkoutStyles.totalDivider} />
                 <View style={checkoutStyles.totalRow}>
                     <ThemedText type="SemiBold">Total</ThemedText>
-                    <ThemedText type="SemiBold">{formatCurrency(total)}</ThemedText>
+                    <ThemedText type="SemiBold">
+                        {formatCurrency(total)}
+                    </ThemedText>
                 </View>
 
-                <TouchableOpacity style={checkoutStyles.payBtn} onPress={handleConfirm}>
+                <TouchableOpacity
+                    style={checkoutStyles.payBtn}
+                    onPress={handleConfirm}
+                >
                     <ThemedText type="SemiBold" color="#fff">
                         Proses Pembayaran
                     </ThemedText>
@@ -369,7 +406,7 @@ const CustomerPicker: React.FC<{
                         }
                     },
                 },
-            ]
+            ],
         );
     };
 
@@ -408,7 +445,9 @@ const CustomerPicker: React.FC<{
                 >
                     <View style={checkoutStyles.sheet}>
                         <View style={checkoutStyles.sheetHeader}>
-                            <ThemedText type="SemiBold">Pilih Pelanggan</ThemedText>
+                            <ThemedText type="SemiBold">
+                                Pilih Pelanggan
+                            </ThemedText>
                             <TouchableOpacity
                                 onPress={() => setOpen(false)}
                                 style={checkoutStyles.iconGhost}
@@ -429,7 +468,12 @@ const CustomerPicker: React.FC<{
                                 data={customers}
                                 keyExtractor={(item) => item.id}
                                 renderItem={({ item }) => (
-                                    <View style={[checkoutStyles.customerRow, { alignItems: "center" }]}>
+                                    <View
+                                        style={[
+                                            checkoutStyles.customerRow,
+                                            { alignItems: "center" },
+                                        ]}
+                                    >
                                         <TouchableOpacity
                                             style={{ flex: 1 }}
                                             onPress={() => {
@@ -437,11 +481,16 @@ const CustomerPicker: React.FC<{
                                                 setOpen(false);
                                             }}
                                         >
-                                            <ThemedText type="SemiBold">{item.name}</ThemedText>
+                                            <ThemedText type="SemiBold">
+                                                {item.name}
+                                            </ThemedText>
                                             {!!item.contact && (
                                                 <ThemedText
                                                     size="xs"
-                                                    color={Color.Text?.Secondary || "#6b7280"}
+                                                    color={
+                                                        Color.Text?.Secondary ||
+                                                        "#6b7280"
+                                                    }
                                                 >
                                                     {item.contact}
                                                 </ThemedText>
@@ -449,7 +498,10 @@ const CustomerPicker: React.FC<{
                                             {!!item.address && (
                                                 <ThemedText
                                                     size="xs"
-                                                    color={Color.Text?.Secondary || "#6b7280"}
+                                                    color={
+                                                        Color.Text?.Secondary ||
+                                                        "#6b7280"
+                                                    }
                                                 >
                                                     {item.address}
                                                 </ThemedText>
@@ -461,16 +513,24 @@ const CustomerPicker: React.FC<{
                                             onPress={() => {
                                                 setEditData(item);
                                                 setOpen(false);
-                                                setTimeout(() => setAddOpen(true), 400);
+                                                setTimeout(
+                                                    () => setAddOpen(true),
+                                                    400,
+                                                );
                                             }}
-                                            style={[checkoutStyles.iconGhost, { marginHorizontal: 4 }]}
+                                            style={[
+                                                checkoutStyles.iconGhost,
+                                                { marginHorizontal: 4 },
+                                            ]}
                                         >
                                             <ThemedText>✎</ThemedText>
                                         </TouchableOpacity>
 
                                         {/* Tombol Hapus */}
                                         <TouchableOpacity
-                                            onPress={() => handleDelete(item.id)}
+                                            onPress={() =>
+                                                handleDelete(item.id)
+                                            }
                                             style={checkoutStyles.iconGhost}
                                         >
                                             <ThemedText>🗑️</ThemedText>
@@ -518,7 +578,10 @@ const CustomerPicker: React.FC<{
                         // mode tambah
                         const res = await addCustomer(payload);
                         if (res.success) {
-                            Alert.alert("Sukses", "Pelanggan berhasil ditambahkan");
+                            Alert.alert(
+                                "Sukses",
+                                "Pelanggan berhasil ditambahkan",
+                            );
                             onRefresh?.();
                         } else {
                             Alert.alert("Gagal", res.message);
@@ -556,7 +619,12 @@ const AddCustomerModal: React.FC<{
     const canSave = name.trim().length > 0;
 
     return (
-        <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+        <Modal
+            visible={visible}
+            transparent
+            animationType="fade"
+            onRequestClose={onClose}
+        >
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : undefined}
                 style={checkoutStyles.backdrop}
@@ -566,7 +634,10 @@ const AddCustomerModal: React.FC<{
                         <ThemedText type="SemiBold">
                             {editData ? "Edit Pelanggan" : "Tambah Pelanggan"}
                         </ThemedText>
-                        <TouchableOpacity onPress={onClose} style={checkoutStyles.iconGhost}>
+                        <TouchableOpacity
+                            onPress={onClose}
+                            style={checkoutStyles.iconGhost}
+                        >
                             <ThemedText>✕</ThemedText>
                         </TouchableOpacity>
                     </View>
@@ -616,7 +687,6 @@ const AddCustomerModal: React.FC<{
         </Modal>
     );
 };
-
 
 // -----------------------------
 // Styles (Preview)

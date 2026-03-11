@@ -34,14 +34,14 @@ const RootLayout = () => {
         registerForPushNotifications().then(async (token) => {
             if (token) {
                 // TODO: kirim ke backend
-                console.log("FCM Token:", token);
+                //  console.log("FCM Token:", token);
                 await saveItem("fcm_token", token);
             }
         });
 
         const foregroundSub = Notifications.addNotificationReceivedListener(
             (notification) => {
-                console.log("Foreground notification:", notification);
+                //  console.log("Foreground notification:", notification);
             },
         );
 
@@ -49,7 +49,7 @@ const RootLayout = () => {
             Notifications.addNotificationResponseReceivedListener(
                 (response) => {
                     const data = response.notification;
-                    console.log("data notif", data);
+                    //   console.log("data notif", data);
                     if (
                         data?.request?.content?.data?.type ===
                         "production_plan_created" //"production_set_sewn"

@@ -43,7 +43,7 @@ const LoginScreen = () => {
         const fcmToken = (await getItem("fcm_token")) ?? "";
         try {
             const response = await login(data.email, data.password, fcmToken);
-            console.log("res login", response);
+            // console.log("res login", response);
 
             if (response.status === 200) {
                 getListSetting();

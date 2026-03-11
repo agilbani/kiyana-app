@@ -107,12 +107,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         password,
         fcm_token,
     ) => {
-        console.log("login email", email);
-
         setLoading(true);
         try {
             const res = await loginUser(email, password, fcm_token);
-            console.log("login res1111", res);
+            // console.log("login res1111", res);
             setLoading(false);
             if (res?.token) {
                 setUser(res.user);

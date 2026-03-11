@@ -58,8 +58,8 @@ const RequestChangeShift = () => {
             getCurrHost,
             getAllHost,
         ]);
-        console.log("cek currentHost", currentHost);
-        console.log("cek allHost", allHost);
+        //   console.log("cek currentHost", currentHost);
+        //   console.log("cek allHost", allHost);
 
         if (currentHost.success) {
             let hostData = [];
@@ -154,7 +154,7 @@ const RequestChangeShift = () => {
         setIsSubmit(true);
         const res = await postRequestChangeAttendance(
             payload,
-            user?.is_host ? "host" : "shifted"
+            user?.is_host ? "host" : "shifted",
         );
         setIsSubmit(false);
         if (res.success) {
@@ -166,7 +166,7 @@ const RequestChangeShift = () => {
                         text: "Oke",
                         onPress: () => router.back(),
                     },
-                ]
+                ],
             );
         } else {
             Alert.alert(
@@ -177,7 +177,7 @@ const RequestChangeShift = () => {
                         text: "Oke",
                         onPress: () => router.back(),
                     },
-                ]
+                ],
             );
         }
     };
@@ -236,8 +236,8 @@ const RequestChangeShift = () => {
                                 onChange={(date: any) =>
                                     setStartDate(
                                         moment(date, "DD-MM-YYYY").format(
-                                            "YYYY-MM-DD"
-                                        )
+                                            "YYYY-MM-DD",
+                                        ),
                                     )
                                 }
                             />
@@ -247,8 +247,8 @@ const RequestChangeShift = () => {
                                 onChange={(date: any) =>
                                     setEndDate(
                                         moment(date, "DD-MM-YYYY").format(
-                                            "YYYY-MM-DD"
-                                        )
+                                            "YYYY-MM-DD",
+                                        ),
                                     )
                                 }
                             />

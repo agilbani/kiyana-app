@@ -20,7 +20,7 @@ const statusBarHeight = StatusBar.currentHeight;
 
 const ProfileScreen = () => {
     const { user } = useApp();
-    console.log("user profile", user);
+    //  console.log("user profile", user);
 
     return (
         <View style={styles.page}>
@@ -78,7 +78,7 @@ const ProfileScreen = () => {
                             size="md"
                             color={Color.Purple[500]}
                         >
-                            v.2.5
+                            v.2.6
                         </ThemedText>
                     </View>
                     <ThemedGap height="md" />

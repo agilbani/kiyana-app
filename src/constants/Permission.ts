@@ -295,4 +295,5 @@ export const MENU_PERMISSION = {
         "Packing",
         "Staff Admin",
     ],
+    CAN_MUTE: ["CEO", "CMO", "COO", "GM", "Manager"],
 };

@@ -88,7 +88,7 @@ const TransferScreen = () => {
     };
 
     const onSubmit = async (data: FormValues) => {
-        console.log("cek data form", data);
+        //   console.log("cek data form", data);
 
         const recipientName = fetchRecipientName(data.recipient);
         const numericAmount = Number(data.amount.replace(/\./g, ""));
@@ -105,7 +105,7 @@ const TransferScreen = () => {
             amount: Number(data.amount.replace(/\./g, "")),
         });
         LoadingManager.hide();
-        console.log("res tf", res);
+        //   console.log("res tf", res);
 
         if (res.success) {
             Alert.alert("Berhasil!", "Saldo anda berhasil di transfer");
@@ -113,7 +113,7 @@ const TransferScreen = () => {
         } else {
             Alert.alert(
                 "Gagal!",
-                "Saldo anda gagal di transfer, silahkan coba beberapa saat lagi"
+                "Saldo anda gagal di transfer, silahkan coba beberapa saat lagi",
             );
         }
     };
